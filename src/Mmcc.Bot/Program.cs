@@ -94,7 +94,25 @@ namespace Mmcc.Bot
                     services.AddSingleton<DiscordService>();
                     services.AddSingleton<IHostedService, DiscordService>(serviceProvider =>
                         serviceProvider.GetRequiredService<DiscordService>());
+                    
                     services.AddDiscordCaching();
+                    services.Configure<CacheSettings>(settings =>
+                    {
+                        settings.SetAbsoluteExpiration<IGuild>(TimeSpan.FromDays(1));
+                        settings.SetSlidingExpiration<IGuild>(TimeSpan.FromDays(1));
+                        
+                        settings.SetAbsoluteExpiration<IRole>(TimeSpan.FromDays(1));
+                        settings.SetSlidingExpiration<IRole>(TimeSpan.FromDays(1));
+                        
+                        settings.SetAbsoluteExpiration<IReadOnlyList<IRole>>(TimeSpan.FromDays(1));
+                        settings.SetSlidingExpiration<IReadOnlyList<IRole>>(TimeSpan.FromDays(1));
+
+                        settings.SetAbsoluteExpiration<IChannel>(TimeSpan.FromDays(1));
+                        settings.SetSlidingExpiration<IChannel>(TimeSpan.FromHours(12));
+
+                        settings.SetAbsoluteExpiration<IGuildMember>(TimeSpan.FromHours(30));
+                        settings.SetSlidingExpiration<IGuildMember>(TimeSpan.FromMinutes(15));
+                    });
                 });
     }
 }
