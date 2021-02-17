@@ -19,7 +19,7 @@ namespace Mmcc.Bot.Database
             
             // get connection string;
             var optionsBuilder = new DbContextOptionsBuilder<BotContext>();
-            var boundConfig = config.GetSection("Database").Get<MySqlSettings>();
+            var boundConfig = config.GetSection("MySql").Get<MySqlSettings>();
             var connString =
                 $"Server={boundConfig.ServerIp};Port={boundConfig.Port};Database={boundConfig.DatabaseName};Uid={boundConfig.Username};Pwd={boundConfig.Password};Allow User Variables=True";
             optionsBuilder.UseMySql(
