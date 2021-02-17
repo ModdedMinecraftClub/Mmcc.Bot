@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +14,9 @@ using Mmcc.Bot.Infrastructure.Conditions;
 using Mmcc.Bot.Responders;
 using Remora.Commands.Extensions;
 using Remora.Discord.API.Abstractions.Gateway.Commands;
+using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.Caching.Extensions;
+using Remora.Discord.Caching.Services;
 using Remora.Discord.Commands.Extensions;
 using Remora.Discord.Gateway;
 using Remora.Discord.Gateway.Extensions;

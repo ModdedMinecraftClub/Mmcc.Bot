@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -46,6 +47,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
                 try
                 {
                     var app = await _context.MemberApplications
+                        .Where(a => a.GuildId == request.DiscordMessageUpdatedEvent.GuildID.Value.Value)
                         .FirstOrDefaultAsync(a => a.MessageId == request.DiscordMessageUpdatedEvent.ID.Value.Value,
                             cancellationToken);
 

@@ -65,13 +65,7 @@ namespace Mmcc.Bot.Responders
             {
                 return Result.FromSuccess();
             }
-            
-            // return if the message is a command;
-            if (ev.Content.StartsWith('!'))
-            {
-                return Result.FromSuccess();
-            }
-            
+
             var getChannelNameResult = await _channelApi.GetChannelAsync(ev.ChannelID, ct);
             if (!getChannelNameResult.IsSuccess)
             {
