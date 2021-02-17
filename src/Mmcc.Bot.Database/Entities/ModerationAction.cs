@@ -23,12 +23,12 @@
         /// <summary>
         /// Expiry date of the moderation action in Unix time format. Set to <code>null</code> if permanent.
         /// </summary>
-        public ulong? ExpiryDate { get; set; }
+        public long? ExpiryDate { get; set; }
         
         /// <summary>
         /// The user's Discord ID. Set to <code>null</code> if not associated with a Discord user.
         /// </summary>
-        public long? UserDiscordId { get; set; }
+        public ulong? UserDiscordId { get; set; }
         
         /// <summary>
         /// The user's IGN. Set to <code>null</code> if not associated with an in-game user.
@@ -53,9 +53,9 @@
             ModerationActionType moderationActionType,
             bool isActive,
             string reason,
-            long? userDiscordId = null,
+            ulong? userDiscordId = null,
             string? userIgn = null,
-            ulong? expiryDate = null 
+            long? expiryDate = null 
         )
         {
             ModerationActionType = moderationActionType;
