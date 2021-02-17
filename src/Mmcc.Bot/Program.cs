@@ -1,22 +1,21 @@
-using System;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mmcc.Bot.CommandGroups;
 using Mmcc.Bot.Core.Models.Settings;
+using Mmcc.Bot.Database;
+using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions;
-using Mmcc.Bot.Infrastructure.HostedServices;
-using Mmcc.Bot.Infrastructure.Services;
+using Mmcc.Bot.Responders;
 using Remora.Commands.Extensions;
-using Remora.Discord.API.Abstractions.Objects;
+using Remora.Discord.API.Abstractions.Gateway.Commands;
 using Remora.Discord.Caching.Extensions;
-using Remora.Discord.Caching.Services;
-using Remora.Discord.Commands.Contexts;
 using Remora.Discord.Commands.Extensions;
-using Remora.Discord.Commands.Services;
+using Remora.Discord.Gateway;
 using Remora.Discord.Gateway.Extensions;
-using Remora.Discord.Hosting.Extensions;
 using Remora.Discord.Hosting.Services;
 
 namespace Mmcc.Bot
@@ -51,12 +50,37 @@ namespace Mmcc.Bot
                     services.AddSingleton(provider => provider.GetRequiredService<IOptions<DiscordSettings>>().Value);
                     services.Configure<PolychatSettings>(hostContext.Configuration.GetSection("Polychat"));
                     services.AddSingleton(provider => provider.GetRequiredService<IOptions<PolychatSettings>>().Value);
+                    
+                    services.Configure<DiscordGatewayClientOptions>(options =>
+                    {
+                        options.Intents =
+                            GatewayIntents.Guilds
+                            | GatewayIntents.GuildBans
+                            | GatewayIntents.GuildMessages;
+                    });
+                    
+                    services.AddDbContext<BotContext>((provider, options) =>
+                    {
+                        var config = provider.GetRequiredService<MySqlSettings>();
+                        var connString =
+                            $"Server={config.ServerIp};Port={config.Port};Database={config.DatabaseName};Uid={config.Username};Pwd={config.Password};Allow User Variables=True";
+                        var serverVersion = ServerVersion.FromString("10.4.11-mariadb");
+                        
+                        options.UseMySql(connString, serverVersion);
+                    });
 
+                    services.AddMediatR(typeof(CreateFromDiscordMessage));
+                    
                     services.AddDiscordCommands();
+                    
                     services.AddCondition<RequireUserGuildPermissionCondition>();
+                    
                     services.AddCommandGroup<TestCommands>();
                     services.AddCommandGroup<ApplicationCommands>();
                     services.AddCommandGroup<ApplicationCommands.ViewCommands>();
+                    
+                    services.AddResponder<MemberApplicationCreatedResponder>();
+                    services.AddResponder<MemberApplicationUpdatedResponder>();
                     
                     services.AddDiscordGateway(provider =>
                     {

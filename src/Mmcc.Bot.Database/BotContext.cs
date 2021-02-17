@@ -29,6 +29,9 @@ namespace Mmcc.Bot.Database
             {
                 e.HasIndex(a => a.GuildId);
                 e.HasIndex(a => a.AuthorDiscordId);
+
+                e.Property(a => a.AppStatus)
+                    .HasColumnType("int(1)");
             });
 
             modelBuilder.Entity<ModerationAction>(e =>
@@ -36,6 +39,9 @@ namespace Mmcc.Bot.Database
                 e.HasIndex(m => m.ModerationActionType);
                 e.HasIndex(m => m.UserDiscordId);
                 e.HasIndex(m => m.UserIgn);
+
+                e.Property(m => m.ModerationActionType)
+                    .HasColumnType("int(1)");
             });
         }
     }

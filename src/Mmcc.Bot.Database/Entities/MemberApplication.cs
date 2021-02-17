@@ -8,7 +8,7 @@
         /// <summary>
         /// ID of the application.
         /// </summary>
-        public int AppId { get; set; }
+        public int MemberApplicationId { get; set; }
         
         /// <summary>
         /// ID of the guild in which the message containing the application was sent.
@@ -48,7 +48,7 @@
         /// <summary>
         /// URL of the image which serves as proof of fulfilling the requirements for the Member role.
         /// </summary>
-        public string ImageUrl { get; set; } = null!;
+        public string ImageUrl { get; set; }
         
         /// <summary>
         /// Instantiates <see cref="MemberApplication"/>
@@ -57,7 +57,7 @@
         /// <param name="channelId">ID of the channel in which the message containing the application was sent.</param>
         /// <param name="messageId">ID of the message containing the application. </param>
         /// <param name="authorDiscordId">ID of the Discord user who is the author of the message containing the application.</param>
-        /// <param name="applicationStatus">Status of the application. See <see cref="ApplicationStatus"/>.</param>
+        /// <param name="appStatus">Status of the application. See <see cref="ApplicationStatus"/>.</param>
         /// <param name="appTime">Time when the application was sent in Unix time format.</param>
         /// <param name="imageUrl">Content of the message.</param>
         /// <param name="messageContent">URL of the image which serves as proof of fulfilling the requirements for the Member role.</param>
@@ -66,7 +66,7 @@
             ulong channelId,
             ulong messageId,
             ulong authorDiscordId,
-            ApplicationStatus applicationStatus,
+            ApplicationStatus appStatus,
             long appTime,
             string imageUrl,
             string? messageContent = null
@@ -76,7 +76,7 @@
             ChannelId = channelId;
             MessageId = messageId;
             AuthorDiscordId = authorDiscordId;
-            AppStatus = applicationStatus;
+            AppStatus = appStatus;
             AppTime = appTime;
             ImageUrl = imageUrl;
             MessageContent = messageContent;

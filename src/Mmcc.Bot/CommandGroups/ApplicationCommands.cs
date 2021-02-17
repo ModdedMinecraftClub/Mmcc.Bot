@@ -24,7 +24,6 @@ namespace Mmcc.Bot.CommandGroups
             }
             
             [Command("view")]
-            [RequireUserGuildPermission(DiscordPermission.BanMembers)]
             public async Task<IResult> View(int id)
             {
                 var reply = await _channelApi.CreateMessageAsync(

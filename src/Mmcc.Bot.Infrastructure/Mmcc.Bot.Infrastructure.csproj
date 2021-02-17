@@ -11,7 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Commands" />
+      <ProjectReference Include="..\Mmcc.Bot.Database\Mmcc.Bot.Database.csproj" />
     </ItemGroup>
 
 </Project>
