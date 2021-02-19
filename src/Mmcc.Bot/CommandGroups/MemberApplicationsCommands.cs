@@ -124,7 +124,11 @@ namespace Mmcc.Bot.CommandGroups
                 ? Result.FromError(sendMessageResult)
                 : Result.FromSuccess();
         }
-
+        
+        /// <summary>
+        /// Views pending applications.
+        /// </summary>
+        /// <returns>Result of the operation.</returns>
         [Command("pending")]
         public async Task<IResult> ViewPending()
         {
@@ -132,7 +136,7 @@ namespace Mmcc.Bot.CommandGroups
                 new GetByStatus.Query
                 {
                     ApplicationStatus = ApplicationStatus.Pending,
-                    Limit = 10,
+                    Limit = 100,
                     SortByDescending = false
                 }
             );
@@ -163,7 +167,11 @@ namespace Mmcc.Bot.CommandGroups
                 ? Result.FromError(sendMessageResult)
                 : Result.FromSuccess();
         }
-
+        
+        /// <summary>
+        /// Views last 10 approved applications.
+        /// </summary>
+        /// <returns>Result of the operation.</returns>
         [Command("approved")]
         public async Task<IResult> ViewApproved()
         {
@@ -202,7 +210,11 @@ namespace Mmcc.Bot.CommandGroups
                 ? Result.FromError(sendMessageResult)
                 : Result.FromSuccess();
         }
-
+        
+        /// <summary>
+        /// Views last 10 rejected applications.
+        /// </summary>
+        /// <returns>Result of the operation</returns>
         [Command("rejected")]
         public async Task<IResult> ViewRejected()
         {
@@ -241,7 +253,12 @@ namespace Mmcc.Bot.CommandGroups
                 ? Result.FromError(sendMessageResult)
                 : Result.FromSuccess();
         }
-
+        
+        /// <summary>
+        /// Gets embed fields from an enumerable of member applications.
+        /// </summary>
+        /// <param name="memberApplications">An enumerable of member applications.</param>
+        /// <returns>Embed fields.</returns>
         private static IEnumerable<EmbedField> GetFieldsFromApps(IEnumerable<MemberApplication> memberApplications) =>
             memberApplications
                 .Select(app => new EmbedField
