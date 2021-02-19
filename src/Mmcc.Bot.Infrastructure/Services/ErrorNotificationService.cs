@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Core.Errors;
+using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
@@ -20,30 +21,37 @@ namespace Mmcc.Bot.Infrastructure.Services
     {
         private readonly ILogger<ErrorNotificationService> _logger;
         private readonly IDiscordRestChannelAPI _channelApi;
-        
+        private readonly ColourPalette _colourPalette;
+
         /// <summary>
         /// Instantiates a new instance of <see cref="ErrorNotificationService"/>.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="channelApi">The channel API.</param>
-        public ErrorNotificationService(ILogger<ErrorNotificationService> logger, IDiscordRestChannelAPI channelApi)
+        /// <param name="colourPalette">The colour palette.</param>
+        public ErrorNotificationService(
+            ILogger<ErrorNotificationService> logger,
+            IDiscordRestChannelAPI channelApi,
+            ColourPalette colourPalette
+        )
         {
             _logger = logger;
             _channelApi = channelApi;
+            _colourPalette = colourPalette;
         }
-        
+
         /// <inheritdoc />
         public Task<Result> BeforeExecutionAsync(ICommandContext context, CancellationToken ct)
         {
             return Task.FromResult(Result.FromSuccess());
         }
-        
+
         /// <inheritdoc />
         public async Task<Result> AfterExecutionAsync(
             ICommandContext context,
             IResult executionResult,
             CancellationToken ct
-            )
+        )
         {
             if (
                 executionResult.IsSuccess
@@ -61,8 +69,8 @@ namespace Mmcc.Bot.Infrastructure.Services
                 new Optional<int>(),
                 new Optional<int>()
             );
-            
-            var errorEmbed = new Embed(Thumbnail: embedImg, Colour: Color.Red);
+
+            var errorEmbed = new Embed(Thumbnail: embedImg, Colour: _colourPalette.Red);
             errorEmbed = err switch
             {
                 ValidationError => errorEmbed with

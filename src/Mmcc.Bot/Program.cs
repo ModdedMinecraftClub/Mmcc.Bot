@@ -13,6 +13,7 @@ using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Responders;
+using Mmcc.Bot.Setup;
 using Remora.Commands.Extensions;
 using Remora.Discord.API.Abstractions.Gateway.Commands;
 using Remora.Discord.API.Abstractions.Objects;
@@ -92,7 +93,8 @@ namespace Mmcc.Bot
                         var discordConfig = provider.GetRequiredService<DiscordSettings>();
                         return discordConfig.Token;
                     });
-                    
+
+                    services.AddTailwindColourPalette();
                     services.AddScoped<IExecutionEventService, ErrorNotificationService>();
                     services.AddSingleton<DiscordService>();
                     services.AddSingleton<IHostedService, DiscordService>(serviceProvider =>

@@ -31,6 +31,11 @@
         public ulong AuthorDiscordId { get; set; }
         
         /// <summary>
+        /// Name of the Discord user who is the author of the message containing the application.
+        /// </summary>
+        public string AuthorDiscordName { get; set; }
+        
+        /// <summary>
         /// Status of the application. See <see cref="ApplicationStatus"/>.
         /// </summary>
         public ApplicationStatus AppStatus { get; set; }
@@ -49,7 +54,7 @@
         /// URL of the image which serves as proof of fulfilling the requirements for the Member role.
         /// </summary>
         public string ImageUrl { get; set; }
-        
+
         /// <summary>
         /// Instantiates <see cref="MemberApplication"/>
         /// </summary>
@@ -57,6 +62,7 @@
         /// <param name="channelId">ID of the channel in which the message containing the application was sent.</param>
         /// <param name="messageId">ID of the message containing the application. </param>
         /// <param name="authorDiscordId">ID of the Discord user who is the author of the message containing the application.</param>
+        /// <param name="authorDiscordName">Name of the Discord user who is the author of the message containing the application.</param>
         /// <param name="appStatus">Status of the application. See <see cref="ApplicationStatus"/>.</param>
         /// <param name="appTime">Time when the application was sent in Unix time format.</param>
         /// <param name="imageUrl">Content of the message.</param>
@@ -66,6 +72,7 @@
             ulong channelId,
             ulong messageId,
             ulong authorDiscordId,
+            string authorDiscordName,
             ApplicationStatus appStatus,
             long appTime,
             string imageUrl,
@@ -76,6 +83,7 @@
             ChannelId = channelId;
             MessageId = messageId;
             AuthorDiscordId = authorDiscordId;
+            AuthorDiscordName = authorDiscordName;
             AppStatus = appStatus;
             AppTime = appTime;
             ImageUrl = imageUrl;
