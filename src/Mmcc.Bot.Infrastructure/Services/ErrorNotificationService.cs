@@ -35,7 +35,7 @@ namespace Mmcc.Bot.Infrastructure.Services
         }
         
         /// <inheritdoc />
-        public Task<Result> BeforeExecutionAsync(ICommandContext context, CancellationToken ct = new CancellationToken())
+        public Task<Result> BeforeExecutionAsync(ICommandContext context, CancellationToken ct)
         {
             return Task.FromResult(Result.FromSuccess());
         }
