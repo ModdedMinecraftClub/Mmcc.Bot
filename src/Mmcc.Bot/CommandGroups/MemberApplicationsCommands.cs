@@ -152,16 +152,9 @@ namespace Mmcc.Bot.CommandGroups
                 Thumbnail = EmbedProperties.MmccLogoThumbnail,
                 Colour = _colourPalette.Blue
             };
-            
-            if (!apps.Any())
-            {
-                embed = embed with {Description = "There are no pending applications at the moment."};
-            }
-            else
-            {
-                embed = embed with {Fields = GetFieldsFromApps(apps).ToList()};
-            }
-            
+            embed = !apps.Any()
+                ? embed with {Description = "There are no pending applications at the moment."}
+                : embed with {Fields = GetFieldsFromApps(apps).ToList()};
             var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
             return !sendMessageResult.IsSuccess
                 ? Result.FromError(sendMessageResult)
@@ -195,16 +188,9 @@ namespace Mmcc.Bot.CommandGroups
                 Thumbnail = EmbedProperties.MmccLogoThumbnail,
                 Colour = _colourPalette.Green
             };
-
-            if (!apps.Any())
-            {
-                embed = embed with {Description = "You have not approved any applications yet."};
-            }
-            else
-            {
-                embed = embed with {Fields = GetFieldsFromApps(apps).ToList()};
-            }
-
+            embed = !apps.Any()
+                ? embed with {Description = "You have not approved any applications yet."}
+                : embed with {Fields = GetFieldsFromApps(apps).ToList()};
             var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
             return !sendMessageResult.IsSuccess
                 ? Result.FromError(sendMessageResult)
@@ -238,16 +224,9 @@ namespace Mmcc.Bot.CommandGroups
                 Thumbnail = EmbedProperties.MmccLogoThumbnail,
                 Colour = _colourPalette.Red
             };
-
-            if (!apps.Any())
-            {
-                embed = embed with {Description = "You have not rejected any applications yet"};
-            }
-            else
-            {
-                embed = embed with {Fields = GetFieldsFromApps(apps).ToList()};
-            }
-            
+            embed = !apps.Any()
+                ? embed with {Description = "You have not rejected any applications yet."}
+                : embed with {Fields = GetFieldsFromApps(apps).ToList()};
             var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
             return !sendMessageResult.IsSuccess
                 ? Result.FromError(sendMessageResult)
