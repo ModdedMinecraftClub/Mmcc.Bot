@@ -136,7 +136,7 @@ namespace Mmcc.Bot.CommandGroups
                 new GetByStatus.Query
                 {
                     ApplicationStatus = ApplicationStatus.Pending,
-                    Limit = 100,
+                    Limit = 25,
                     SortByDescending = false
                 }
             );
