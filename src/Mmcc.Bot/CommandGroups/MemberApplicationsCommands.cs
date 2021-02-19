@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Models;
+using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.Database.Entities;
 using Mmcc.Bot.Infrastructure.Queries.MemberApplications;
 using Remora.Commands.Attributes;
@@ -112,7 +113,8 @@ namespace Mmcc.Bot.CommandGroups
                         false
                     )
                 },
-                Colour = embedConditionalAttributes.Colour
+                Colour = embedConditionalAttributes.Colour,
+                Thumbnail = new EmbedThumbnail(Urls.MmccLogoUrl, new(), new(), new())
             };
             var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
             return !sendMessageResult.IsSuccess
