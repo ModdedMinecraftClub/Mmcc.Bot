@@ -68,25 +68,25 @@ namespace Mmcc.Bot.Infrastructure.Services
             errorEmbed = err switch
             {
                 ValidationError => errorEmbed with
-                                    {
-                                        Title = ":exclamation: Validation error.",
-                                        Description = err.Message
-                                    },
-                NotFoundError   => errorEmbed with
-                                    {
-                                        Title = ":x: Resource not found.",
-                                        Description = err.Message
-                                    },
-                null            => errorEmbed with
-                                    {
-                                        Title = ":exclamation: Error.",
-                                        Description = "Unknown error."
-                                    },
-                _               => errorEmbed with
-                                    {
-                                        Title = $":x: {err.GetType()} error.",
-                                        Description = err.Message
-                                    }
+                {
+                    Title = ":exclamation: Validation error.",
+                    Description = err.Message
+                },
+                NotFoundError => errorEmbed with
+                {
+                    Title = ":x: Resource not found.",
+                    Description = err.Message
+                },
+                null => errorEmbed with
+                {
+                    Title = ":exclamation: Error.",
+                    Description = "Unknown error."
+                },
+                _ => errorEmbed with
+                {
+                    Title = $":x: {err.GetType()} error.",
+                    Description = err.Message
+                }
             };
 
             var sendEmbedResult = await _channelApi.CreateMessageAsync(context.ChannelID, content: "something",
