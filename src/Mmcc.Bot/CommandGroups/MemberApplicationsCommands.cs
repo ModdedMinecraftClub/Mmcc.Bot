@@ -264,7 +264,7 @@ namespace Mmcc.Bot.CommandGroups
                 .Select(app => new EmbedField
                 (
                     $"[{app.MemberApplicationId}] {app.AuthorDiscordName}",
-                    $"*Submitted at:* {DateTimeOffset.FromUnixTimeMilliseconds(app.AppTime).UtcDateTime}",
+                    $"*Submitted at:* {DateTimeOffset.FromUnixTimeMilliseconds(app.AppTime).UtcDateTime} UTC.",
                     false
                 ));
     }
