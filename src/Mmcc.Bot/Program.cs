@@ -11,6 +11,7 @@ using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions;
+using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Responders;
 using Remora.Commands.Extensions;
 using Remora.Discord.API.Abstractions.Gateway.Commands;
@@ -18,6 +19,7 @@ using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.Caching.Extensions;
 using Remora.Discord.Caching.Services;
 using Remora.Discord.Commands.Extensions;
+using Remora.Discord.Commands.Services;
 using Remora.Discord.Gateway;
 using Remora.Discord.Gateway.Extensions;
 using Remora.Discord.Hosting.Services;
@@ -91,10 +93,12 @@ namespace Mmcc.Bot
                         var discordConfig = provider.GetRequiredService<DiscordSettings>();
                         return discordConfig.Token;
                     });
+                    
+                    services.AddScoped<IExecutionEventService, ErrorNotificationService>();
                     services.AddSingleton<DiscordService>();
                     services.AddSingleton<IHostedService, DiscordService>(serviceProvider =>
                         serviceProvider.GetRequiredService<DiscordService>());
-                    
+
                     services.AddDiscordCaching();
                     services.Configure<CacheSettings>(settings =>
                     {

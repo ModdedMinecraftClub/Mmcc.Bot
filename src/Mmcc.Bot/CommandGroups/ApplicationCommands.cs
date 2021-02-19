@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Mmcc.Bot.Infrastructure.Conditions.Attributes;
+using Mmcc.Bot.Core.Errors;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
-using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
@@ -31,6 +30,7 @@ namespace Mmcc.Bot.CommandGroups
                     "Sent from Remora",
                     ct: CancellationToken
                 );
+                return Result.FromError(new NotFoundError("error"));
                 return reply;
             }
         }
