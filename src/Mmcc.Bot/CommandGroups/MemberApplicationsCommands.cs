@@ -92,7 +92,7 @@ namespace Mmcc.Bot.CommandGroups
                 },
                 ApplicationStatus.Rejected => new
                 {
-                    Colour = _colourPalette.Green,
+                    Colour = _colourPalette.Red,
                     StatusFieldValue = ":white_check_mark: REJECTED"
                 },
                 _ => throw new ArgumentOutOfRangeException(nameof(id))
