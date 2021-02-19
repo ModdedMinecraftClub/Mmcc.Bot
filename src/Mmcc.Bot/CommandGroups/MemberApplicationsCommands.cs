@@ -107,7 +107,7 @@ namespace Mmcc.Bot.CommandGroups
                     new("Author", $"{app.AuthorDiscordName} (ID: `{app.AuthorDiscordId}`)", false),
                     new("Status", embedConditionalAttributes.StatusFieldValue, false),
                     new(
-                        "Details",
+                        "Provided details",
                         $"{app.MessageContent}\n" +
                         $"**[Original message (click here)](https://discord.com/channels/{app.GuildId}/{app.ChannelId}/{app.MessageId})**",
                         false
