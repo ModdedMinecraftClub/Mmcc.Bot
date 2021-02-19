@@ -67,11 +67,6 @@ namespace Mmcc.Bot.Infrastructure.Services
             var errorEmbed = new Embed(Thumbnail: embedImg, Colour: Color.Red);
             errorEmbed = err switch
             {
-                null            => errorEmbed with
-                                    {
-                                        Title = ":exclamation: Error.",
-                                        Description = "Unknown error."
-                                    },
                 ValidationError => errorEmbed with
                                     {
                                         Title = ":exclamation: Validation error.",
@@ -81,6 +76,11 @@ namespace Mmcc.Bot.Infrastructure.Services
                                     {
                                         Title = ":x: Resource not found.",
                                         Description = err.Message
+                                    },
+                null            => errorEmbed with
+                                    {
+                                        Title = ":exclamation: Error.",
+                                        Description = "Unknown error."
                                     },
                 _               => errorEmbed with
                                     {
