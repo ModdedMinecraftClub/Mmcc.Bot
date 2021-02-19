@@ -82,9 +82,8 @@ namespace Mmcc.Bot
                     services.AddCondition<RequireUserGuildPermissionCondition>();
                     
                     services.AddCommandGroup<TestCommands>();
-                    services.AddCommandGroup<ApplicationCommands>();
-                    services.AddCommandGroup<ApplicationCommands.ViewCommands>();
-                    
+                    services.AddCommandGroup<MemberApplicationsCommands>();
+
                     services.AddResponder<MemberApplicationCreatedResponder>();
                     services.AddResponder<MemberApplicationUpdatedResponder>();
                     
