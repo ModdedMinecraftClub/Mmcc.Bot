@@ -50,7 +50,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
                         channelId: request.DiscordMessageCreatedEvent.ChannelID.Value,
                         messageId: request.DiscordMessageCreatedEvent.ID.Value,
                         authorDiscordId: request.DiscordMessageCreatedEvent.Author.ID.Value,
-                        authorDiscordName: $"{request.DiscordMessageCreatedEvent.Author.Username}${request.DiscordMessageCreatedEvent.Author.Discriminator}",
+                        authorDiscordName: $"{request.DiscordMessageCreatedEvent.Author.Username}#{request.DiscordMessageCreatedEvent.Author.Discriminator}",
                         appStatus: ApplicationStatus.Pending,
                         appTime: request.DiscordMessageCreatedEvent.Timestamp.ToUnixTimeMilliseconds(),
                         messageContent: request.DiscordMessageCreatedEvent.Content,

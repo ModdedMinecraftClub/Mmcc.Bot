@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,9 +10,9 @@ using Remora.Results;
 namespace Mmcc.Bot.Infrastructure.Queries.MemberApplications
 {
     /// <summary>
-    /// Views a member application by ID, provided it belongs to the given guild.
+    /// Gets a member application by ID, provided it belongs to the given guild.
     /// </summary>
-    public class ViewById
+    public class GetById
     {
         /// <summary>
         /// Query to get a member application by ID.
@@ -24,6 +25,7 @@ namespace Mmcc.Bot.Infrastructure.Queries.MemberApplications
             public int ApplicationId { get; set; }
         }
         
+        /// <inheritdoc />
         private class Handler : IRequestHandler<Query, Result<MemberApplication?>>
         {
             private readonly BotContext _context;
@@ -40,10 +42,18 @@ namespace Mmcc.Bot.Infrastructure.Queries.MemberApplications
             /// <inheritdoc />
             public async Task<Result<MemberApplication?>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var res = await _context.MemberApplications
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(app => app.MemberApplicationId == request.ApplicationId, cancellationToken);
-                return res;
+                try
+                {
+                    var res = await _context.MemberApplications
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(app => app.MemberApplicationId == request.ApplicationId,
+                            cancellationToken);
+                    return res;
+                }
+                catch (Exception e)
+                {
+                    return e;
+                }
             }
         }
     }

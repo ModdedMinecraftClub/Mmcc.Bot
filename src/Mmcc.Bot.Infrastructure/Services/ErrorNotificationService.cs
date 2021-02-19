@@ -63,14 +63,7 @@ namespace Mmcc.Bot.Infrastructure.Services
             }
 
             var err = executionResult.Inner.Error;
-            var embedImg = new EmbedThumbnail(
-                Urls.MmccLogoUrl,
-                new Optional<string>(),
-                new Optional<int>(),
-                new Optional<int>()
-            );
-
-            var errorEmbed = new Embed(Thumbnail: embedImg, Colour: _colourPalette.Red);
+            var errorEmbed = new Embed(Thumbnail: EmbedProperties.MmccLogoThumbnail, Colour: _colourPalette.Red);
             errorEmbed = err switch
             {
                 ValidationError => errorEmbed with

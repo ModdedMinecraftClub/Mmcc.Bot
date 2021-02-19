@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
@@ -50,7 +52,7 @@ namespace Mmcc.Bot.CommandGroups
             _userApi = userApi;
             _colourPalette = colourPalette;
         }
-        
+
         /// <summary>
         /// Views a member application by ID.
         /// </summary>
@@ -66,11 +68,12 @@ namespace Mmcc.Bot.CommandGroups
                 );
             }
 
-            var query = await _mediator.Send(new ViewById.Query {ApplicationId = id});
+            var query = await _mediator.Send(new GetById.Query {ApplicationId = id});
             if (!query.IsSuccess)
             {
                 return Result.FromError(query.Error);
             }
+
             if (query.Entity is null)
             {
                 return Result.FromError(
@@ -114,12 +117,138 @@ namespace Mmcc.Bot.CommandGroups
                     )
                 },
                 Colour = embedConditionalAttributes.Colour,
-                Thumbnail = new EmbedThumbnail(Urls.MmccLogoUrl, new(), new(), new())
+                Thumbnail = EmbedProperties.MmccLogoThumbnail
             };
             var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
             return !sendMessageResult.IsSuccess
                 ? Result.FromError(sendMessageResult)
                 : Result.FromSuccess();
         }
+
+        [Command("pending")]
+        public async Task<IResult> ViewPending()
+        {
+            var queryResult = await _mediator.Send(
+                new GetByStatus.Query
+                {
+                    ApplicationStatus = ApplicationStatus.Pending,
+                    Limit = 10,
+                    SortByDescending = false
+                }
+            );
+            if (!queryResult.IsSuccess)
+            {
+                return Result.FromError(queryResult.Error);
+            }
+
+            var apps = queryResult.Entity;
+            var embed = new Embed
+            {
+                Title = "Pending applications",
+                Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                Colour = _colourPalette.Blue
+            };
+            
+            if (!apps.Any())
+            {
+                embed = embed with {Description = "There are no pending applications at the moment."};
+            }
+            else
+            {
+                embed = embed with {Fields = GetFieldsFromApps(apps).ToList()};
+            }
+            
+            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
+            return !sendMessageResult.IsSuccess
+                ? Result.FromError(sendMessageResult)
+                : Result.FromSuccess();
+        }
+
+        [Command("approved")]
+        public async Task<IResult> ViewApproved()
+        {
+            var queryResult = await _mediator.Send(
+                new GetByStatus.Query
+                {
+                    ApplicationStatus = ApplicationStatus.Approved,
+                    Limit = 10,
+                    SortByDescending = true
+                }
+            );
+            if (!queryResult.IsSuccess)
+            {
+                return Result.FromError(queryResult.Error);
+            }
+
+            var apps = queryResult.Entity;
+            var embed = new Embed
+            {
+                Title = "Approved applications",
+                Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                Colour = _colourPalette.Green
+            };
+
+            if (!apps.Any())
+            {
+                embed = embed with {Description = "You have not approved any applications yet."};
+            }
+            else
+            {
+                embed = embed with {Fields = GetFieldsFromApps(apps).ToList()};
+            }
+
+            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
+            return !sendMessageResult.IsSuccess
+                ? Result.FromError(sendMessageResult)
+                : Result.FromSuccess();
+        }
+
+        [Command("rejected")]
+        public async Task<IResult> ViewRejected()
+        {
+            var queryResult = await _mediator.Send(
+                new GetByStatus.Query
+                {
+                    ApplicationStatus = ApplicationStatus.Rejected,
+                    Limit = 10,
+                    SortByDescending = true
+                }
+            );
+            if (!queryResult.IsSuccess)
+            {
+                return Result.FromError(queryResult.Error);
+            }
+
+            var apps = queryResult.Entity;
+            var embed = new Embed
+            {
+                Title = "Rejected applications",
+                Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                Colour = _colourPalette.Red
+            };
+
+            if (!apps.Any())
+            {
+                embed = embed with {Description = "You have not rejected any applications yet"};
+            }
+            else
+            {
+                embed = embed with {Fields = GetFieldsFromApps(apps).ToList()};
+            }
+            
+            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
+            return !sendMessageResult.IsSuccess
+                ? Result.FromError(sendMessageResult)
+                : Result.FromSuccess();
+        }
+
+        private static IEnumerable<EmbedField> GetFieldsFromApps(IEnumerable<MemberApplication> memberApplications) =>
+            memberApplications
+                .Select(app => new EmbedField
+                (
+                    $"[{app.MemberApplicationId}] {app.AuthorDiscordName}",
+                    $"*Submitted at:* {DateTimeOffset.FromUnixTimeMilliseconds(app.AppTime).UtcDateTime}",
+                    false
+                ));
     }
 }
