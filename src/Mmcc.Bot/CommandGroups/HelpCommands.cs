@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using Mmcc.Bot.Core.Models;
+using Mmcc.Bot.Core.Statics;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Commands.Trees;
@@ -45,28 +47,37 @@ namespace Mmcc.Bot.CommandGroups
         [Description("Shows available commands")]
         public async Task<IResult> Help()
         {
-            var fields = new List<EmbedField>();
-            Traverse(_tree.Root.Children.ToList(), ref fields);
-            var embed = new Embed
+            var embeds = new List<Embed>
             {
-                Title = ":information_source: Help",
-                Description = "Shows available commands",
-                Fields = fields,
-                Colour = _colourPalette.Blue
+                new()
+                {
+                    Title = ":information_source: Help",
+                    Description = "Shows available commands by category",
+                    Colour = _colourPalette.Blue,
+                    Thumbnail = EmbedProperties.MmccLogoThumbnail
+                }
             };
+            
+            Traverse(_tree.Root.Children.ToList(), embeds);
 
-            var sendEmbedResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-            return !sendEmbedResult.IsSuccess
-                ? Result.FromError(sendEmbedResult)
-                : Result.FromSuccess();
+            foreach (var embed in embeds)
+            {
+                var sendEmbedResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
+                if (!sendEmbedResult.IsSuccess)
+                {
+                    return Result.FromError(sendEmbedResult);
+                }
+            }
+            
+            return Result.FromSuccess();
         }
         
         /// <summary>
         /// Traverses the command tree and produces a field for each <see cref="CommandGroup"/>.
         /// </summary>
         /// <param name="children">Children of the root node.</param>
-        /// <param name="fields">List of fields.</param>
-        private static void Traverse(IList<IChildNode> children, ref List<EmbedField> fields)
+        /// <param name="embeds">List of embeds.</param>
+        private void Traverse(IList<IChildNode> children, IList<Embed> embeds)
         {
             var orphans = children
                 .OfType<CommandNode>()
@@ -74,12 +85,13 @@ namespace Mmcc.Bot.CommandGroups
             var normals = children
                 .OfType<GroupNode>()
                 .ToList();
+            var fields = new List<EmbedField>();
             
-            var valueStr = new StringBuilder();
             foreach (var orphan in orphans)
             {
                 if (orphan is null) break;
-
+                
+                var nameString = new StringBuilder();
                 var orphanParams = orphan.Shape.Parameters;
 
                 if (orphanParams.Any())
@@ -93,28 +105,42 @@ namespace Mmcc.Bot.CommandGroups
                             : $"<{orphanParams[i].HintName}>");
                     }
 
-                    valueStr.AppendLine($"▸ {orphan.Key} {paramsString}");
+                    nameString.AppendLine($"❯ {orphan.Key} {paramsString}");
                 }
                 else
                 {
-                    valueStr.AppendLine($"▸ {orphan.Key}");
+                    nameString.AppendLine($"❯ {orphan.Key}");
                 }
-                
-                valueStr.AppendLine($"*{orphan.Shape.Description}*");
-                valueStr.AppendLine();
+
+                fields.Add(new EmbedField(nameString.ToString(), $"{orphan.Shape.Description}", false));
             }
             
             var parent = orphans.FirstOrDefault()?.Parent;
-            var field = parent switch
+            var embed = parent switch
             {
-                GroupNode g => new EmbedField($"▼ {g.Description} (!{g.Key})", valueStr.ToString(), false),
-                _ => new EmbedField("▼ General commands", valueStr.ToString(), false)
+                GroupNode g => new Embed
+                {
+                    Title = $":arrow_right: {g.Description} (!{g.Key})",
+                    Description = $"Use `!{g.Key} <command name> <params>`."
+                },
+                _ => new Embed
+                {
+                    Title = ":arrow_right: General commands (!)",
+                    Description = "Use `!<command name> <params>`."
+                }
             };
-            fields.Add(field);
+            embed = embed with
+            {
+                Fields = fields,
+                Colour = _colourPalette.Blue,
+                Thumbnail = EmbedProperties.MmccLogoThumbnail
+            };
+            
+            embeds.Add(embed);
 
             foreach (var normal in normals)
             {
-                Traverse(normal.Children.ToList(), ref fields);
+                Traverse(normal.Children.ToList(), embeds);
             }
         }
     }
