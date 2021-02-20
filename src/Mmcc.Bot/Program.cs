@@ -89,6 +89,7 @@ namespace Mmcc.Bot
 
                     services.AddCommandGroup<TestCommands>();
                     services.AddCommandGroup<MemberApplicationsCommands>();
+                    services.AddCommandGroup<HelpCommands>();
 
                     services.AddResponder<MemberApplicationCreatedResponder>();
                     services.AddResponder<MemberApplicationUpdatedResponder>();

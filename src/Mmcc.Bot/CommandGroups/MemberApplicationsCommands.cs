@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
@@ -25,6 +26,7 @@ namespace Mmcc.Bot.CommandGroups
     /// Commands for managing member applications.
     /// </summary>
     [Group("apps")]
+    [Description("Member applications")]
     public class MemberApplicationsCommands : CommandGroup
     {
         private readonly MessageContext _context;
@@ -58,6 +60,7 @@ namespace Mmcc.Bot.CommandGroups
         /// <param name="id">ID of the application.</param>
         /// <returns>Result of the operation.</returns>
         [Command("view")]
+        [Description("Views a member application by ID.")]
         [RequireGuild]
         public async Task<IResult> View(int id)
         {
@@ -135,6 +138,7 @@ namespace Mmcc.Bot.CommandGroups
         /// </summary>
         /// <returns>Result of the operation.</returns>
         [Command("pending")]
+        [Description("Views pending applications.")]
         [RequireGuild]
         public async Task<IResult> ViewPending()
         {
@@ -173,6 +177,7 @@ namespace Mmcc.Bot.CommandGroups
         /// </summary>
         /// <returns>Result of the operation.</returns>
         [Command("approved")]
+        [Description("Views last 10 approved applications.")]
         [RequireGuild]
         public async Task<IResult> ViewApproved()
         {
@@ -211,6 +216,7 @@ namespace Mmcc.Bot.CommandGroups
         /// </summary>
         /// <returns>Result of the operation</returns>
         [Command("rejected")]
+        [Description("Views last 10 rejected applications.")]
         [RequireGuild]
         public async Task<IResult> ViewRejected()
         {
@@ -252,6 +258,7 @@ namespace Mmcc.Bot.CommandGroups
         /// <param name="ignsList">IGN(s) of the player(s).</param>
         /// <returns>The result of the operation.</returns>
         [Command("approve")]
+        [Description("Approves a member application.")]
         [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> Approve(int id, string serverPrefix, List<string> ignsList)
@@ -315,6 +322,7 @@ namespace Mmcc.Bot.CommandGroups
         /// <param name="reason">Reason for rejection.</param>
         /// <returns>The result of the operation.</returns>
         [Command("reject")]
+        [Description("Rejects a member application.")]
         [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> Reject(int id, [Greedy] string reason)
