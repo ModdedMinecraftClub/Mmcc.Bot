@@ -293,6 +293,12 @@ namespace Mmcc.Bot.CommandGroups
                 : Result.FromSuccess();
         }
         
+        /// <summary>
+        /// Rejects a member application.
+        /// </summary>
+        /// <param name="id">ID of the application to reject.</param>
+        /// <param name="reason">Reason for rejection.</param>
+        /// <returns>The result of the operation.</returns>
         [Command("reject")]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> Reject(int id, [Greedy] string reason)
