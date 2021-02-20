@@ -27,7 +27,7 @@ namespace Mmcc.Bot.CommandGroups
     [Group("apps")]
     public class MemberApplicationsCommands : CommandGroup
     {
-        private readonly ICommandContext _context;
+        private readonly MessageContext _context;
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly IMediator _mediator;
         private readonly ColourPalette _colourPalette;
@@ -35,12 +35,12 @@ namespace Mmcc.Bot.CommandGroups
         /// <summary>
         /// Instantiates a new instance of <see cref="MemberApplicationsCommands"/>.
         /// </summary>
-        /// <param name="context">The command context.</param>
+        /// <param name="context">The message context.</param>
         /// <param name="channelApi">The channel API.</param>
         /// <param name="mediator">The mediator.</param>
         /// <param name="colourPalette">The colour palette.</param>
         public MemberApplicationsCommands(
-            ICommandContext context,
+            MessageContext context,
             IDiscordRestChannelAPI channelApi,
             IMediator mediator,
             ColourPalette colourPalette
@@ -58,6 +58,7 @@ namespace Mmcc.Bot.CommandGroups
         /// <param name="id">ID of the application.</param>
         /// <returns>Result of the operation.</returns>
         [Command("view")]
+        [RequireGuild]
         public async Task<IResult> View(int id)
         {
             if (id < 0)
@@ -67,12 +68,17 @@ namespace Mmcc.Bot.CommandGroups
                 );
             }
 
-            var query = await _mediator.Send(new GetById.Query {ApplicationId = id});
+            var query = await _mediator.Send(
+                new GetById.Query
+                {
+                    ApplicationId = id,
+                    GuildId = _context.Message.GuildID.Value
+                }
+            );
             if (!query.IsSuccess)
             {
                 return Result.FromError(query.Error);
             }
-
             if (query.Entity is null)
             {
                 return Result.FromError(
@@ -129,11 +135,13 @@ namespace Mmcc.Bot.CommandGroups
         /// </summary>
         /// <returns>Result of the operation.</returns>
         [Command("pending")]
+        [RequireGuild]
         public async Task<IResult> ViewPending()
         {
             var queryResult = await _mediator.Send(
                 new GetByStatus.Query
                 {
+                    GuildId = _context.Message.GuildID.Value,
                     ApplicationStatus = ApplicationStatus.Pending,
                     Limit = 25,
                     SortByDescending = false
@@ -165,11 +173,13 @@ namespace Mmcc.Bot.CommandGroups
         /// </summary>
         /// <returns>Result of the operation.</returns>
         [Command("approved")]
+        [RequireGuild]
         public async Task<IResult> ViewApproved()
         {
             var queryResult = await _mediator.Send(
                 new GetByStatus.Query
                 {
+                    GuildId = _context.Message.GuildID.Value,
                     ApplicationStatus = ApplicationStatus.Approved,
                     Limit = 10,
                     SortByDescending = true
@@ -201,11 +211,13 @@ namespace Mmcc.Bot.CommandGroups
         /// </summary>
         /// <returns>Result of the operation</returns>
         [Command("rejected")]
+        [RequireGuild]
         public async Task<IResult> ViewRejected()
         {
             var queryResult = await _mediator.Send(
                 new GetByStatus.Query
                 {
+                    GuildId = _context.Message.GuildID.Value,
                     ApplicationStatus = ApplicationStatus.Rejected,
                     Limit = 10,
                     SortByDescending = true
@@ -240,6 +252,7 @@ namespace Mmcc.Bot.CommandGroups
         /// <param name="ignsList">IGN(s) of the player(s).</param>
         /// <returns>The result of the operation.</returns>
         [Command("approve")]
+        [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> Approve(int id, string serverPrefix, List<string> ignsList)
         {
@@ -268,13 +281,15 @@ namespace Mmcc.Bot.CommandGroups
                 );
             }
 
-            var commandResult = await _mediator.Send(new ApproveAutomatically.Command
-            {
-                Id = id,
-                ChannelId = _context.ChannelID,
-                ServerPrefix = serverPrefix,
-                Igns = ignsList
-            });
+            var commandResult = await _mediator.Send(
+                new ApproveAutomatically.Command
+                {
+                    Id = id,
+                    GuildId = _context.Message.GuildID.Value,
+                    ServerPrefix = serverPrefix,
+                    Igns = ignsList
+                }
+            );
             if (!commandResult.IsSuccess)
             {
                 return Result.FromError(commandResult.Error);
@@ -300,6 +315,7 @@ namespace Mmcc.Bot.CommandGroups
         /// <param name="reason">Reason for rejection.</param>
         /// <returns>The result of the operation.</returns>
         [Command("reject")]
+        [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> Reject(int id, [Greedy] string reason)
         {
@@ -322,28 +338,15 @@ namespace Mmcc.Bot.CommandGroups
                 );
             }
 
-            var getChannelResult = await _channelApi.GetChannelAsync(_context.ChannelID);
-            if (!getChannelResult.IsSuccess)
-            {
-                return Result.FromError(getChannelResult);
-            }
-
-            var channel = getChannelResult.Entity;
-            var guildId = channel.GuildID;
-            if (!guildId.HasValue)
-            {
-                return Result.FromError(
-                    new NotFoundError(
-                        "Guild could not be found for this channel"));
-            }
-
-            var getMembersChannelResult = await _mediator.Send(new GetMembersChannel.Query {GuildId = guildId.Value});
+            var getMembersChannelResult = await _mediator.Send(new GetMembersChannel.Query
+                {GuildId = _context.Message.GuildID.Value});
             if (!getMembersChannelResult.IsSuccess)
             {
                 return Result.FromError(getMembersChannelResult.Error);
             }
 
-            var rejectCommandResult = await _mediator.Send(new Reject.Command {Id = id});
+            var rejectCommandResult = await _mediator.Send(new Reject.Command
+                {Id = id, GuildId = _context.Message.GuildID.Value});
             if (!rejectCommandResult.IsSuccess)
             {
                 return Result.FromError(rejectCommandResult.Error);

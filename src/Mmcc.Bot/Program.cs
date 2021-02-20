@@ -84,8 +84,9 @@ namespace Mmcc.Bot
                     
                     services.AddDiscordCommands();
                     
+                    services.AddCondition<RequireGuildCondition>();
                     services.AddCondition<RequireUserGuildPermissionCondition>();
-                    
+
                     services.AddCommandGroup<TestCommands>();
                     services.AddCommandGroup<MemberApplicationsCommands>();
 

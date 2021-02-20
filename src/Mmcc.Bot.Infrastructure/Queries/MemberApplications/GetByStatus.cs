@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Entities;
+using Remora.Discord.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.Infrastructure.Queries.MemberApplications
@@ -21,6 +22,11 @@ namespace Mmcc.Bot.Infrastructure.Queries.MemberApplications
         /// </summary>
         public class Query : IRequest<Result<IList<MemberApplication>>>
         {
+            /// <summary>
+            /// ID of the Guild.
+            /// </summary>
+            public Snowflake GuildId { get; set; }
+            
             /// <summary>
             /// Application status.
             /// </summary>
@@ -59,7 +65,8 @@ namespace Mmcc.Bot.Infrastructure.Queries.MemberApplications
                 {
                     var res = _context.MemberApplications
                         .AsNoTracking()
-                        .Where(app => app.AppStatus == request.ApplicationStatus);
+                        .Where(app => app.AppStatus == request.ApplicationStatus &&
+                                      app.GuildId == request.GuildId.Value);
                     res = (request.SortByDescending
                             ? res.OrderByDescending(app => app.MemberApplicationId)
                             : res.OrderBy(app => app.MemberApplicationId))
