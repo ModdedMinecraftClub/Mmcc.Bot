@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
@@ -8,9 +7,12 @@ using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.Database.Entities;
+using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
+using Mmcc.Bot.Infrastructure.Conditions.Attributes;
 using Mmcc.Bot.Infrastructure.Queries.MemberApplications;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
+using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
@@ -227,6 +229,67 @@ namespace Mmcc.Bot.CommandGroups
             embed = !apps.Any()
                 ? embed with {Description = "You have not rejected any applications yet."}
                 : embed with {Fields = GetFieldsFromApps(apps).ToList()};
+            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
+            return !sendMessageResult.IsSuccess
+                ? Result.FromError(sendMessageResult)
+                : Result.FromSuccess();
+        }
+
+        /// <summary>
+        /// Approves a member application.
+        /// </summary>
+        /// <param name="id">ID of the application to approve.</param>
+        /// <param name="serverPrefix">Server prefix.</param>
+        /// <param name="ignsList">IGN(s) of the player(s).</param>
+        /// <returns>The result of the operation.</returns>
+        [Command("approve")]
+        [RequireUserGuildPermission(DiscordPermission.BanMembers)]
+        public async Task<IResult> Approve(int id, string serverPrefix, List<string> ignsList)
+        {
+            if (id < 0)
+            {
+                return Result.FromError(
+                    new ValidationError("Parameter `id` cannot be less than 0.")
+                );
+            }
+            if (string.IsNullOrWhiteSpace(serverPrefix))
+            {
+                return Result.FromError(
+                    new ValidationError("Parameter `serverPrefix` cannot be null, empty or whitespace.")
+                );
+            }
+            if (serverPrefix.Length < 2)
+            {
+                return Result.FromError(
+                    new ValidationError("Parameter `serverPrefix` cannot be shorter than `2` characters.")
+                );
+            }
+            if (!ignsList.Any())
+            {
+                return Result.FromError(
+                    new ValidationError("Parameter `ignsList` cannot be empty.")
+                );
+            }
+
+            var commandResult = await _mediator.Send(new ApproveAutomatically.Command
+            {
+                Id = id,
+                ChannelId = _context.ChannelID,
+                ServerPrefix = serverPrefix,
+                Igns = ignsList
+            });
+            if (!commandResult.IsSuccess)
+            {
+                return Result.FromError(commandResult.Error);
+            }
+
+            var embed = new Embed
+            {
+                Title = ":white_check_mark: Approved the application successfully",
+                Description = $"Application with ID `{id}` has been :white_check_mark: *approved*.",
+                Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                Colour = _colourPalette.Green
+            };
             var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
             return !sendMessageResult.IsSuccess
                 ? Result.FromError(sendMessageResult)

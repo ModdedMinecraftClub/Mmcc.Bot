@@ -53,16 +53,17 @@ namespace Mmcc.Bot.Infrastructure.Services
             CancellationToken ct
         )
         {
-            if (
-                executionResult.IsSuccess
-                || executionResult.Inner is null
-                || executionResult.Inner.IsSuccess
-            )
+            if (executionResult.IsSuccess)
             {
                 return Result.FromSuccess();
             }
 
-            var err = executionResult.Inner.Error;
+            var err = executionResult.Inner is null
+                      || executionResult.Inner.IsSuccess
+                      || executionResult.Inner.Error is null
+                ? executionResult.Error
+                : executionResult.Inner.Error;
+
             var errorEmbed = new Embed(Thumbnail: EmbedProperties.MmccLogoThumbnail, Colour: _colourPalette.Red);
             errorEmbed = err switch
             {

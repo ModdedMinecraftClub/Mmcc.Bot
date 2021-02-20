@@ -75,6 +75,10 @@ namespace Mmcc.Bot
                         
                         options.UseMySql(connString, serverVersion);
                     });
+                    
+                    services.AddTailwindColourPalette();
+                    services.AddScoped<IExecutionEventService, ErrorNotificationService>();
+                    services.AddScoped<IPolychatCommunicationService, PolychatCommunicationService>();
 
                     services.AddMediatR(typeof(CreateFromDiscordMessage));
                     
@@ -94,8 +98,6 @@ namespace Mmcc.Bot
                         return discordConfig.Token;
                     });
 
-                    services.AddTailwindColourPalette();
-                    services.AddScoped<IExecutionEventService, ErrorNotificationService>();
                     services.AddSingleton<DiscordService>();
                     services.AddSingleton<IHostedService, DiscordService>(serviceProvider =>
                         serviceProvider.GetRequiredService<DiscordService>());

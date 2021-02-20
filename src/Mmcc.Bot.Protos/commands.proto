@@ -1,0 +1,28 @@
+﻿syntax = "proto3";
+
+package polychat;
+
+option java_package = "club.moddedminecraft.polychat.core.messagelibrary";
+option java_outer_classname = "CommandProtos";
+
+option csharp_namespace = "Mmcc.Bot.Protos";
+
+message GenericCommand {
+  string discordChannelId = 1;
+  string discordCommandName = 2;
+  string defaultCommand = 3;
+  repeated string args = 4;
+}
+
+message GenericCommandResult {
+  string serverId = 1;
+  string discordChannelId = 2;
+  string command = 3;
+  string commandOutput = 4;
+  string colour = 5;
+}
+
+message PromoteMemberCommand {
+  string serverId = 1;
+  string username = 2;
+}
