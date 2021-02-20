@@ -18,17 +18,17 @@ namespace Mmcc.Bot.Infrastructure.Conditions
     /// </summary>
     public class RequireUserGuildPermissionCondition : ICondition<RequireUserGuildPermissionAttribute>
     {
-        private readonly ICommandContext _context;
+        private readonly MessageContext _context;
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly IDiscordRestGuildAPI _guildApi;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RequireUserGuildPermissionCondition"/> class.
+        /// Instantiates a new instance of the <see cref="RequireUserGuildPermissionCondition"/> class.
         /// </summary>
-        /// <param name="context">The command context.</param>
+        /// <param name="context">The message context.</param>
         /// <param name="guildApi">The guild API.</param>
         /// <param name="channelApi">The channel API.</param>
-        public RequireUserGuildPermissionCondition(ICommandContext context, IDiscordRestGuildAPI guildApi, IDiscordRestChannelAPI channelApi)
+        public RequireUserGuildPermissionCondition(MessageContext context, IDiscordRestGuildAPI guildApi, IDiscordRestChannelAPI channelApi)
         {
             _context = context;
             _guildApi = guildApi;
@@ -94,13 +94,18 @@ namespace Mmcc.Bot.Infrastructure.Conditions
             if (channel.PermissionOverwrites.HasValue)
             {
                 computedPermissions = DiscordPermissionSet.ComputePermissions(
-                    _context.User.ID, everyoneRole, memberRoles, channel.PermissionOverwrites.Value
+                    _context.User.ID,
+                    everyoneRole,
+                    memberRoles,
+                    channel.PermissionOverwrites.Value
                 );
             }
             else
             {
                 computedPermissions = DiscordPermissionSet.ComputePermissions(
-                    _context.User.ID, everyoneRole, memberRoles
+                    _context.User.ID,
+                    everyoneRole,
+                    memberRoles
                 );
             }
 

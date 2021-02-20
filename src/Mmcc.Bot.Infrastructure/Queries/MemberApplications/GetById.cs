@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Entities;
+using Remora.Discord.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.Infrastructure.Queries.MemberApplications
@@ -23,6 +24,11 @@ namespace Mmcc.Bot.Infrastructure.Queries.MemberApplications
             /// ID of the application
             /// </summary>
             public int ApplicationId { get; set; }
+            
+            /// <summary>
+            /// ID of the Guild.
+            /// </summary>
+            public Snowflake GuildId { get; set; }
         }
         
         /// <inheritdoc />
@@ -46,7 +52,9 @@ namespace Mmcc.Bot.Infrastructure.Queries.MemberApplications
                 {
                     var res = await _context.MemberApplications
                         .AsNoTracking()
-                        .FirstOrDefaultAsync(app => app.MemberApplicationId == request.ApplicationId,
+                        .FirstOrDefaultAsync(
+                            app => app.MemberApplicationId == request.ApplicationId &&
+                                   app.GuildId == request.GuildId.Value,
                             cancellationToken);
                     return res;
                 }

@@ -32,6 +32,11 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
             public int Id { get; set; }
             
             /// <summary>
+            /// ID of the Guild.
+            /// </summary>
+            public Snowflake GuildId { get; set; }
+
+            /// <summary>
             /// Prefix of server.
             /// </summary>
             public string ServerPrefix { get; set; } = null!;
@@ -40,11 +45,6 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
             /// IGN(s) of the player(s).
             /// </summary>
             public IList<string> Igns { get; set; } = null!;
-            
-            /// <summary>
-            /// ID of the channel in which the command was executed.
-            /// </summary>
-            public Snowflake ChannelId { get; set; }
         }
         
         /// <inheritdoc />
@@ -52,7 +52,6 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
         {
             private readonly BotContext _context;
             private readonly IDiscordRestGuildAPI _guildApi;
-            private readonly IDiscordRestChannelAPI _channelApi;
             private readonly IPolychatCommunicationService _polychatCommunicationService;
 
             /// <summary>
@@ -60,13 +59,11 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
             /// </summary>
             /// <param name="context">The db context.</param>
             /// <param name="guildApi">The guild API.</param>
-            /// <param name="channelApi">The channel API.</param>
             /// <param name="polychatCommunicationService">The polychat communication service.</param>
-            public Handler(BotContext context, IDiscordRestGuildAPI guildApi, IDiscordRestChannelAPI channelApi, IPolychatCommunicationService polychatCommunicationService)
+            public Handler(BotContext context, IDiscordRestGuildAPI guildApi, IPolychatCommunicationService polychatCommunicationService)
             {
                 _context = context;
                 _guildApi = guildApi;
-                _channelApi = channelApi;
                 _polychatCommunicationService = polychatCommunicationService;
             }
             
@@ -78,7 +75,9 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
                 try
                 {
                     app = await _context.MemberApplications
-                        .FirstOrDefaultAsync(app => app.MemberApplicationId == request.Id, cancellationToken);
+                        .FirstOrDefaultAsync(
+                            a => a.MemberApplicationId == request.Id && a.GuildId == request.GuildId.Value,
+                            cancellationToken);
                 }
                 catch (Exception e)
                 {
@@ -90,19 +89,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
                     return new NotFoundError($"Application with ID `{request.Id}` does not exist");
                 }
 
-                var getChannelResult = await _channelApi.GetChannelAsync(request.ChannelId, cancellationToken);
-                if (!getChannelResult.IsSuccess)
-                {
-                    return Result.FromError(getChannelResult.Error);
-                }
-
-                var guildId = getChannelResult.Entity.GuildID;
-                if (!guildId.HasValue)
-                {
-                    return new NotFoundError("Guild not found.");
-                }
-
-                var getRoles = await _guildApi.GetGuildRolesAsync(guildId.Value, cancellationToken);
+                var getRoles = await _guildApi.GetGuildRolesAsync(request.GuildId, cancellationToken);
                 if (!getRoles.IsSuccess)
                 {
                     return Result.FromError(getRoles.Error);
@@ -119,7 +106,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
 
                 var userId = new Snowflake(app.AuthorDiscordId);
                 var getUserToPromoteResult =
-                    await _guildApi.GetGuildMemberAsync(guildId.Value, userId, cancellationToken);
+                    await _guildApi.GetGuildMemberAsync(request.GuildId, userId, cancellationToken);
                 if (!getUserToPromoteResult.IsSuccess)
                 {
                     return Result.FromError(getUserToPromoteResult.Error);
@@ -147,7 +134,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
                 }
                 
                 var addRoleResult =
-                    await _guildApi.AddGuildMemberRoleAsync(guildId.Value, userId, role.ID, cancellationToken);
+                    await _guildApi.AddGuildMemberRoleAsync(request.GuildId, userId, role.ID, cancellationToken);
                 if (!addRoleResult.IsSuccess)
                 {
                     return Result.FromError(addRoleResult);
