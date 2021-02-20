@@ -9,6 +9,7 @@ using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.Database.Entities;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
+using Mmcc.Bot.Infrastructure.Queries.Discord;
 using Mmcc.Bot.Infrastructure.Queries.MemberApplications;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
@@ -28,7 +29,6 @@ namespace Mmcc.Bot.CommandGroups
     {
         private readonly ICommandContext _context;
         private readonly IDiscordRestChannelAPI _channelApi;
-        private readonly IDiscordRestUserAPI _userApi;
         private readonly IMediator _mediator;
         private readonly ColourPalette _colourPalette;
 
@@ -38,20 +38,17 @@ namespace Mmcc.Bot.CommandGroups
         /// <param name="context">The command context.</param>
         /// <param name="channelApi">The channel API.</param>
         /// <param name="mediator">The mediator.</param>
-        /// <param name="userApi">The user API.</param>
         /// <param name="colourPalette">The colour palette.</param>
         public MemberApplicationsCommands(
             ICommandContext context,
             IDiscordRestChannelAPI channelApi,
             IMediator mediator,
-            IDiscordRestUserAPI userApi,
             ColourPalette colourPalette
         )
         {
             _context = context;
             _channelApi = channelApi;
             _mediator = mediator;
-            _userApi = userApi;
             _colourPalette = colourPalette;
         }
 
@@ -99,7 +96,7 @@ namespace Mmcc.Bot.CommandGroups
                 ApplicationStatus.Rejected => new
                 {
                     Colour = _colourPalette.Red,
-                    StatusFieldValue = ":white_check_mark: REJECTED"
+                    StatusFieldValue = ":no_entry: REJECTED"
                 },
                 _ => throw new ArgumentOutOfRangeException(nameof(id))
             };
@@ -293,6 +290,90 @@ namespace Mmcc.Bot.CommandGroups
             var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
             return !sendMessageResult.IsSuccess
                 ? Result.FromError(sendMessageResult)
+                : Result.FromSuccess();
+        }
+        
+        [Command("reject")]
+        [RequireUserGuildPermission(DiscordPermission.BanMembers)]
+        public async Task<IResult> Reject(int id, [Greedy] string reason)
+        {
+            if (id < 0)
+            {
+                return Result.FromError(
+                    new ValidationError("Parameter `id` cannot be less than 0.")
+                );
+            }
+            if (string.IsNullOrWhiteSpace(reason))
+            {
+                return Result.FromError(
+                    new ValidationError("Parameter `serverPrefix` cannot be null, empty or whitespace.")
+                );
+            }
+            if (reason.Length < 4)
+            {
+                return Result.FromError(
+                    new ValidationError("Parameter `reason` cannot be shorter than `4` characters.")
+                );
+            }
+
+            var getChannelResult = await _channelApi.GetChannelAsync(_context.ChannelID);
+            if (!getChannelResult.IsSuccess)
+            {
+                return Result.FromError(getChannelResult);
+            }
+
+            var channel = getChannelResult.Entity;
+            var guildId = channel.GuildID;
+            if (!guildId.HasValue)
+            {
+                return Result.FromError(
+                    new NotFoundError(
+                        "Guild could not be found for this channel"));
+            }
+
+            var getMembersChannelResult = await _mediator.Send(new GetMembersChannel.Query {GuildId = guildId.Value});
+            if (!getMembersChannelResult.IsSuccess)
+            {
+                return Result.FromError(getMembersChannelResult.Error);
+            }
+
+            var rejectCommandResult = await _mediator.Send(new Reject.Command {Id = id});
+            if (!rejectCommandResult.IsSuccess)
+            {
+                return Result.FromError(rejectCommandResult.Error);
+            }
+
+            var userNotificationEmbed = new Embed
+            {
+                Title = ":no_entry: Application rejected.",
+                Description = "Unfortunately, your application has been rejected.",
+                Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                Colour = _colourPalette.Red,
+                Fields = new List<EmbedField>
+                {
+                    new("Reason", reason, new()),
+                    new("Rejected by", $"<@{_context.User.ID}>", new())
+                }
+            };
+            var sendUserNotificationEmbedResult =
+                await _channelApi.CreateMessageAsync(getMembersChannelResult.Entity.ID,
+                    $"<@{rejectCommandResult.Entity.AuthorDiscordId}>", embed: userNotificationEmbed);
+            if (!sendUserNotificationEmbedResult.IsSuccess)
+            {
+                return Result.FromError(sendUserNotificationEmbedResult);
+            }
+
+            var staffNotificationEmbed = new Embed
+            {
+                Title = ":white_check_mark: Rejected the application successfully!",
+                Description = $"Application with ID `{id}` has been *rejected*.",
+                Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                Colour = _colourPalette.Green
+            };
+            var sendStaffNotificationEmbedResult =
+                await _channelApi.CreateMessageAsync(_context.ChannelID, embed: staffNotificationEmbed);
+            return !sendStaffNotificationEmbedResult.IsSuccess
+                ? Result.FromError(sendStaffNotificationEmbedResult)
                 : Result.FromSuccess();
         }
         

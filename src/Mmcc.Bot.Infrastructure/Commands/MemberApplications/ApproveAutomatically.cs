@@ -54,11 +54,14 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
             private readonly IDiscordRestGuildAPI _guildApi;
             private readonly IDiscordRestChannelAPI _channelApi;
             private readonly IPolychatCommunicationService _polychatCommunicationService;
-            
+
             /// <summary>
             /// Instantiates a new instance of <see cref="Handler"/>.
             /// </summary>
             /// <param name="context">The db context.</param>
+            /// <param name="guildApi">The guild API.</param>
+            /// <param name="channelApi">The channel API.</param>
+            /// <param name="polychatCommunicationService">The polychat communication service.</param>
             public Handler(BotContext context, IDiscordRestGuildAPI guildApi, IDiscordRestChannelAPI channelApi, IPolychatCommunicationService polychatCommunicationService)
             {
                 _context = context;
