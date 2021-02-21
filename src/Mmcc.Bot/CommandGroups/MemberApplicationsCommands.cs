@@ -59,7 +59,7 @@ namespace Mmcc.Bot.CommandGroups
         /// </summary>
         /// <param name="id">ID of the application.</param>
         /// <returns>Result of the operation.</returns>
-        [Command("view")]
+        [Command("view", "v")]
         [Description("Views a member application by ID.")]
         [RequireGuild]
         public async Task<IResult> View(int id)
@@ -90,43 +90,46 @@ namespace Mmcc.Bot.CommandGroups
             }
 
             var app = query.Entity;
-            var embedConditionalAttributes = app.AppStatus switch
+            var embed = GetApplicationEmbed(app);
+            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
+            return !sendMessageResult.IsSuccess
+                ? Result.FromError(sendMessageResult)
+                : Result.FromSuccess();
+        }
+        
+        /// <summary>
+        /// Views the next pending application in the queue.
+        /// </summary>
+        /// <returns></returns>
+        [Command("next", "n")]
+        [Description("Views the next pending application in the queue")]
+        [RequireGuild]
+        public async Task<IResult> ViewNextPending()
+        {
+            var queryResult = await _mediator.Send(new GetNextPending.Query {GuildId = _context.Message.GuildID.Value});
+            if (!queryResult.IsSuccess)
             {
-                ApplicationStatus.Pending => new
-                {
-                    Colour = _colourPalette.Blue,
-                    StatusFieldValue = ":clock1: PENDING"
-                },
-                ApplicationStatus.Approved => new
-                {
-                    Colour = _colourPalette.Green,
-                    StatusFieldValue = ":white_check_mark: APPROVED"
-                },
-                ApplicationStatus.Rejected => new
-                {
-                    Colour = _colourPalette.Red,
-                    StatusFieldValue = ":no_entry: REJECTED"
-                },
-                _ => throw new ArgumentOutOfRangeException(nameof(id))
-            };
-            var embed = new Embed
+                return Result.FromError(queryResult.Error);
+            }
+
+            var app = queryResult.Entity;
+
+            Embed embed;
+            if (app is null)
             {
-                Title = $"Member Application #{app.MemberApplicationId}",
-                Description = $"Submitted at {DateTimeOffset.FromUnixTimeMilliseconds(app.AppTime).UtcDateTime} UTC.",
-                Fields = new List<EmbedField>
+                embed = new Embed
                 {
-                    new("Author", $"{app.AuthorDiscordName} (ID: `{app.AuthorDiscordId}`)", false),
-                    new("Status", embedConditionalAttributes.StatusFieldValue, false),
-                    new(
-                        "Provided details",
-                        $"{app.MessageContent}\n" +
-                        $"**[Original message (click here)](https://discord.com/channels/{app.GuildId}/{app.ChannelId}/{app.MessageId})**",
-                        false
-                    )
-                },
-                Colour = embedConditionalAttributes.Colour,
-                Thumbnail = EmbedProperties.MmccLogoThumbnail
-            };
+                    Title = "No pending applications",
+                    Description = "There are no pending applications at the moment",
+                    Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                    Colour = _colourPalette.Blue
+                };
+            }
+            else
+            {
+                embed = GetApplicationEmbed(app);
+            }
+
             var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
             return !sendMessageResult.IsSuccess
                 ? Result.FromError(sendMessageResult)
@@ -137,7 +140,7 @@ namespace Mmcc.Bot.CommandGroups
         /// Views pending applications.
         /// </summary>
         /// <returns>Result of the operation.</returns>
-        [Command("pending")]
+        [Command("pending", "p")]
         [Description("Views pending applications.")]
         [RequireGuild]
         public async Task<IResult> ViewPending()
@@ -257,7 +260,7 @@ namespace Mmcc.Bot.CommandGroups
         /// <param name="serverPrefix">Server prefix.</param>
         /// <param name="ignsList">IGN(s) of the player(s).</param>
         /// <returns>The result of the operation.</returns>
-        [Command("approve")]
+        [Command("approve", "a")]
         [Description("Approves a member application.")]
         [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
@@ -321,7 +324,7 @@ namespace Mmcc.Bot.CommandGroups
         /// <param name="id">ID of the application to reject.</param>
         /// <param name="reason">Reason for rejection.</param>
         /// <returns>The result of the operation.</returns>
-        [Command("reject")]
+        [Command("reject", "r")]
         [Description("Rejects a member application.")]
         [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
@@ -392,6 +395,53 @@ namespace Mmcc.Bot.CommandGroups
             return !sendStaffNotificationEmbedResult.IsSuccess
                 ? Result.FromError(sendStaffNotificationEmbedResult)
                 : Result.FromSuccess();
+        }
+        
+        /// <summary>
+        /// Gets an embed representation of a member application.
+        /// </summary>
+        /// <param name="app">Member application.</param>
+        /// <returns>Embed representation of a member application.</returns>
+        private Embed GetApplicationEmbed(MemberApplication app)
+        {
+            var statusStr = app.AppStatus.ToString();
+            var embedConditionalAttributes = app.AppStatus switch
+            {
+                ApplicationStatus.Pending => new
+                {
+                    Colour = _colourPalette.Blue,
+                    StatusFieldValue = $":clock1: {statusStr}"
+                },
+                ApplicationStatus.Approved => new
+                {
+                    Colour = _colourPalette.Green,
+                    StatusFieldValue = $":white_check_mark: {statusStr}"
+                },
+                ApplicationStatus.Rejected => new
+                {
+                    Colour = _colourPalette.Red,
+                    StatusFieldValue = $":no_entry: {statusStr}"
+                },
+                _ => throw new ArgumentOutOfRangeException(nameof(app))
+            };
+            return new Embed
+            {
+                Title = $"Member Application #{app.MemberApplicationId}",
+                Description = $"Submitted at {DateTimeOffset.FromUnixTimeMilliseconds(app.AppTime).UtcDateTime} UTC.",
+                Fields = new List<EmbedField>
+                {
+                    new("Author", $"{app.AuthorDiscordName} (ID: `{app.AuthorDiscordId}`)", false),
+                    new("Status", embedConditionalAttributes.StatusFieldValue, false),
+                    new(
+                        "Provided details",
+                        $"{app.MessageContent}\n" +
+                        $"**[Original message (click here)](https://discord.com/channels/{app.GuildId}/{app.ChannelId}/{app.MessageId})**",
+                        false
+                    )
+                },
+                Colour = embedConditionalAttributes.Colour,
+                Thumbnail = new EmbedThumbnail(app.ImageUrl, new(), new(), new())
+            };
         }
         
         /// <summary>

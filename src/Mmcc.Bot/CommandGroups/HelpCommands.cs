@@ -112,7 +112,20 @@ namespace Mmcc.Bot.CommandGroups
                     nameString.AppendLine($"❯ {orphan.Key}");
                 }
 
-                fields.Add(new EmbedField(nameString.ToString(), $"{orphan.Shape.Description}", false));
+                var fieldValueSb = new StringBuilder();
+                if (orphan.Aliases.Any())
+                {
+                    fieldValueSb.Append("**Aliases:** ");
+                    for (var i = 0; i < orphan.Aliases.Count; i++)
+                    {
+                        fieldValueSb.Append(i != orphan.Aliases.Count - 1
+                            ? $"\"{orphan.Aliases[i]}\", "
+                            : $"\"{orphan.Aliases[i]}\"");
+                    }
+                }
+                fieldValueSb.Append("\n" + orphan.Shape.Description);
+                
+                fields.Add(new EmbedField(nameString.ToString(), $"{fieldValueSb}", false));
             }
             
             var parent = orphans.FirstOrDefault()?.Parent;
