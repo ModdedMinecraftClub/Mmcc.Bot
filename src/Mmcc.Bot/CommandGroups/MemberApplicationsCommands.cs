@@ -100,7 +100,7 @@ namespace Mmcc.Bot.CommandGroups
         /// <summary>
         /// Views the next pending application in the queue.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Result of the operation.</returns>
         [Command("next", "n")]
         [Description("Views the next pending application in the queue")]
         [RequireGuild]
