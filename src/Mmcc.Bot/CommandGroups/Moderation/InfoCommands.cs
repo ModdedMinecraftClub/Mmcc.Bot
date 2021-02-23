@@ -62,7 +62,12 @@ namespace Mmcc.Bot.CommandGroups.Moderation
             _mojangApi = mojangApi;
             _guildApi = guildApi;
         }
-
+        
+        /// <summary>
+        /// Views info about a Discord user..
+        /// </summary>
+        /// <param name="user">Discord user.</param>
+        /// <returns>Result of the operation.</returns>
         [Command("discord", "d")]
         [Description("Obtains information about a Discord user")]
         [RequireGuild]
