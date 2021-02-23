@@ -1,7 +1,7 @@
 ﻿using Remora.Commands.Trees.Nodes;
 using Remora.Results;
 
-namespace Mmcc.Bot.Infrastructure.Conditions
+namespace Mmcc.Bot.Core.Errors
 {
     /// <summary>
     /// Represents a failure to satisfy a condition.

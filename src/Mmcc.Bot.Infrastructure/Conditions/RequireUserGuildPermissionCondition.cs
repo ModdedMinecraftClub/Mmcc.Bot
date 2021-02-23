@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
 using Remora.Commands.Conditions;
 using Remora.Discord.API.Abstractions.Objects;
