@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Models;
+using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.Database.Entities;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
@@ -33,6 +34,7 @@ namespace Mmcc.Bot.CommandGroups
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly IMediator _mediator;
         private readonly ColourPalette _colourPalette;
+        private readonly DiscordSettings _discordSettings;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="MemberApplicationsCommands"/>.
@@ -41,17 +43,20 @@ namespace Mmcc.Bot.CommandGroups
         /// <param name="channelApi">The channel API.</param>
         /// <param name="mediator">The mediator.</param>
         /// <param name="colourPalette">The colour palette.</param>
+        /// <param name="discordSettings">The Discord settings.</param>
         public MemberApplicationsCommands(
             MessageContext context,
             IDiscordRestChannelAPI channelApi,
             IMediator mediator,
-            ColourPalette colourPalette
+            ColourPalette colourPalette,
+            DiscordSettings discordSettings
         )
         {
             _context = context;
             _channelApi = channelApi;
             _mediator = mediator;
             _colourPalette = colourPalette;
+            _discordSettings = discordSettings;
         }
 
         /// <summary>
@@ -349,8 +354,13 @@ namespace Mmcc.Bot.CommandGroups
                 );
             }
 
-            var getMembersChannelResult = await _mediator.Send(new GetMembersChannel.Query
-                {GuildId = _context.Message.GuildID.Value});
+            var getMembersChannelResult = await _mediator.Send(
+                new GetChannelByName.Query
+                {
+                    GuildId = _context.Message.GuildID.Value,
+                    ChannelName = _discordSettings.ChannelNames.MemberApps
+                }
+            );
             if (!getMembersChannelResult.IsSuccess)
             {
                 return Result.FromError(getMembersChannelResult.Error);

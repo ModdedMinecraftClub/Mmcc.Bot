@@ -12,28 +12,34 @@ using Remora.Results;
 namespace Mmcc.Bot.Infrastructure.Queries.Discord
 {
     /// <summary>
-    /// Gets the member apps channel.
+    /// Gets a Guild channel by name.
     /// </summary>
-    public class GetMembersChannel
+    public class GetChannelByName
     {
         /// <summary>
         /// Query to get the member apps channel.
         /// </summary>
         public class Query : IRequest<Result<IChannel>>
         {
+            /// <summary>
+            /// Guild ID.
+            /// </summary>
             public Snowflake GuildId { get; set; }
+            
+            /// <summary>
+            /// Channel name.
+            /// </summary>
+            public string ChannelName { get; set; } = null!;
         }
         
         /// <inheritdoc />
         public class Handler : IRequestHandler<Query, Result<IChannel>>
         {
             private readonly IDiscordRestGuildAPI _guildApi;
-            private readonly DiscordSettings _settings;
 
             public Handler(IDiscordRestGuildAPI guildApi, DiscordSettings settings)
             {
                 _guildApi = guildApi;
-                _settings = settings;
             }
             
             /// <inheritdoc />
@@ -50,18 +56,17 @@ namespace Mmcc.Bot.Infrastructure.Queries.Discord
                 {
                     return new NotFoundError("Guild channels for current guild not found.");
                 }
-
-                var memberAppsChannelName = _settings.ChannelNames.MemberApps;
-                var memberAppsChannel = guildChannels
+                
+                var channel = guildChannels
                     .Where(c => c.Name.HasValue && c.Name.Value is not null)
-                    .FirstOrDefault(c => c.Name.Value!.Equals(memberAppsChannelName));
-                if (memberAppsChannel is null)
+                    .FirstOrDefault(c => c.Name.Value!.Equals(request.ChannelName));
+                if (channel is null)
                 {
                     return new NotFoundError(
-                        $"Could not find the channel with member application. The given member applications channel name was {_settings.ChannelNames.MemberApps}");
+                        $"Could not find the channel with name {request.ChannelName} in guild {request.GuildId}.");
                 }
 
-                return Result<IChannel>.FromSuccess(memberAppsChannel);
+                return Result<IChannel>.FromSuccess(channel);
             }
         }
     }
