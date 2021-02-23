@@ -9,7 +9,12 @@ namespace Mmcc.Bot.Core.Extensions.Models
 {
     public static class PlayerNameInfoExtensions
     {
-        public static EmbedField ToEmbedField(this IEnumerable<IPlayerNameInfo> playerNameInfos)
+        /// <summary>
+        /// Gets EmbedField representation of a player name infos collection.
+        /// </summary>
+        /// <param name="playerNameInfos">Player name infos.</param>
+        /// <returns>EmbedField representation of a player name infos collection.</returns>
+        public static EmbedField GetEmbedField(this IEnumerable<IPlayerNameInfo> playerNameInfos)
         {
             var nameInfos = playerNameInfos.ToList();
             var fieldValue = new StringBuilder();

@@ -11,6 +11,7 @@ using Mmcc.Bot.CommandGroups.Moderation;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Settings;
+using Mmcc.Bot.Infrastructure;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions;
 using Mmcc.Bot.Infrastructure.Services;

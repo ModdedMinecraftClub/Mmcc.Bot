@@ -13,12 +13,12 @@ using Remora.Results;
 namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
 {
     /// <summary>
-    /// Gets moderation actions for a given IGN.
+    /// Gets moderation actions for a given Discord user.
     /// </summary>
-    public class GetByIgn
+    public class GetByDiscordId
     {
         /// <summary>
-        /// Query to get moderation actions by IGN.
+        /// Query to get moderation actions by Discord user ID.
         /// </summary>
         public class Query : IRequest<Result<IList<ModerationAction>>>
         {
@@ -26,22 +26,18 @@ namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
             /// ID of the guild.
             /// </summary>
             public Snowflake GuildId { get; set; }
-
+            
             /// <summary>
-            /// Minecraft IGN of the user.
+            /// ID of the Discord user.
             /// </summary>
-            public string Ign { get; set; } = null!;
+            public ulong DiscordUserId { get; set; }
         }
-        
+
         /// <inheritdoc />
         public class Handler : IRequestHandler<Query, Result<IList<ModerationAction>>>
         {
             private readonly BotContext _context;
-            
-            /// <summary>
-            /// Instantiates a new instance of <see cref="Handler"/> class.
-            /// </summary>
-            /// <param name="context">DB context.</param>
+
             public Handler(BotContext context)
             {
                 _context = context;
@@ -54,7 +50,7 @@ namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
                 {
                     var res = _context.ModerationActions
                         .AsNoTracking()
-                        .Where(ma => ma.UserIgn != null && ma.UserIgn.Equals(request.Ign));
+                        .Where(ma => ma.UserDiscordId != null && ma.UserDiscordId == request.DiscordUserId);
                     return await res.ToListAsync(cancellationToken);
                 }
                 catch (Exception e)

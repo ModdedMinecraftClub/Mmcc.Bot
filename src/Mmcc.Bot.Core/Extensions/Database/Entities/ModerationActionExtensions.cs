@@ -11,13 +11,13 @@ namespace Mmcc.Bot.Core.Extensions.Database.Entities
     public static class ModerationActionExtensions
     {
         /// <summary>
-        /// Converts an enumerable of moderation actions into an enumerable of formatted embed fields that represent the moderation actions.
+        /// Gets an enumerable of formatted embed fields that represent the moderation actions. 
         /// </summary>
         /// <param name="moderationActions">Moderation actions</param>
         /// <param name="showAssociatedDiscord">Whether to include associated Discord user in each moderation action field value.</param>
         /// <param name="showAssociatedIgn">Whether to include associated IGN in each moderation action field value.</param>
         /// <returns>Enumerable of formatted embed fields that represent the moderation actions.</returns>
-        public static IEnumerable<EmbedField> ToEmbedFields(this IEnumerable<ModerationAction> moderationActions, bool showAssociatedDiscord, bool showAssociatedIgn)
+        public static IEnumerable<EmbedField> GetEmbedFields(this IEnumerable<ModerationAction> moderationActions, bool showAssociatedDiscord, bool showAssociatedIgn)
         {
             var moderationActionsList = moderationActions.ToList();
             var warningsField = moderationActionsList.GetEmbedFieldForActionsOfType(ModerationActionType.Warn,
@@ -55,7 +55,7 @@ namespace Mmcc.Bot.Core.Extensions.Database.Entities
                     {
                         fieldValue.AppendLine(moderationAction.UserDiscordId is null
                             ? "Associated IGN user: `None`"
-                            : $"Associated Discord user: <@{moderationAction.UserIgn}>");
+                            : $"Associated IGN user: `{moderationAction.UserIgn}`");
                     }
                     
                     fieldValue.AppendLine($"Active: {moderationAction.IsActive}");
