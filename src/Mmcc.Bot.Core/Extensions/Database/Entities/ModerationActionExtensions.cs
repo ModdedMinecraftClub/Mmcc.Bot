@@ -67,6 +67,10 @@ namespace Mmcc.Bot.Core.Extensions.Database.Entities
                             ? $"Expires at: {DateTimeOffset.FromUnixTimeMilliseconds(moderationAction.ExpiryDate.Value).UtcDateTime} UTC"
                             : $"Expired at: {DateTimeOffset.FromUnixTimeMilliseconds(moderationAction.ExpiryDate.Value).UtcDateTime} UTC");
                     }
+                    else
+                    {
+                        fieldValue.AppendLine("Expires at: `Permanent`");
+                    }
 
                     var splitReason = moderationAction.Reason.SplitByNewLine();
                     var reason = new StringBuilder();
