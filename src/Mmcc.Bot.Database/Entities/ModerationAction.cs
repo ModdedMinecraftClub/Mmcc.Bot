@@ -21,6 +21,11 @@
         public bool IsActive { get; set; }
         
         /// <summary>
+        /// Date when the moderation action was taken in Unix time format.
+        /// </summary>
+        public long Date { get; set; }
+        
+        /// <summary>
         /// Expiry date of the moderation action in Unix time format. Set to <code>null</code> if permanent.
         /// </summary>
         public long? ExpiryDate { get; set; }
@@ -45,6 +50,7 @@
         /// </summary>
         /// <param name="moderationActionType">Moderation action type.</param>
         /// <param name="isActive">Whether the moderation action is active.</param>
+        /// <param name="date">Date when the moderation action was taken in Unix time format.</param>
         /// <param name="reason">Reason for the moderation action.</param>
         /// <param name="userDiscordId">The user's Discord ID. Set to <code>null</code> if not associated with a Discord user.</param>
         /// <param name="userIgn">The user's IGN. Set to <code>null</code> if not associated with an in-game user.</param>
@@ -53,6 +59,7 @@
             ModerationActionType moderationActionType,
             bool isActive,
             string reason,
+            long date,
             ulong? userDiscordId = null,
             string? userIgn = null,
             long? expiryDate = null 
@@ -61,6 +68,7 @@
             ModerationActionType = moderationActionType;
             IsActive = isActive;
             Reason = reason;
+            Date = date;
             UserDiscordId = userDiscordId;
             UserIgn = userIgn;
             ExpiryDate = expiryDate;

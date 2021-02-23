@@ -1,4 +1,4 @@
-﻿namespace Mmcc.Bot.Core.Models.Settings
+﻿namespace Mmcc.Bot.Database.Settings
 {
     /// <summary>
     /// Settings for the underlying MySQL database.

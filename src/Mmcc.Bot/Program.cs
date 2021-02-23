@@ -7,8 +7,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mmcc.Bot.CommandGroups;
+using Mmcc.Bot.CommandGroups.Moderation;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Database;
+using Mmcc.Bot.Database.Settings;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions;
 using Mmcc.Bot.Infrastructure.Services;
@@ -79,6 +81,7 @@ namespace Mmcc.Bot
                     services.AddTailwindColourPalette();
                     services.AddScoped<IExecutionEventService, ErrorNotificationService>();
                     services.AddScoped<IPolychatCommunicationService, PolychatCommunicationService>();
+                    services.AddScoped<IMojangApiService, MojangApiService>();
 
                     services.AddMediatR(typeof(CreateFromDiscordMessage));
                     
@@ -90,6 +93,7 @@ namespace Mmcc.Bot
                     services.AddCommandGroup<TestCommands>();
                     services.AddCommandGroup<MemberApplicationsCommands>();
                     services.AddCommandGroup<HelpCommands>();
+                    services.AddCommandGroup<InfoCommands>();
 
                     services.AddResponder<MemberApplicationCreatedResponder>();
                     services.AddResponder<MemberApplicationUpdatedResponder>();

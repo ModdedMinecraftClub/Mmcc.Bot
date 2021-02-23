@@ -61,11 +61,10 @@ namespace Mmcc.Bot.Infrastructure.Services
                 ? $"/users/profiles/minecraft/{username}"
                 : $"/users/profiles/minecraft/{username}?at={date}";
             var response = await _client.GetAsync(uri);
-
             if (response.StatusCode is HttpStatusCode.OK)
             {
                 await using var responseStream = await response.Content.ReadAsStreamAsync();
-                var res = await JsonSerializer.DeserializeAsync<PlayerUuidInfo?>(responseStream);
+                var res = await JsonSerializer.DeserializeAsync<PlayerUuidInfo?>(responseStream, _serializerOptions);
                 return Result<IPlayerUuidInfo?>.FromSuccess(res);
             }
 
@@ -77,7 +76,7 @@ namespace Mmcc.Bot.Infrastructure.Services
             if (response.StatusCode is HttpStatusCode.BadRequest)
             {
                 await using var responseStream = await response.Content.ReadAsStreamAsync();
-                var res = await JsonSerializer.DeserializeAsync<ErrorResponse?>(responseStream);
+                var res = await JsonSerializer.DeserializeAsync<ErrorResponse?>(responseStream, _serializerOptions);
                 return res is null
                     ? new GenericError($"API error: {response.StatusCode.ToString()}")
                     : new GenericError($"{res.Error}; {res.ErrorMessage}");
@@ -98,7 +97,8 @@ namespace Mmcc.Bot.Infrastructure.Services
             }
             
             await using var responseStream = await response.Content.ReadAsStreamAsync();
-            var res = await JsonSerializer.DeserializeAsync<IEnumerable<PlayerNameInfo>>(responseStream);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var res = await JsonSerializer.DeserializeAsync<IEnumerable<PlayerNameInfo>>(responseStream, _serializerOptions);
             return Result<IEnumerable<IPlayerNameInfo>>.FromSuccess(res ?? Enumerable.Empty<IPlayerNameInfo>());
         }
     }

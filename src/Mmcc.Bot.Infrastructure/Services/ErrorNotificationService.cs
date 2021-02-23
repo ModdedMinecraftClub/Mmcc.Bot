@@ -84,7 +84,7 @@ namespace Mmcc.Bot.Infrastructure.Services
                 },
                 _ => errorEmbed with
                 {
-                    Title = $":x: {err.GetType()} error.",
+                    Title = $":x: {err.GetType()}.",
                     Description = err.Message
                 }
             };

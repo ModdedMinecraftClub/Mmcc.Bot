@@ -15,13 +15,13 @@ namespace Mmcc.Bot.Core.Models.MojangApi
         /// <summary>
         /// When the user changed their username to the given username.
         /// </summary>
-        long? ChangedAt { get; }
+        long? ChangedToAt { get; }
     }
     
     /// <inheritdoc cref="IPlayerNameInfo"/>
     public record PlayerNameInfo
     (
         string Name,
-        long? ChangedAt
+        long? ChangedToAt
     ) : IPlayerNameInfo;
 }

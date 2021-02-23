@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using Mmcc.Bot.Core.Models.Settings;
+using Mmcc.Bot.Database.Settings;
 
 namespace Mmcc.Bot.Database
 {

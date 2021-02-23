@@ -16,9 +16,5 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.0-alpha.2" />
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Mmcc.Bot.Core\Mmcc.Bot.Core.csproj" />
-    </ItemGroup>
     
 </Project>

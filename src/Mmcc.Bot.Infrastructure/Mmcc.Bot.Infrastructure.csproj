@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Mmcc.Bot.Core\Mmcc.Bot.Core.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Database\Mmcc.Bot.Database.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Protos\Mmcc.Bot.Protos.csproj" />
     </ItemGroup>
