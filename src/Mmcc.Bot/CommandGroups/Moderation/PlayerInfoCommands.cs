@@ -28,7 +28,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
     /// </summary>
     [Group("info")]
     [Description("Information about players")]
-    public class InfoCommands : CommandGroup
+    public class PlayerInfoCommands : CommandGroup
     {
         private readonly MessageContext _context;
         private readonly IDiscordRestChannelAPI _channelApi;
@@ -38,7 +38,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         private readonly IDiscordRestGuildAPI _guildApi;
 
         /// <summary>
-        /// Instantiates a new instance of <see cref="InfoCommands"/>.
+        /// Instantiates a new instance of <see cref="PlayerInfoCommands"/>.
         /// </summary>
         /// <param name="context">The message context.</param>
         /// <param name="channelApi">The channel API.</param>
@@ -46,7 +46,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <param name="colourPalette">The colour palette.</param>
         /// <param name="mojangApi">The Mojang API.</param>
         /// <param name="guildApi">The guild API.</param>
-        public InfoCommands(
+        public PlayerInfoCommands(
             MessageContext context,
             IDiscordRestChannelAPI channelApi,
             IMediator mediator,
