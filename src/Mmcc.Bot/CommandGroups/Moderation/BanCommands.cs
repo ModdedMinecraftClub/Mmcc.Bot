@@ -44,7 +44,16 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 Colour = colourPalette.Green
             };
         }
-
+        
+        /// <summary>
+        /// Bans a Discord user.
+        /// </summary>
+        /// <param name="user">Discord user.</param>
+        /// <param name="expiryDate">Expiry date.</param>
+        /// <param name="reason">Reason.</param>
+        /// <returns>Result of the operation.</returns>
+        ///
+        /// <remarks>This command is for Discord user only. It will not ban from MC servers.</remarks>
         [Command("discord", "d")]
         [Description("Bans a Discord user (Discord only)")]
         [RequireGuild]
@@ -77,7 +86,16 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 ? Result.FromError(sendMessageResult)
                 : Result.FromSuccess();
         }
-
+        
+        /// <summary>
+        /// Bans a MC user.
+        /// </summary>
+        /// <param name="ign">MC user's IGN.</param>
+        /// <param name="expiryDate">Expiry date.</param>
+        /// <param name="reason">Reason.</param>
+        /// <returns>Result of the operation</returns>
+        ///
+        /// <remarks>This command is for MC user only. It will not ban from Discord.</remarks>
         [Command("ig")]
         [Description("Bans a user from all MC servers. (In-game only)")]
         [RequireGuild]
@@ -110,7 +128,15 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 ? Result.FromError(sendMessageResult)
                 : Result.FromSuccess();
         }
-
+        
+        /// <summary>
+        /// Bans a user from Discord and MC servers.
+        /// </summary>
+        /// <param name="discordUser">Discord user.</param>
+        /// <param name="ign">User's MC IGN.</param>
+        /// <param name="expiryDate">Expiry date.</param>
+        /// <param name="reason">Reason.</param>
+        /// <returns>Result of the operation.</returns>
         [Command("all", "a")]
         [Description("Bans the user from both MC servers and Discord")]
         [RequireGuild]
