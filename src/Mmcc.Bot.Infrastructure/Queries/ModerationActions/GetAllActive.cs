@@ -24,7 +24,7 @@ namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
             /// <summary>
             /// Whether to enable tracking.
             /// </summary>
-            public bool Tracking { get; set; } = true;
+            public bool EnableTracking { get; set; } = true;
         }
         
         /// <inheritdoc />
@@ -49,7 +49,7 @@ namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
                     var cmd = _context.ModerationActions
                         .Where(ma => ma.IsActive);
 
-                    if (!request.Tracking)
+                    if (!request.EnableTracking)
                     {
                         cmd = cmd.AsNoTracking();
                     }
