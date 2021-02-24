@@ -170,7 +170,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
 
                     var createDmResult = await _userApi.CreateDMAsync(request.UserDiscordId.Value, cancellationToken);
                     const string errMsg =
-                        "Failed to send a DM notification to the user. It may be because they have blocked the bot or don't share any servers. This error can in most cases be ignored.";
+                        "Failed to send a DM notification to the user. It may be because they have blocked the bot. This error can in most cases be ignored.";
                     if (!createDmResult.IsSuccess || createDmResult.Entity is null)
                     {
                         _logger.LogWarning(errMsg);
