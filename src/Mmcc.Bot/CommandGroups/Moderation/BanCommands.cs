@@ -57,6 +57,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         [Command("discord", "d")]
         [Description("Bans a Discord user (Discord only)")]
         [RequireGuild]
+        [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> BanDiscord(IUser user, string expiryDate, [Greedy] string reason)
         {
             var commandResult = await _mediator.Send
@@ -99,6 +100,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         [Command("ig")]
         [Description("Bans a user from all MC servers. (In-game only)")]
         [RequireGuild]
+        [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> BanIg(string ign, string expiryDate, [Greedy] string reason)
         {
             var commandResult = await _mediator.Send
@@ -140,6 +142,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         [Command("all", "a")]
         [Description("Bans the user from both MC servers and Discord")]
         [RequireGuild]
+        [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> BanAll(IUser discordUser, string ign, string expiryDate, [Greedy] string reason)
         {
             var commandResult = await _mediator.Send
