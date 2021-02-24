@@ -114,7 +114,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
 
                 if (request.UserIgn is not null)
                 {
-                    var command = new GenericServerCommand
+                    var protobufMessage = new GenericServerCommand
                     {
                         ServerId = "<all>",
                         Command = new GenericCommand
@@ -125,10 +125,10 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                             Args = {request.UserIgn}
                         }
                     };
-                    var sendCommandResult = await _pcs.SendProtobufMessage(command);
-                    if (!sendCommandResult.IsSuccess)
+                    var sendProtobufMessageResult = await _pcs.SendProtobufMessage(protobufMessage);
+                    if (!sendProtobufMessageResult.IsSuccess)
                     {
-                        return Result.FromError(sendCommandResult);
+                        return Result.FromError(sendProtobufMessageResult);
                     }
                 }
 
