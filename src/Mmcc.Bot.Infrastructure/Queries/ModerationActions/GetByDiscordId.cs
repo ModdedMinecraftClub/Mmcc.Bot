@@ -37,7 +37,11 @@ namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
         public class Handler : IRequestHandler<Query, Result<IList<ModerationAction>>>
         {
             private readonly BotContext _context;
-
+            
+            /// <summary>
+            /// Instantiates a new instance of <see cref="BotContext"/> class.
+            /// </summary>
+            /// <param name="context">The db context.</param>
             public Handler(BotContext context)
             {
                 _context = context;
@@ -50,7 +54,9 @@ namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
                 {
                     var res = _context.ModerationActions
                         .AsNoTracking()
-                        .Where(ma => ma.UserDiscordId != null && ma.UserDiscordId == request.DiscordUserId);
+                        .Where(ma =>
+                            ma.UserDiscordId != null && ma.UserDiscordId == request.DiscordUserId &&
+                            ma.GuildId == request.GuildId.Value);
                     return await res.ToListAsync(cancellationToken);
                 }
                 catch (Exception e)

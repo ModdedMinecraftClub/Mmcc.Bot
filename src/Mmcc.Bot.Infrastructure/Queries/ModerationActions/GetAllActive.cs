@@ -7,57 +7,54 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Entities;
-using Remora.Discord.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
 {
     /// <summary>
-    /// Gets moderation actions for a given IGN.
+    /// Gets all active moderation actions.
     /// </summary>
-    public class GetByIgn
+    public class GetAllActive
     {
         /// <summary>
-        /// Query to get moderation actions by IGN.
+        /// Query to get all active moderation actions.
         /// </summary>
         public class Query : IRequest<Result<IList<ModerationAction>>>
         {
             /// <summary>
-            /// ID of the guild.
+            /// Whether to enable tracking.
             /// </summary>
-            public Snowflake GuildId { get; set; }
-
-            /// <summary>
-            /// Minecraft IGN of the user.
-            /// </summary>
-            public string Ign { get; set; } = null!;
+            public bool Tracking { get; set; } = true;
         }
         
         /// <inheritdoc />
         public class Handler : IRequestHandler<Query, Result<IList<ModerationAction>>>
         {
             private readonly BotContext _context;
-            
+
             /// <summary>
-            /// Instantiates a new instance of <see cref="Handler"/> class.
+            /// Instantiates a new instance of <see cref="BotContext"/> class.
             /// </summary>
-            /// <param name="context">DB context.</param>
+            /// <param name="context">The db context.</param>
             public Handler(BotContext context)
             {
                 _context = context;
             }
-            
+
             /// <inheritdoc />
             public async Task<Result<IList<ModerationAction>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 try
                 {
-                    var res = _context.ModerationActions
-                        .AsNoTracking()
-                        .Where(ma =>
-                            ma.UserIgn != null && ma.UserIgn.Equals(request.Ign) &&
-                            ma.GuildId == request.GuildId.Value);
-                    return await res.ToListAsync(cancellationToken);
+                    var cmd = _context.ModerationActions
+                        .Where(ma => ma.IsActive);
+
+                    if (!request.Tracking)
+                    {
+                        cmd = cmd.AsNoTracking();
+                    }
+
+                    return await cmd.ToListAsync(cancellationToken);
                 }
                 catch (Exception e)
                 {

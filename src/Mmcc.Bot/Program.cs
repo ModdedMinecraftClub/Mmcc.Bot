@@ -15,6 +15,7 @@ using Mmcc.Bot.Infrastructure;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions;
 using Mmcc.Bot.Infrastructure.Services;
+using Mmcc.Bot.Infrastructure.Workers;
 using Mmcc.Bot.Responders;
 using Mmcc.Bot.Setup;
 using Remora.Commands.Extensions;
@@ -83,6 +84,7 @@ namespace Mmcc.Bot
                     services.AddScoped<IExecutionEventService, ErrorNotificationService>();
                     services.AddScoped<IPolychatCommunicationService, PolychatCommunicationService>();
                     services.AddScoped<IMojangApiService, MojangApiService>();
+                    services.AddScoped<IModerationService, ModerationService>();
 
                     services.AddMediatR(typeof(CreateFromDiscordMessage));
                     
@@ -111,6 +113,9 @@ namespace Mmcc.Bot
                     services.AddSingleton<DiscordService>();
                     services.AddSingleton<IHostedService, DiscordService>(serviceProvider =>
                         serviceProvider.GetRequiredService<DiscordService>());
+                    services.AddSingleton<ModerationWorker>();
+                    services.AddSingleton<IHostedService, ModerationWorker>(serviceProvider =>
+                        serviceProvider.GetRequiredService<ModerationWorker>());
 
                     services.AddDiscordCaching();
                     services.Configure<CacheSettings>(settings =>

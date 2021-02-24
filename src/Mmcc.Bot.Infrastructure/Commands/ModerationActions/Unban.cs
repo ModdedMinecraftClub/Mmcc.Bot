@@ -19,102 +19,76 @@ using Remora.Results;
 namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
 {
     /// <summary>
-    /// Bans a user.
+    /// Unbans a user.
     /// </summary>
-    public class Ban
+    public class Unban
     {
         /// <summary>
-        /// Command to ban a user.
+        /// Command to unban a user.
         /// </summary>
         public class Command : IRequest<Result>
         {
             /// <summary>
-            /// Channel ID.
+            /// Moderation action.
+            /// </summary>
+            public ModerationAction ModerationAction { get; set; } = null!;
+            
+            /// <summary>
+            /// ID of the channel to which polychat2 will send the confirmation message.
             /// </summary>
             public Snowflake ChannelId { get; set; }
-            
-            /// <summary>
-            /// Guild ID.
-            /// </summary>
-            public Snowflake GuildId { get; set; }
-
-            /// <summary>
-            /// User's Discord ID. Set to <code>null</code> if not associated with a Discord user.
-            /// </summary>
-            public Snowflake? UserDiscordId { get; set; }
-            
-            /// <summary>
-            /// User's IGN. Set to <code>null</code> if not associated with a MC user.
-            /// </summary>
-            public string? UserIgn { get; set; }
-            
-            /// <summary>
-            /// Reason
-            /// </summary>
-            public string Reason { get; set; } = null!;
-            
-            /// <summary>
-            /// Expiry date. Set to <code>null</code> if permanent.
-            /// </summary>
-            public long? ExpiryDate { get; set; }
         }
         
         /// <inheritdoc />
         public class Handler : IRequestHandler<Command, Result>
         {
             private readonly BotContext _context;
-            private readonly IDiscordRestGuildAPI _guildApi;
             private readonly IPolychatCommunicationService _pcs;
+            private readonly IDiscordRestGuildAPI _guildApi;
             private readonly IDiscordRestUserAPI _userApi;
+            private readonly IDiscordRestChannelAPI _channelApi;
             private readonly ColourPalette _colourPalette;
             private readonly ILogger<Handler> _logger;
-            private readonly IDiscordRestChannelAPI _channelApi;
 
             /// <summary>
             /// Instantiates a new instance of <see cref="Handler"/> class.
             /// </summary>
             /// <param name="context">The DB context.</param>
-            /// <param name="guildApi">The guild API.</param>
             /// <param name="pcs">The polychat communication service.</param>
+            /// <param name="guildApi">The guild API.</param>
             /// <param name="userApi">The user API.</param>
+            /// <param name="channelApi">The channel API.</param>
             /// <param name="colourPalette">The colour palette.</param>
             /// <param name="logger">The logger.</param>
-            /// <param name="channelApi">The channel API.</param>
             public Handler(
                 BotContext context,
-                IDiscordRestGuildAPI guildApi,
                 IPolychatCommunicationService pcs,
+                IDiscordRestGuildAPI guildApi,
                 IDiscordRestUserAPI userApi,
+                IDiscordRestChannelAPI channelApi,
                 ColourPalette colourPalette,
-                ILogger<Handler> logger,
-                IDiscordRestChannelAPI channelApi
+                ILogger<Handler> logger
             )
             {
                 _context = context;
-                _guildApi = guildApi;
                 _pcs = pcs;
+                _guildApi = guildApi;
                 _userApi = userApi;
+                _channelApi = channelApi;
                 _colourPalette = colourPalette;
                 _logger = logger;
-                _channelApi = channelApi;
             }
 
             /// <inheritdoc />
             public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
             {
-                var banModerationAction = new ModerationAction
-                (
-                    moderationActionType: ModerationActionType.Ban,
-                    guildId: request.GuildId.Value,
-                    isActive: true,
-                    reason: request.Reason,
-                    date: DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                    userDiscordId: request.UserDiscordId?.Value,
-                    userIgn: request.UserIgn,
-                    expiryDate: request.ExpiryDate
-                );
+                var ma = request.ModerationAction;
+                if (ma.ModerationActionType != ModerationActionType.Ban)
+                    return new GenericError(
+                        $"Wrong moderation action type. Expected: {ModerationActionType.Ban}, got: {ma.ModerationActionType}"); 
+                if (!ma.IsActive) return new GenericError("Moderation action was already inactive.");
 
-                if (request.UserIgn is not null)
+                if (ma.UserIgn is not null)
                 {
                     var protobufMessage = new GenericServerCommand
                     {
@@ -124,7 +98,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                             DefaultCommand = "ban",
                             DiscordCommandName = "ban",
                             DiscordChannelId = request.ChannelId.Value.ToString(),
-                            Args = {request.UserIgn}
+                            Args = {request.ModerationAction.UserIgn}
                         }
                     };
                     var sendProtobufMessageResult = await _pcs.SendProtobufMessage(protobufMessage);
@@ -134,14 +108,14 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                             "Could not communicate with polychat2's central server. Please see the logs.");
                     }
                 }
-
-                if (request.UserDiscordId is not null)
+                
+                if (request.ModerationAction.UserDiscordId is not null)
                 {
-                    var banResult = await _guildApi.CreateGuildBanAsync(
-                        request.GuildId,
-                        request.UserDiscordId.Value,
-                        reason: request.Reason,
-                        ct: cancellationToken
+                    var userDiscordIdSnowflake = new Snowflake(request.ModerationAction.UserDiscordId.Value);
+                    var banResult = await _guildApi.RemoveGuildBanAsync(
+                        new(request.ModerationAction.GuildId),
+                        new(request.ModerationAction.UserDiscordId.Value),
+                        cancellationToken
                     );
 
                     if (!banResult.IsSuccess)
@@ -151,29 +125,17 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
 
                     var embed = new Embed
                     {
-                        Title = "You have been banned from Modded Minecraft Club.",
-                        Colour = _colourPalette.Red,
-                        Thumbnail = EmbedProperties.MmccLogoThumbnail,
-                        Timestamp = DateTimeOffset.UtcNow,
-                        Fields = new List<EmbedField>
-                        {
-                            new("Reason", request.Reason, false),
-                            new(
-                                "Expires at",
-                                request.ExpiryDate is null
-                                    ? "Permanent"
-                                    : $"{DateTimeOffset.FromUnixTimeMilliseconds(request.ExpiryDate.Value).UtcDateTime} UTC",
-                                false
-                            )
-                        }
+                        Title = "You have been unbanned from Modded Minecraft Club.",
+                        Colour = _colourPalette.Green,
+                        Thumbnail = EmbedProperties.MmccLogoThumbnail
                     };
 
-                    var createDmResult = await _userApi.CreateDMAsync(request.UserDiscordId.Value, cancellationToken);
-                    const string errMsg =
-                        "Failed to send a DM notification to the user. It may be because they have blocked the bot or don't share any servers. This error can in most cases be ignored.";
+                    var createDmResult = await _userApi.CreateDMAsync(userDiscordIdSnowflake, cancellationToken);
+                    const string warningMsg =
+                        "Failed to send a DM notification to the user. It may be because they have blocked the bot or don't share any servers. This warning can in most cases be ignored.";
                     if (!createDmResult.IsSuccess || createDmResult.Entity is null)
                     {
-                        _logger.LogWarning(errMsg);
+                        _logger.LogWarning(warningMsg);
                     }
                     else
                     {
@@ -181,14 +143,14 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                             ct: cancellationToken);
                         if (!sendDmResult.IsSuccess)
                         {
-                            _logger.LogWarning(errMsg);
+                            _logger.LogWarning(warningMsg);
                         }
                     }
                 }
 
                 try
                 {
-                    await _context.AddAsync(banModerationAction, cancellationToken);
+                    ma.IsActive = false;
                     await _context.SaveChangesAsync(cancellationToken);
                 }
                 catch (Exception e)

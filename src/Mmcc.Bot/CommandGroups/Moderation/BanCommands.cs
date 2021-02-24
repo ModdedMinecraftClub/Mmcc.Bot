@@ -153,7 +153,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     ChannelId = _context.ChannelID,
                     UserIgn = ign,
                     Reason = reason,
-                    ExpiryDate = null,
+                    ExpiryDate = DateTimeOffset.UtcNow.AddSeconds(20).ToUnixTimeMilliseconds(),
                     UserDiscordId = discordUser.ID
                 }
             );

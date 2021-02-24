@@ -16,6 +16,11 @@
         public ModerationActionType ModerationActionType { get; set; }
         
         /// <summary>
+        /// ID of the guild.
+        /// </summary>
+        public ulong GuildId { get; set; }
+        
+        /// <summary>
         /// Whether the moderation action is active.
         /// </summary>
         public bool IsActive { get; set; }
@@ -49,6 +54,7 @@
         /// Instantiates <see cref="ModerationAction"/>.
         /// </summary>
         /// <param name="moderationActionType">Moderation action type.</param>
+        /// <param name="guildId">ID of the guild.</param>
         /// <param name="isActive">Whether the moderation action is active.</param>
         /// <param name="date">Date when the moderation action was taken in Unix time format.</param>
         /// <param name="reason">Reason for the moderation action.</param>
@@ -57,6 +63,7 @@
         /// <param name="expiryDate">Expiry date of the moderation action in Unix time format. Set to <code>null</code> if permanent.</param>
         public ModerationAction(
             ModerationActionType moderationActionType,
+            ulong guildId,
             bool isActive,
             string reason,
             long date,
@@ -66,6 +73,7 @@
         )
         {
             ModerationActionType = moderationActionType;
+            GuildId = guildId;
             IsActive = isActive;
             Reason = reason;
             Date = date;
