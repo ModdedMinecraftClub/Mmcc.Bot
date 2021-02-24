@@ -17,6 +17,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
     /// <summary>
     /// Commands for banning users.
     /// </summary>
+    [Group("ban")]
     public class BanCommands : CommandGroup
     {
         private readonly MessageContext _context;

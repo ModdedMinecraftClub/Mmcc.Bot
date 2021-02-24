@@ -94,7 +94,10 @@ namespace Mmcc.Bot
                     services.AddCommandGroup<TestCommands>();
                     services.AddCommandGroup<MemberApplicationsCommands>();
                     services.AddCommandGroup<HelpCommands>();
+                    
+                    // moderation;
                     services.AddCommandGroup<InfoCommands>();
+                    services.AddCommandGroup<BanCommands>();
 
                     services.AddResponder<MemberApplicationCreatedResponder>();
                     services.AddResponder<MemberApplicationUpdatedResponder>();
