@@ -38,7 +38,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         }
 
         [Command("discord", "d")]
-        [Description("Bans a Discord user")]
+        [Description("Bans a Discord user (Discord only)")]
         [RequireGuild]
         public async Task<IResult> BanDiscord(IUser user, string expiryDate, [Greedy] string reason)
         {
@@ -61,7 +61,41 @@ namespace Mmcc.Bot.CommandGroups.Moderation
 
             var embed = new Embed
             {
-                Title = ":white_check_mark: User banned successfully.",
+                Title = ":white_check_mark: User banned successfully (Discord only).",
+                Description = "User has been banned successfully.",
+                Timestamp = DateTimeOffset.UtcNow
+            };
+            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
+            return !sendMessageResult.IsSuccess
+                ? Result.FromError(sendMessageResult)
+                : Result.FromSuccess();
+        }
+
+        [Command("ig")]
+        [Description("Bans a user from all MC servers. (In-game only)")]
+        [RequireGuild]
+        public async Task<IResult> BanIg(string ign, string expiryDate, [Greedy] string reason)
+        {
+            var commandResult = await _mediator.Send
+            (
+                new Ban.Command
+                {
+                    GuildId = _context.Message.GuildID.Value,
+                    ChannelId = _context.ChannelID,
+                    UserIgn = ign,
+                    Reason = reason,
+                    ExpiryDate = null,
+                    UserDiscordId = null
+                }
+            );
+            if (!commandResult.IsSuccess)
+            {
+                return Result.FromError(commandResult.Error);
+            }
+
+            var embed = new Embed
+            {
+                Title = ":white_check_mark: User banned successfully from all MC servers (in-game only).",
                 Description = "User has been banned successfully.",
                 Timestamp = DateTimeOffset.UtcNow
             };

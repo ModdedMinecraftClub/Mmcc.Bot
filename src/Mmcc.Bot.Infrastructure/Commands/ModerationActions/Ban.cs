@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.Database;
@@ -128,7 +129,8 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                     var sendProtobufMessageResult = await _pcs.SendProtobufMessage(protobufMessage);
                     if (!sendProtobufMessageResult.IsSuccess)
                     {
-                        return Result.FromError(sendProtobufMessageResult);
+                        return new PolychatError(
+                            "Could not communicate with polychat2's central server. Please see the logs.");
                     }
                 }
 
