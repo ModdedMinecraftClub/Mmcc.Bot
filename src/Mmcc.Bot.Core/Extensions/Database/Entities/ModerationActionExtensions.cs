@@ -42,7 +42,7 @@ namespace Mmcc.Bot.Core.Extensions.Database.Entities
             {
                 foreach (var moderationAction in list)
                 {
-                    fieldValue.AppendLine($"**▸ #{moderationAction.ModerationActionId}**");
+                    fieldValue.AppendLine($"**▸ ID: {moderationAction.ModerationActionId}**");
                     
                     if (showAssociatedDiscord)
                     {
@@ -81,7 +81,6 @@ namespace Mmcc.Bot.Core.Extensions.Database.Entities
                     }
                     
                     fieldValue.AppendLine($"Reason:\n {reason}");
-                    fieldValue.AppendLine();
                 }
             }
 
