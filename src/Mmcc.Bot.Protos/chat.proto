@@ -12,3 +12,7 @@ message ChatMessage {
   string message = 2;
   int32 messageOffset = 3;
 }
+
+message ChatBroadcast {
+  string message = 1;
+}
