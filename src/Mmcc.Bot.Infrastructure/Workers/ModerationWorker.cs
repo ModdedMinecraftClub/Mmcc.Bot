@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Core.Models;
+using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Database.Entities;
 using Mmcc.Bot.Infrastructure.Queries.Discord;
 using Mmcc.Bot.Infrastructure.Queries.ModerationActions;
@@ -29,6 +30,7 @@ namespace Mmcc.Bot.Infrastructure.Workers
         private readonly IServiceProvider _sp;
         private readonly ILogger<ModerationWorker> _logger;
         private readonly ColourPalette _colourPalette;
+        private readonly DiscordSettings _discordSettings;
 
         private const int TimeBetweenIterationsInMillis = 10 * 1000;
 
@@ -38,11 +40,13 @@ namespace Mmcc.Bot.Infrastructure.Workers
         /// <param name="sp">The service provider.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="colourPalette">The colour palette.</param>
-        public ModerationWorker(IServiceProvider sp, ILogger<ModerationWorker> logger, ColourPalette colourPalette)
+        /// <param name="discordSettings">The Discord settings.</param>
+        public ModerationWorker(IServiceProvider sp, ILogger<ModerationWorker> logger, ColourPalette colourPalette, DiscordSettings discordSettings)
         {
             _sp = sp;
             _logger = logger;
             _colourPalette = colourPalette;
+            _discordSettings = discordSettings;
         }
 
         /// <inheritdoc />
@@ -87,7 +91,7 @@ namespace Mmcc.Bot.Infrastructure.Workers
             {
                 var getLogsChannel = await mediator.Send(new GetChannelByName.Query
                 {
-                    ChannelName = "logs",
+                    ChannelName = _discordSettings.ChannelNames.ModerationLogs,
                     GuildId = new Snowflake(ma.GuildId)
                 }, ct);
                 if (!getLogsChannel.IsSuccess)
@@ -105,7 +109,8 @@ namespace Mmcc.Bot.Infrastructure.Workers
                 }
 
                 var warningMsg =
-                    $"Successfully deactivated expired moderation action with ID: {ma.ModerationActionId} but failed to send a notification to the logs channel. It may be because the bot doesn't have permissions in that channel or has since been removed from the guild. This warning can in most cases be ignored.";
+                    $"Successfully deactivated expired moderation action with ID: {ma.ModerationActionId} but failed to send a notification to the logs channel." +
+                    " It may be because the bot doesn't have permissions in that channel or has since been removed from the guild. This warning can in most cases be ignored.";
 
                 var typeString = ma.ModerationActionType switch
                 {
