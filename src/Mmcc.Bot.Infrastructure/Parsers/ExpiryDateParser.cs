@@ -23,7 +23,7 @@ namespace Mmcc.Bot.Infrastructure.Parsers
             }
             
             // regex obtained from a back alley code dealer;
-            var match = Regex.Match(value, "([1-9][0-9]+)([mhd])");
+            var match = Regex.Match(value, "([1-9][0-9]*)([mhd])");
 
             if (!match.Success)
             {
