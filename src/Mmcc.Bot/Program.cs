@@ -8,12 +8,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mmcc.Bot.CommandGroups;
 using Mmcc.Bot.CommandGroups.Moderation;
+using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Settings;
 using Mmcc.Bot.Infrastructure;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions;
+using Mmcc.Bot.Infrastructure.Parsers;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Infrastructure.Workers;
 using Mmcc.Bot.Responders;
@@ -92,6 +94,8 @@ namespace Mmcc.Bot
                     
                     services.AddCondition<RequireGuildCondition>();
                     services.AddCondition<RequireUserGuildPermissionCondition>();
+
+                    services.AddParser<ExpiryDate, ExpiryDateParser>();
 
                     services.AddCommandGroup<TestCommands>();
                     services.AddCommandGroup<MemberApplicationsCommands>();

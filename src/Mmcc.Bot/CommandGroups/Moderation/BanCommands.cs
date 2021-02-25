@@ -58,7 +58,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         [Description("Bans a Discord user (Discord only)")]
         [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
-        public async Task<IResult> BanDiscord(IUser user, string expiryDate, [Greedy] string reason)
+        public async Task<IResult> BanDiscord(IUser user, ExpiryDate expiryDate, [Greedy] string reason)
         {
             var commandResult = await _mediator.Send
             (
@@ -68,7 +68,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     ChannelId = _context.ChannelID,
                     UserDiscordId = user.ID,
                     Reason = reason,
-                    ExpiryDate = null,
+                    ExpiryDate = expiryDate.Value,
                     UserIgn = null
                 }
             );
@@ -101,7 +101,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         [Description("Bans a user from all MC servers. (In-game only)")]
         [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
-        public async Task<IResult> BanIg(string ign, string expiryDate, [Greedy] string reason)
+        public async Task<IResult> BanIg(string ign, ExpiryDate expiryDate, [Greedy] string reason)
         {
             var commandResult = await _mediator.Send
             (
@@ -111,7 +111,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     ChannelId = _context.ChannelID,
                     UserIgn = ign,
                     Reason = reason,
-                    ExpiryDate = null,
+                    ExpiryDate = expiryDate.Value,
                     UserDiscordId = null
                 }
             );
@@ -143,7 +143,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         [Description("Bans the user from both MC servers and Discord")]
         [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
-        public async Task<IResult> BanAll(IUser discordUser, string ign, string expiryDate, [Greedy] string reason)
+        public async Task<IResult> BanAll(IUser discordUser, string ign, ExpiryDate expiryDate, [Greedy] string reason)
         {
             var commandResult = await _mediator.Send
             (
@@ -153,7 +153,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     ChannelId = _context.ChannelID,
                     UserIgn = ign,
                     Reason = reason,
-                    ExpiryDate = DateTimeOffset.UtcNow.AddSeconds(20).ToUnixTimeMilliseconds(),
+                    ExpiryDate = expiryDate.Value,
                     UserDiscordId = discordUser.ID
                 }
             );
