@@ -83,6 +83,7 @@ namespace Mmcc.Bot
                     });
                     
                     services.AddTailwindColourPalette();
+                    
                     services.AddScoped<IExecutionEventService, ErrorNotificationService>();
                     services.AddScoped<IPolychatCommunicationService, PolychatCommunicationService>();
                     services.AddScoped<IMojangApiService, MojangApiService>();
@@ -95,6 +96,7 @@ namespace Mmcc.Bot
                     services.AddCondition<RequireGuildCondition>();
                     services.AddCondition<RequireUserGuildPermissionCondition>();
 
+                    services.AddParser<TimeSpan, TimeSpanParser>();
                     services.AddParser<ExpiryDate, ExpiryDateParser>();
 
                     services.AddCommandGroup<TestCommands>();
