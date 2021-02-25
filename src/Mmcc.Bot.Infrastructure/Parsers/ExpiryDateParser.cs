@@ -21,7 +21,8 @@ namespace Mmcc.Bot.Infrastructure.Parsers
             {
                 return new(new ExpiryDate());
             }
-
+            
+            // regex obtained from a back alley code dealer;
             var match = Regex.Match(value, "([0-9]+)([mhd])");
 
             if (!match.Success)
