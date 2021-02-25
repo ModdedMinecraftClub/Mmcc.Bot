@@ -52,7 +52,8 @@ namespace Mmcc.Bot.Infrastructure.Workers
         /// <inheritdoc />
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation($"Started {nameof(ModerationWorker)}...");
+            _logger.LogInformation("Starting the worker...");
+            _logger.LogInformation("Started the worker.");
             
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -61,12 +62,12 @@ namespace Mmcc.Bot.Infrastructure.Workers
                 await Task.Delay(TimeBetweenIterationsInMillis, stoppingToken);
             }
 
-            _logger.LogInformation($"Stopped {nameof(ModerationWorker)}");
+            _logger.LogInformation("Stopped the worker.");
         }
 
         private async Task RunIterationAsync(CancellationToken ct)
         {
-            _logger.LogInformation($"{nameof(ModerationWorker)} is running an iteration...");
+            _logger.LogInformation("Running an iteration...");
             
             using var scope = _sp.CreateScope();
             var provider = scope.ServiceProvider;
@@ -77,7 +78,7 @@ namespace Mmcc.Bot.Infrastructure.Workers
 
             if (!getAllPendingResult.IsSuccess)
             {
-                _logger.LogError($"Error in the moderation worker.\n{getAllPendingResult.Error}");
+                _logger.LogError($"Error in the iteration loop.\n{getAllPendingResult.Error}");
                 return;
             }
 
@@ -104,7 +105,7 @@ namespace Mmcc.Bot.Infrastructure.Workers
 
                 if (!deactivateResult.IsSuccess)
                 {
-                    _logger.LogError($"Error in the moderation worker.\n{deactivateResult.Error}");
+                    _logger.LogError($"Error in the iteration loop.\n{deactivateResult.Error}");
                     break;
                 }
 
@@ -154,7 +155,7 @@ namespace Mmcc.Bot.Infrastructure.Workers
                     $"Successfully deactivated expired moderation action with ID: {ma.ModerationActionId}");
             }
 
-            _logger.LogInformation($"{nameof(ModerationWorker)} has completed an iteration.");
+            _logger.LogInformation("Completed an iteration.");
         }
     }
 }

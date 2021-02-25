@@ -9,7 +9,7 @@ using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.Gateway.Responders;
 using Remora.Results;
 
-namespace Mmcc.Bot.Responders
+namespace Mmcc.Bot.Responders.Messages
 {
     /// <summary>
     /// Responds to a member application, that is a message that contains a screenshot and that was sent in the #member-apps channel, being updated.

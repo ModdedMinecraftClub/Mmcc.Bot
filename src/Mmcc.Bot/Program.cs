@@ -18,7 +18,9 @@ using Mmcc.Bot.Infrastructure.Conditions;
 using Mmcc.Bot.Infrastructure.Parsers;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Infrastructure.Workers;
-using Mmcc.Bot.Responders;
+using Mmcc.Bot.Responders.Guilds;
+using Mmcc.Bot.Responders.Messages;
+using Mmcc.Bot.Responders.Users;
 using Mmcc.Bot.Setup;
 using Remora.Commands.Extensions;
 using Remora.Discord.API.Abstractions.Gateway.Commands;
@@ -68,6 +70,7 @@ namespace Mmcc.Bot
                     {
                         options.Intents =
                             GatewayIntents.Guilds
+                            | GatewayIntents.GuildMembers
                             | GatewayIntents.GuildBans
                             | GatewayIntents.GuildMessages;
                     });
@@ -108,8 +111,11 @@ namespace Mmcc.Bot
                     services.AddCommandGroup<BanCommands>();
                     services.AddCommandGroup<WarnCommands>();
 
+                    services.AddResponder<GuildCreatedResponder>();
                     services.AddResponder<MemberApplicationCreatedResponder>();
                     services.AddResponder<MemberApplicationUpdatedResponder>();
+                    services.AddResponder<UserJoinedResponder>();
+                    services.AddResponder<UserLeftResponder>();
                     
                     services.AddDiscordGateway(provider =>
                     {
