@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mmcc.Bot.CommandGroups;
+using Mmcc.Bot.CommandGroups.Minecraft;
 using Mmcc.Bot.CommandGroups.Moderation;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
@@ -101,11 +102,17 @@ namespace Mmcc.Bot
 
                     services.AddParser<TimeSpan, TimeSpanParser>();
                     services.AddParser<ExpiryDate, ExpiryDateParser>();
-
-                    services.AddCommandGroup<TestCommands>();
-                    services.AddCommandGroup<MemberApplicationsCommands>();
-                    services.AddCommandGroup<HelpCommands>();
                     
+                    // core commands;
+                    services.AddCommandGroup<HelpCommands>();
+                    services.AddCommandGroup<TestCommands>();
+                    
+                    // in game;
+                    services.AddCommandGroup<MinecraftServersCommands>();
+                    
+                    // member apps;
+                    services.AddCommandGroup<MemberApplicationsCommands>();
+
                     // moderation;
                     services.AddCommandGroup<PlayerInfoCommands>();
                     services.AddCommandGroup<BanCommands>();
