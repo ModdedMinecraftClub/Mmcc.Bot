@@ -1,2 +1,2 @@
 # Mmcc.Bot
-Main Discord bot to fulfill all of MMCC's needs - applications, moderation, issues. Tightly coupled with the polychat2 messaging protocol.
+Discord bot to fulfill all of MMCC's needs - communication with servers, diagnostics, applications, moderation, issues.
