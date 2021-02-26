@@ -32,7 +32,7 @@ namespace Mmcc.Bot.Infrastructure.Workers
         private readonly ColourPalette _colourPalette;
         private readonly DiscordSettings _discordSettings;
 
-        private const int TimeBetweenIterationsInMillis = 10 * 1000;
+        private const int TimeBetweenIterationsInMillis = 2 * 60 * 1000;
 
         /// <summary>
         /// Instantiates a new instance of the <see cref="ModerationWorker"/> class.
