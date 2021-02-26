@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Protos", "Mmcc.Bot
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mmcc.Bot.Tools", "Mmcc.Bot.Tools", "{289017AA-8458-4313-B6DA-073161AC644D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Tools.DbConverter", "Mmcc.Bot.Tools.DbConverter\Mmcc.Bot.Tools.DbConverter.csproj", "{C77427A5-10FE-4A35-8547-E22AED4B1E95}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Tools.DbConverter", "Mmcc.Bot.Tools\Mmcc.Bot.Tools.DbConverter\Mmcc.Bot.Tools.DbConverter.csproj", "{C77427A5-10FE-4A35-8547-E22AED4B1E95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
