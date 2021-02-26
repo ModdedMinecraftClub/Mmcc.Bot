@@ -22,7 +22,13 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
         private readonly MessageContext _context;
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly IMediator _mediator;
-
+        
+        /// <summary>
+        /// Instantiates a new instance of <see cref="MinecraftServersCommands"/> class.
+        /// </summary>
+        /// <param name="context">The message context.</param>
+        /// <param name="channelApi">The channel API.</param>
+        /// <param name="mediator">The mediator.</param>
         public MinecraftServersCommands(MessageContext context, IDiscordRestChannelAPI channelApi, IMediator mediator)
         {
             _context = context;
