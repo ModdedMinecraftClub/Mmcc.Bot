@@ -10,6 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Infrastructure", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Protos", "Mmcc.Bot.Protos\Mmcc.Bot.Protos.csproj", "{B66743F5-7491-47D8-821D-4280A10A9D0D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mmcc.Bot.Tools", "Mmcc.Bot.Tools", "{289017AA-8458-4313-B6DA-073161AC644D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Tools.DbConverter", "Mmcc.Bot.Tools.DbConverter\Mmcc.Bot.Tools.DbConverter.csproj", "{C77427A5-10FE-4A35-8547-E22AED4B1E95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +40,12 @@ Global
 		{B66743F5-7491-47D8-821D-4280A10A9D0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B66743F5-7491-47D8-821D-4280A10A9D0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B66743F5-7491-47D8-821D-4280A10A9D0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C77427A5-10FE-4A35-8547-E22AED4B1E95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C77427A5-10FE-4A35-8547-E22AED4B1E95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C77427A5-10FE-4A35-8547-E22AED4B1E95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C77427A5-10FE-4A35-8547-E22AED4B1E95}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C77427A5-10FE-4A35-8547-E22AED4B1E95} = {289017AA-8458-4313-B6DA-073161AC644D}
 	EndGlobalSection
 EndGlobal
