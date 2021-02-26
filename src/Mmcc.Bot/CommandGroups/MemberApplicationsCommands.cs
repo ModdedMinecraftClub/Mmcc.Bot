@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
+using Mmcc.Bot.Core.Extensions.Database.Entities;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Core.Statics;
@@ -95,7 +95,7 @@ namespace Mmcc.Bot.CommandGroups
             }
 
             var app = query.Entity;
-            var embed = GetApplicationEmbed(app);
+            var embed = app.GetEmbed(_colourPalette);
             var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
             return !sendMessageResult.IsSuccess
                 ? Result.FromError(sendMessageResult)
@@ -132,7 +132,7 @@ namespace Mmcc.Bot.CommandGroups
             }
             else
             {
-                embed = GetApplicationEmbed(app);
+                embed = app.GetEmbed(_colourPalette);
             }
 
             var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
@@ -173,7 +173,7 @@ namespace Mmcc.Bot.CommandGroups
             };
             embed = !apps.Any()
                 ? embed with {Description = "There are no pending applications at the moment."}
-                : embed with {Fields = GetFieldsFromApps(apps).ToList()};
+                : embed with {Fields = apps.GetEmbedFields().ToList()};
             var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
             return !sendMessageResult.IsSuccess
                 ? Result.FromError(sendMessageResult)
@@ -212,7 +212,7 @@ namespace Mmcc.Bot.CommandGroups
             };
             embed = !apps.Any()
                 ? embed with {Description = "You have not approved any applications yet."}
-                : embed with {Fields = GetFieldsFromApps(apps).ToList()};
+                : embed with {Fields = apps.GetEmbedFields().ToList()};
             var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
             return !sendMessageResult.IsSuccess
                 ? Result.FromError(sendMessageResult)
@@ -251,7 +251,7 @@ namespace Mmcc.Bot.CommandGroups
             };
             embed = !apps.Any()
                 ? embed with {Description = "You have not rejected any applications yet."}
-                : embed with {Fields = GetFieldsFromApps(apps).ToList()};
+                : embed with {Fields = apps.GetEmbedFields().ToList()};
             var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
             return !sendMessageResult.IsSuccess
                 ? Result.FromError(sendMessageResult)
@@ -406,66 +406,5 @@ namespace Mmcc.Bot.CommandGroups
                 ? Result.FromError(sendStaffNotificationEmbedResult)
                 : Result.FromSuccess();
         }
-        
-        /// <summary>
-        /// Gets an embed representation of a member application.
-        /// </summary>
-        /// <param name="app">Member application.</param>
-        /// <returns>Embed representation of a member application.</returns>
-        private Embed GetApplicationEmbed(MemberApplication app)
-        {
-            var statusStr = app.AppStatus.ToString();
-            var embedConditionalAttributes = app.AppStatus switch
-            {
-                ApplicationStatus.Pending => new
-                {
-                    Colour = _colourPalette.Blue,
-                    StatusFieldValue = $":clock1: {statusStr}"
-                },
-                ApplicationStatus.Approved => new
-                {
-                    Colour = _colourPalette.Green,
-                    StatusFieldValue = $":white_check_mark: {statusStr}"
-                },
-                ApplicationStatus.Rejected => new
-                {
-                    Colour = _colourPalette.Red,
-                    StatusFieldValue = $":no_entry: {statusStr}"
-                },
-                _ => throw new ArgumentOutOfRangeException(nameof(app))
-            };
-            return new Embed
-            {
-                Title = $"Member Application #{app.MemberApplicationId}",
-                Description = $"Submitted at {DateTimeOffset.FromUnixTimeMilliseconds(app.AppTime).UtcDateTime} UTC.",
-                Fields = new List<EmbedField>
-                {
-                    new("Author", $"{app.AuthorDiscordName} (ID: `{app.AuthorDiscordId}`)", false),
-                    new("Status", embedConditionalAttributes.StatusFieldValue, false),
-                    new(
-                        "Provided details",
-                        $"{app.MessageContent}\n" +
-                        $"**[Original message (click here)](https://discord.com/channels/{app.GuildId}/{app.ChannelId}/{app.MessageId})**",
-                        false
-                    )
-                },
-                Colour = embedConditionalAttributes.Colour,
-                Thumbnail = new EmbedThumbnail(app.ImageUrl, new(), new(), new())
-            };
-        }
-        
-        /// <summary>
-        /// Gets embed fields from an enumerable of member applications.
-        /// </summary>
-        /// <param name="memberApplications">An enumerable of member applications.</param>
-        /// <returns>Embed fields.</returns>
-        private static IEnumerable<EmbedField> GetFieldsFromApps(IEnumerable<MemberApplication> memberApplications) =>
-            memberApplications
-                .Select(app => new EmbedField
-                (
-                    $"[{app.MemberApplicationId}] {app.AuthorDiscordName}",
-                    $"*Submitted at:* {DateTimeOffset.FromUnixTimeMilliseconds(app.AppTime).UtcDateTime} UTC.",
-                    false
-                ));
     }
 }
