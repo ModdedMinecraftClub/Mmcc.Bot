@@ -295,6 +295,18 @@ namespace Mmcc.Bot.CommandGroups
                     new ValidationError("Parameter `ignsList` cannot be empty.")
                 );
             }
+            
+            var getMembersChannelResult = await _mediator.Send(
+                new GetChannelByName.Query
+                {
+                    GuildId = _context.Message.GuildID.Value,
+                    ChannelName = _discordSettings.ChannelNames.MemberApps
+                }
+            );
+            if (!getMembersChannelResult.IsSuccess)
+            {
+                return Result.FromError(getMembersChannelResult.Error);
+            }
 
             var commandResult = await _mediator.Send(
                 new ApproveAutomatically.Command
@@ -308,6 +320,25 @@ namespace Mmcc.Bot.CommandGroups
             if (!commandResult.IsSuccess)
             {
                 return Result.FromError(commandResult.Error);
+            }
+            
+            var userNotificationEmbed = new Embed
+            {
+                Title = ":white_check_mark: Application approved.",
+                Description = "Your application has been approved.",
+                Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                Colour = _colourPalette.Green,
+                Fields = new List<EmbedField>
+                {
+                    new("Approved by", $"<@{_context.User.ID}>", new())
+                }
+            };
+            var sendUserNotificationEmbedResult =
+                await _channelApi.CreateMessageAsync(getMembersChannelResult.Entity.ID,
+                    $"<@{commandResult.Entity.AuthorDiscordId}>", embed: userNotificationEmbed);
+            if (!sendUserNotificationEmbedResult.IsSuccess)
+            {
+                return Result.FromError(sendUserNotificationEmbedResult);
             }
 
             var embed = new Embed

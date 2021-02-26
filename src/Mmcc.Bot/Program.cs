@@ -112,11 +112,11 @@ namespace Mmcc.Bot
                     services.AddCommandGroup<WarnCommands>();
 
                     services.AddResponder<GuildCreatedResponder>();
-                    services.AddResponder<MemberApplicationCreatedResponder>();
-                    services.AddResponder<MemberApplicationUpdatedResponder>();
                     services.AddResponder<UserJoinedResponder>();
                     services.AddResponder<UserLeftResponder>();
-                    
+                    services.AddResponder<MemberApplicationCreatedResponder>();
+                    services.AddResponder<MemberApplicationUpdatedResponder>();
+
                     services.AddDiscordGateway(provider =>
                     {
                         var discordConfig = provider.GetRequiredService<DiscordSettings>();

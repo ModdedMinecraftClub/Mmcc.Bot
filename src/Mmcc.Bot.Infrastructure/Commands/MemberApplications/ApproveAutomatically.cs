@@ -24,7 +24,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
         /// <summary>
         /// Command to approve an application automatically.
         /// </summary>
-        public class Command : IRequest<Result>
+        public class Command : IRequest<Result<MemberApplication>>
         {
             /// <summary>
             /// ID of the application to approve.
@@ -48,7 +48,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
         }
         
         /// <inheritdoc />
-        public class Handler : IRequestHandler<Command, Result>
+        public class Handler : IRequestHandler<Command, Result<MemberApplication>>
         {
             private readonly BotContext _context;
             private readonly IDiscordRestGuildAPI _guildApi;
@@ -68,10 +68,9 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
             }
             
             /// <inheritdoc />
-            public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<MemberApplication>> Handle(Command request, CancellationToken cancellationToken)
             {
                 MemberApplication? app;
-
                 try
                 {
                     app = await _context.MemberApplications
@@ -92,7 +91,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
                 var getRoles = await _guildApi.GetGuildRolesAsync(request.GuildId, cancellationToken);
                 if (!getRoles.IsSuccess)
                 {
-                    return Result.FromError(getRoles.Error);
+                    return Result<MemberApplication>.FromError(getRoles.Error);
                 }
 
                 var role = getRoles.Entity
@@ -109,7 +108,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
                     await _guildApi.GetGuildMemberAsync(request.GuildId, userId, cancellationToken);
                 if (!getUserToPromoteResult.IsSuccess)
                 {
-                    return Result.FromError(getUserToPromoteResult.Error);
+                    return Result<MemberApplication>.FromError(getUserToPromoteResult.Error);
                 }
                 if (getUserToPromoteResult.Entity is null)
                 {
@@ -137,7 +136,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
                     await _guildApi.AddGuildMemberRoleAsync(request.GuildId, userId, role.ID, cancellationToken);
                 if (!addRoleResult.IsSuccess)
                 {
-                    return Result.FromError(addRoleResult);
+                    return Result<MemberApplication>.FromError(addRoleResult);
                 }
 
                 try
@@ -150,7 +149,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
                     return e;
                 }
                 
-                return Result.FromSuccess();
+                return Result<MemberApplication>.FromSuccess(app);
             }
         }
     }
