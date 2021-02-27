@@ -156,8 +156,8 @@ namespace Mmcc.Bot
                         settings.SetAbsoluteExpiration<IChannel>(TimeSpan.FromDays(1));
                         settings.SetSlidingExpiration<IChannel>(TimeSpan.FromHours(6));
 
-                        settings.SetAbsoluteExpiration<IGuildMember>(TimeSpan.FromHours(12));
-                        settings.SetSlidingExpiration<IGuildMember>(TimeSpan.FromHours(3));
+                        settings.SetAbsoluteExpiration<IGuildMember>(TimeSpan.FromHours(6));
+                        settings.SetSlidingExpiration<IGuildMember>(TimeSpan.FromHours(1));
                     });
                 });
     }
