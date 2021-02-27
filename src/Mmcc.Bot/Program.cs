@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mmcc.Bot.CommandGroups;
+using Mmcc.Bot.CommandGroups.Diagnostics;
 using Mmcc.Bot.CommandGroups.Minecraft;
 using Mmcc.Bot.CommandGroups.Moderation;
 using Mmcc.Bot.Core.Models;
@@ -106,6 +107,9 @@ namespace Mmcc.Bot
                     // core commands;
                     services.AddCommandGroup<HelpCommands>();
                     services.AddCommandGroup<TestCommands>();
+                    
+                    // diagnostics;
+                    services.AddCommandGroup<DiagnosticsCommands>();
                     
                     // in game;
                     services.AddCommandGroup<MinecraftServersCommands>();
