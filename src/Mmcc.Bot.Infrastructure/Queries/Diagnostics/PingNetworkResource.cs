@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.NetworkInformation;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -40,7 +39,6 @@ namespace Mmcc.Bot.Infrastructure.Queries.Diagnostics
             /// Roundtrip time in milliseconds.
             /// </summary>
             public long? RoundtripTime { get; set; }
-            
         }
         
         /// <inheritdoc />
