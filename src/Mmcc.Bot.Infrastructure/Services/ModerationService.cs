@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Database.Entities;
 using Mmcc.Bot.Infrastructure.Commands.ModerationActions;
+using Remora.Discord.Commands.Results;
 using Remora.Discord.Core;
 using Remora.Results;
 
@@ -48,7 +49,7 @@ namespace Mmcc.Bot.Infrastructure.Services
                     
                     if (!command.IsSuccess)
                     {
-                        return Result.FromError(command);
+                        return Result.FromError(command.Error);
                     }
                     
                     break;
@@ -56,7 +57,7 @@ namespace Mmcc.Bot.Infrastructure.Services
                     throw new NotImplementedException();
                     break;
                 default:
-                    return new GenericError("Unsupported moderation type.");
+                    return new UnsupportedFeatureError("Unsupported moderation type.");
             }
             
             return Result.FromSuccess();

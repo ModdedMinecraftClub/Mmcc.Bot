@@ -146,7 +146,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
 
                     if (!banResult.IsSuccess)
                     {
-                        return Result.FromError(banResult);
+                        return Result.FromError(banResult.Error);
                     }
 
                     var embed = new Embed

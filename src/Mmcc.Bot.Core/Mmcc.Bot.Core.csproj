@@ -6,8 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Remora.Commands" Version="2.1.0" />
-      <PackageReference Include="Remora.Discord.API" Version="8.1.0" />
+      <PackageReference Include="Remora.Commands" Version="2.1.1" />
+      <PackageReference Include="Remora.Discord.API" Version="11.0.0" />
     </ItemGroup>
 
     <ItemGroup>

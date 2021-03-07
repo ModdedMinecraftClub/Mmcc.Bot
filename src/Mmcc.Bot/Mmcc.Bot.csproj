@@ -10,8 +10,8 @@
         <PackageReference Include="MediatR" Version="9.0.0" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-        <PackageReference Include="Remora.Discord" Version="3.0.3" />
-        <PackageReference Include="Remora.Discord.Caching" Version="1.0.3" />
+        <PackageReference Include="Remora.Discord" Version="3.0.10" />
+        <PackageReference Include="Remora.Discord.Caching" Version="1.1.2" />
     </ItemGroup>
 
     <ItemGroup>

@@ -106,8 +106,7 @@ namespace Mmcc.Bot
                     
                     // core commands;
                     services.AddCommandGroup<HelpCommands>();
-                    services.AddCommandGroup<TestCommands>();
-                    
+
                     // diagnostics;
                     services.AddCommandGroup<DiagnosticsCommands>();
                     
