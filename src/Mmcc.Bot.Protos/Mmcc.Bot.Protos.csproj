@@ -14,9 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf Include=".\commands.proto" GrpcServices="None" />
-        <Protobuf Include=".\chat.proto" GrpcServices="None" />
-        <Protobuf Include=".\server.proto" GrpcServices="None" />
+        <Protobuf Include=".\Protos\messages\*.proto" GrpcServices="None" />
     </ItemGroup>
 
 </Project>
