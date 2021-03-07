@@ -33,14 +33,14 @@ namespace Mmcc.Bot.Responders.Messages
             IDiscordRestChannelAPI channelApi,
             IMediator mediator,
             DiscordSettings discordSettings
-            )
+        )
         {
             _logger = logger;
             _channelApi = channelApi;
             _mediator = mediator;
             _discordSettings = discordSettings;
         }
-        
+
         /// <inheritdoc />
         public async Task<Result> RespondAsync(IMessageCreate ev, CancellationToken ct = default)
         {
