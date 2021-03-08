@@ -1,18 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot", "Mmcc.Bot\Mmcc.Bot.csproj", "{BD6BDD97-0D92-4C2D-ADF6-B0DBB6A8BE3B}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31025.218
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mmcc.Bot", "Mmcc.Bot\Mmcc.Bot.csproj", "{BD6BDD97-0D92-4C2D-ADF6-B0DBB6A8BE3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Database", "Mmcc.Bot.Database\Mmcc.Bot.Database.csproj", "{7AA2B74C-B606-4D5F-A6A2-0CBD7213F204}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mmcc.Bot.Database", "Mmcc.Bot.Database\Mmcc.Bot.Database.csproj", "{7AA2B74C-B606-4D5F-A6A2-0CBD7213F204}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Core", "Mmcc.Bot.Core\Mmcc.Bot.Core.csproj", "{8CAF3CC6-D301-4032-8634-11A09CCD8596}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mmcc.Bot.Core", "Mmcc.Bot.Core\Mmcc.Bot.Core.csproj", "{8CAF3CC6-D301-4032-8634-11A09CCD8596}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Infrastructure", "Mmcc.Bot.Infrastructure\Mmcc.Bot.Infrastructure.csproj", "{61968451-8729-46B3-9F58-E636E7E4699C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mmcc.Bot.Infrastructure", "Mmcc.Bot.Infrastructure\Mmcc.Bot.Infrastructure.csproj", "{61968451-8729-46B3-9F58-E636E7E4699C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Protos", "Mmcc.Bot.Protos\Mmcc.Bot.Protos.csproj", "{B66743F5-7491-47D8-821D-4280A10A9D0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mmcc.Bot.Protos", "Mmcc.Bot.Protos\Mmcc.Bot.Protos.csproj", "{B66743F5-7491-47D8-821D-4280A10A9D0D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mmcc.Bot.Tools", "Mmcc.Bot.Tools", "{289017AA-8458-4313-B6DA-073161AC644D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Tools.DbConverter", "Mmcc.Bot.Tools\Mmcc.Bot.Tools.DbConverter\Mmcc.Bot.Tools.DbConverter.csproj", "{C77427A5-10FE-4A35-8547-E22AED4B1E95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mmcc.Bot.Tools.DbConverter", "Mmcc.Bot.Tools\Mmcc.Bot.Tools.DbConverter\Mmcc.Bot.Tools.DbConverter.csproj", "{C77427A5-10FE-4A35-8547-E22AED4B1E95}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Generators", "Mmcc.Bot.Generators\Mmcc.Bot.Generators.csproj", "{06951F2A-F8BC-412E-9124-F1C88D0E0193}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,8 +49,18 @@ Global
 		{C77427A5-10FE-4A35-8547-E22AED4B1E95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C77427A5-10FE-4A35-8547-E22AED4B1E95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C77427A5-10FE-4A35-8547-E22AED4B1E95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06951F2A-F8BC-412E-9124-F1C88D0E0193}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06951F2A-F8BC-412E-9124-F1C88D0E0193}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06951F2A-F8BC-412E-9124-F1C88D0E0193}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06951F2A-F8BC-412E-9124-F1C88D0E0193}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C77427A5-10FE-4A35-8547-E22AED4B1E95} = {289017AA-8458-4313-B6DA-073161AC644D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {95222898-ACFE-4B8E-A3F8-CCD04F589752}
 	EndGlobalSection
 EndGlobal

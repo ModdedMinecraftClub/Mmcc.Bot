@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
@@ -12,6 +12,7 @@
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
         <PackageReference Include="Remora.Discord" Version="3.0.10" />
         <PackageReference Include="Remora.Discord.Caching" Version="1.1.2" />
+        <PackageReference Include="Ssmp" Version="0.0.3" />
     </ItemGroup>
 
     <ItemGroup>
