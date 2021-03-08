@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Text;
 namespace Mmcc.Bot.Generators
 {
     [Generator]
-    public class HelloWorldGenerator : ISourceGenerator
+    public class TcpServiceGenerator : ISourceGenerator
     {
         public void Initialize(GeneratorInitializationContext context)
         {
