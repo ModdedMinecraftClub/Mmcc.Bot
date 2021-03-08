@@ -56,22 +56,13 @@ namespace Mmcc.Bot.Infrastructure.Services
             sb.Append(@"
              var any = global::Google.Protobuf.WellKnownTypes.Any.Parser.ParseFrom(message);
 ");
+            
+            sb.Append("             " + GenerateIfString(messages.First().Name));
 
             // loop to create the if chain;
-            for (var i = 0; i < messages.Count; i++)
+            for (var i = 1; i < messages.Count; i++)
             {
-                string innerSb;
-
-                if (i == 0)
-                {
-                    innerSb = "             " + GenerateIfString(messages[i].Name);
-                }
-                else
-                {
-                    innerSb = "             else " + GenerateIfString(messages[i].Name);
-                }
-
-                sb.Append(innerSb.ToString());
+                sb.Append("             else " + GenerateIfString(messages[i].Name));
             }
 
             // else
