@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,7 @@ using Remora.Discord.Commands.Services;
 using Remora.Discord.Gateway;
 using Remora.Discord.Gateway.Extensions;
 using Remora.Discord.Hosting.Services;
+using Ssmp;
 
 namespace Mmcc.Bot
 {
@@ -133,13 +135,37 @@ namespace Mmcc.Bot
                         var discordConfig = provider.GetRequiredService<DiscordSettings>();
                         return discordConfig.Token;
                     });
+                    
+                    // set up central server;
+                    services.AddSingleton(provider => new CentralServerService(
+                        async (client, message) =>
+                        {
+                            using var scope = provider.CreateScope();
+                            var handlingService = scope.ServiceProvider.GetRequiredService<TcpMessageProcessingService>();
+                            var logger = scope.ServiceProvider.GetRequiredService<ILogger<CentralServerService>>();
+                            try
+                            {
+                                await handlingService.Handle(client, message);
+                            }
+                            catch (Exception e)
+                            {
+                                logger.LogError("Error in the central server's TCP byte[] message handler.", e);
+                            }
+                        },
+                        1024, // TODO: make configurable;
+                        IPAddress.Loopback,
+                        provider.GetRequiredService<PolychatSettings>().Port
+                        ));
+                    services.AddSingleton<CentralServerBackgroundService>();
+                    services.AddSingleton<IHostedService, CentralServerBackgroundService>(provider =>
+                        provider.GetRequiredService<CentralServerBackgroundService>());
 
                     services.AddSingleton<DiscordService>();
-                    services.AddSingleton<IHostedService, DiscordService>(serviceProvider =>
-                        serviceProvider.GetRequiredService<DiscordService>());
+                    services.AddSingleton<IHostedService, DiscordService>(provider =>
+                        provider.GetRequiredService<DiscordService>());
                     services.AddSingleton<ModerationWorker>();
-                    services.AddSingleton<IHostedService, ModerationWorker>(serviceProvider =>
-                        serviceProvider.GetRequiredService<ModerationWorker>());
+                    services.AddSingleton<IHostedService, ModerationWorker>(provider =>
+                        provider.GetRequiredService<ModerationWorker>());
 
                     services.AddDiscordCaching();
                     services.Configure<CacheSettings>(settings =>
