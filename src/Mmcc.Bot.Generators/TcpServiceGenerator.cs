@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -17,16 +15,16 @@ namespace Mmcc.Bot.Generators
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (!context.Compilation.AssemblyName.Equals("Mmcc.Bot.Infrastructure")) return; 
+            if (!context.Compilation.AssemblyName!.Equals("Mmcc.Bot.Infrastructure")) return; 
             
             var messageType = context.Compilation.GetTypeByMetadataName("Google.Protobuf.IMessage");
-            var messages = context.Compilation.GlobalNamespace
+            var messages = context.Compilation.GlobalNamespace?
                 .GetNamespaceMembers()
-                .FirstOrDefault(n => n.Name.Equals("Mmcc"))
+                .FirstOrDefault(n => n.Name.Equals("Mmcc"))?
                 .GetNamespaceMembers()
-                .FirstOrDefault(n => n.Name.Equals("Bot"))
+                .FirstOrDefault(n => n.Name.Equals("Bot"))?
                 .GetNamespaceMembers()
-                .FirstOrDefault(n => n.Name.Equals("Protos"))
+                .FirstOrDefault(n => n.Name.Equals("Protos"))?
                 .GetTypeMembers()
                 .Where(t => t.Interfaces.Contains(messageType))
                 .ToList();
@@ -36,6 +34,31 @@ namespace Mmcc.Bot.Generators
 
         private static string GenerateService(List<INamedTypeSymbol> messages)
         {
+            if (messages is null || !messages.Any())
+            {
+                return @"
+// auto-generated
+namespace Mmcc.Bot.Infrastructure.Services
+{
+    public class TcpMessageProcessingService
+    {
+        private readonly global::MediatR.IMediator _mediator;
+        
+        public TcpMessageProcessingService(global::MediatR.IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
+        public global::System.Threading.Tasks.Task Handle(global::Ssmp.ConnectedClient connectedClient, byte[] message)
+        {
+            // generated code will go here;
+            return global::System.Threading.Tasks.Task.CompletedTask;
+        }
+    }
+}
+";
+            }
+
             // beginning of the file up to the method that needs to be generated;
             var sb = new StringBuilder(@"
 // auto-generated
