@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -14,6 +17,8 @@ namespace Mmcc.Bot.Generators
 
         public void Execute(GeneratorExecutionContext context)
         {
+            if (!context.Compilation.AssemblyName.Equals("Mmcc.Bot.Infrastructure")) return; 
+            
             var messageType = context.Compilation.GetTypeByMetadataName("Google.Protobuf.IMessage");
             var messages = context.Compilation.GlobalNamespace
                 .GetNamespaceMembers()
@@ -25,11 +30,16 @@ namespace Mmcc.Bot.Generators
                 .GetTypeMembers()
                 .Where(t => t.Interfaces.Contains(messageType))
                 .ToList();
+            
+            context.AddSource("TcpMessageProcessingService.cs", SourceText.From(GenerateService(messages), Encoding.UTF8));
+        }
 
+        private static string GenerateService(List<INamedTypeSymbol> messages)
+        {
             // beginning of the file up to the method that needs to be generated;
             var sb = new StringBuilder(@"
 // auto-generated
-namespace Mmcc.Bot.Infrastructure
+namespace Mmcc.Bot.Infrastructure.Services
 {
     public class TcpMessageProcessingService
     {
@@ -74,9 +84,7 @@ namespace Mmcc.Bot.Infrastructure
             sb.AppendLine(@"        }
     }
 }");
-
-            // inject the created source into the compilation;
-            context.AddSource("TcpMessageProcessingService.cs", SourceText.From(sb.ToString(), Encoding.UTF8));
+            return sb.ToString();
         }
 
         private static string GenerateIfString(string messageName)

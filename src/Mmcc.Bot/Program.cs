@@ -93,6 +93,7 @@ namespace Mmcc.Bot
                     services.AddScoped<IPolychatCommunicationService, PolychatCommunicationService>();
                     services.AddScoped<IMojangApiService, MojangApiService>();
                     services.AddScoped<IModerationService, ModerationService>();
+                    services.AddScoped<TcpMessageProcessingService>();
 
                     services.AddMediatR(typeof(CreateFromDiscordMessage));
                     
