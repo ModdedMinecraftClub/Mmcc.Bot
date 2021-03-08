@@ -75,8 +75,7 @@ namespace Mmcc.Bot.Infrastructure
     }
 }");
 
-            var str = sb.ToString();
-            // inject the created source into the users compilation
+            // inject the created source into the compilation;
             context.AddSource("TcpMessageProcessingService.cs", SourceText.From(sb.ToString(), Encoding.UTF8));
         }
 
