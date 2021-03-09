@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Core;
+using Mmcc.Bot.Core.Extensions;
 
 namespace Mmcc.Bot.Infrastructure.Services
 {
@@ -64,6 +66,12 @@ namespace Mmcc.Bot.Infrastructure.Services
         /// <typeparam name="T">Message type. Must be a Protobuf message, meaning it must implement <see cref="IMessage{T}"/>.</typeparam>
         /// <remarks>To broadcast a message means to send a message to all the online servers.</remarks>
         void BroadcastMessage<T>(T message) where T : IMessage<T>;
+
+        /// <summary>
+        /// Gets information about online servers.
+        /// </summary>
+        /// <returns>Information about online servers.</returns>
+        IEnumerable<OnlineServerInformation> GetInformationAboutOnlineServers();
     }
     
     /// <inheritdoc />
@@ -81,6 +89,8 @@ namespace Mmcc.Bot.Infrastructure.Services
             _logger = logger;
             _onlineServers = new();
         }
+        
+        
         
         /// <inheritdoc />
         public OnlineServer AddOrUpdateOnlineServer(string id, OnlineServer onlineServer) =>
@@ -143,6 +153,15 @@ namespace Mmcc.Bot.Infrastructure.Services
             foreach (var (_, onlineServer) in _onlineServers)
             {
                 SendMessage(onlineServer, packedMsgBytes);
+            }
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<OnlineServerInformation> GetInformationAboutOnlineServers()
+        {
+            foreach (var (_, onlineServer) in _onlineServers)
+            {
+                yield return onlineServer.ExtractServerInformation();
             }
         }
     }
