@@ -91,7 +91,7 @@ namespace Mmcc.Bot.Infrastructure.Services
             // else
             sb.Append(@"             else
              {
-                   throw new global::System.Exception();
+                   throw new global::System.Exception(""Unknown message type."");
              }
 ");
             // closing brackets;
@@ -103,16 +103,21 @@ namespace Mmcc.Bot.Infrastructure.Services
 
         private static string GenerateIfString(string messageName)
         {
+            var messageTypeWithNamespace = $"global::Mmcc.Bot.Protos.{messageName}";
             var innerSb = new StringBuilder();
-            innerSb.Append($@"if(any.Is(global::Mmcc.Bot.Protos.{messageName}.Descriptor))
+    
+            innerSb.Append($@"if(any.Is({messageTypeWithNamespace}.Descriptor))
     ");
-            innerSb.AppendLine("         {");
-
-            var mediatorSb = new StringBuilder(@"                   await _mediator.Send(any.Unpack");
-            mediatorSb.Append($@"<global::Mmcc.Bot.Protos.{messageName}>());");
+            innerSb.AppendLine("         {");    
+    
+            var mediatorSb = new StringBuilder(@$"                   var unpackedMsg = any.Unpack<{messageTypeWithNamespace}>();");
+    
+            mediatorSb.AppendLine();
+            mediatorSb.AppendLine(@$"                   var request = new global::Mmcc.Bot.Infrastructure.Requests.Generic.TcpRequest<{messageTypeWithNamespace}>(connectedClient, unpackedMsg);");
+            mediatorSb.AppendLine(@"                   await _mediator.Send(request);");
             innerSb.AppendLine(mediatorSb.ToString());
             innerSb.AppendLine("             }");
-
+    
             return innerSb.ToString();
         }
     }
