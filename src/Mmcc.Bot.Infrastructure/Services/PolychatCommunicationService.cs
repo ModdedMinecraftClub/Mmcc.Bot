@@ -13,6 +13,7 @@ namespace Mmcc.Bot.Infrastructure.Services
     /// <summary>
     /// Service used for communication with polychat2's central server over TCP.
     /// </summary>
+    [Obsolete("Do not send messages to central server over TCP as it is now in-process. Send via PolychatService instead.")]
     public interface IPolychatCommunicationService
     {
         /// <summary>
@@ -24,6 +25,7 @@ namespace Mmcc.Bot.Infrastructure.Services
     }
     
     /// <inheritdoc />
+    [Obsolete("Do not send messages to central server over TCP as it is now in-process. Send via PolychatService instead.")]
     public class PolychatCommunicationService : IPolychatCommunicationService
     {
         private readonly ILogger<PolychatCommunicationService> _logger;
