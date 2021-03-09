@@ -18,14 +18,14 @@ namespace Mmcc.Bot.Infrastructure.Requests.Generic
         /// <summary>
         /// Request's message (body).
         /// </summary>
-        public T? Message { get; }
+        public T Message { get; }
 
         /// <summary>
         /// Instantiates a new instance of <see cref="TcpRequest{T}"/>.
         /// </summary>
         /// <param name="connectedClient">Request's author.</param>
         /// <param name="message">Request's message (body).</param>
-        public TcpRequest(ConnectedClient connectedClient, T? message)
+        public TcpRequest(ConnectedClient connectedClient, T message)
         {
             ConnectedClient = connectedClient;
             Message = message;
