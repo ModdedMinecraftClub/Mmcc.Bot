@@ -59,7 +59,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat
                     }
 
                     var message = $"Server {msg.Status.ToString().ToLowerInvariant()}.";
-                    var chatMessage = new PolychatMessageString(unformattedId, message);
+                    var chatMessage = new PolychatChatMessageString(unformattedId, message);
                     var sendMessageResult =
                         await _channelApi.CreateMessageAsync(new(_polychatSettings.ChatChannelId),
                             chatMessage.ToDiscordFormattedString(), ct: cancellationToken);

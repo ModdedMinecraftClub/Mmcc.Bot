@@ -2,28 +2,31 @@
 
 namespace Mmcc.Bot.Core
 {
-    public struct PolychatMessageString : IEquatable<PolychatMessageString>
+    /// <summary>
+    /// Represents a polychat chat message string.
+    /// </summary>
+    public struct PolychatChatMessageString : IEquatable<PolychatChatMessageString>
     {
         /// <summary>
         /// Represents the empty string. This field is read only.
         /// </summary>
-        public static readonly PolychatMessageString Empty = new(string.Empty);
+        public static readonly PolychatChatMessageString Empty = new(string.Empty);
 
         /// <summary>
-        /// Creates a new <see cref="PolychatMessageString"/> with the given <paramref name="value"/>.
+        /// Creates a new <see cref="PolychatChatMessageString"/> with the given <paramref name="value"/>.
         /// </summary>
         /// <param name="value">The raw value.</param>
-        public PolychatMessageString(string? value)
+        public PolychatChatMessageString(string? value)
         {
             Value = value ?? string.Empty;
         }
 
         /// <summary>
-        /// Creates a new <see cref="PolychatMessageString"/> with the given <paramref name="serverId"></paramref> server ID and <paramref name="messageBody"></paramref> message body. 
+        /// Creates a new <see cref="PolychatChatMessageString"/> with the given <paramref name="serverId"></paramref> server ID and <paramref name="messageBody"></paramref> message body. 
         /// </summary>
         /// <param name="serverId">Server ID.</param>
         /// <param name="messageBody">Message body.</param>
-        public PolychatMessageString(string serverId, string? messageBody)
+        public PolychatChatMessageString(string serverId, string? messageBody)
         {
             var msg = messageBody ?? string.Empty;
             Value = $"[{serverId.ToUpperInvariant()}] {msg}";
@@ -57,12 +60,12 @@ namespace Mmcc.Bot.Core
             obj switch
             {
                 null => !HasValue,
-                PolychatMessageString other => Equals(other),
+                PolychatChatMessageString other => Equals(other),
                 _ => false
             };
 
         /// <inheritdoc />
-        public bool Equals(PolychatMessageString other) =>
+        public bool Equals(PolychatChatMessageString other) =>
             !(HasValue || other.HasValue)
             || MemoryExtensions.Equals(Value, other.Value);
 
@@ -72,10 +75,10 @@ namespace Mmcc.Bot.Core
                 ? string.GetHashCode(Value)
                 : 0;
         
-        public static bool operator ==(PolychatMessageString left, PolychatMessageString right)
+        public static bool operator ==(PolychatChatMessageString left, PolychatChatMessageString right)
             => left.Equals(right);
         
-        public static bool operator !=(PolychatMessageString left, PolychatMessageString right)
+        public static bool operator !=(PolychatChatMessageString left, PolychatChatMessageString right)
             => !left.Equals(right);
     }
 }
