@@ -34,47 +34,49 @@ namespace Mmcc.Bot.Generators
 
         private static string GenerateService(List<INamedTypeSymbol> messages)
         {
+            const string interfaceToInherit = "global::Mmcc.Bot.Infrastructure.Services.ITcpMessageProcessingService";
+            
             if (messages is null || !messages.Any())
             {
-                return @"
+                return $@"
 // auto-generated
 namespace Mmcc.Bot.Infrastructure.Services
-{
-    public class TcpMessageProcessingService
-    {
+{{
+    public class TcpMessageProcessingService : {interfaceToInherit}
+    {{
         private readonly global::MediatR.IMediator _mediator;
         
         public TcpMessageProcessingService(global::MediatR.IMediator mediator)
-        {
+        {{
             _mediator = mediator;
-        }
+        }}
 
         public global::System.Threading.Tasks.Task Handle(global::Ssmp.ConnectedClient connectedClient, byte[] message)
-        {
+        {{
             // generated code will go here;
             return global::System.Threading.Tasks.Task.CompletedTask;
-        }
-    }
-}
+        }}
+    }}
+}}
 ";
             }
 
             // beginning of the file up to the method that needs to be generated;
-            var sb = new StringBuilder(@"
+            var sb = new StringBuilder($@"
 // auto-generated
 namespace Mmcc.Bot.Infrastructure.Services
-{
-    public class TcpMessageProcessingService
-    {
+{{
+    public class TcpMessageProcessingService : {interfaceToInherit}
+    {{
         private readonly global::MediatR.IMediator _mediator;
         
         public TcpMessageProcessingService(global::MediatR.IMediator mediator)
-        {
+        {{
             _mediator = mediator;
-        }
+        }}
         
         public async global::System.Threading.Tasks.Task Handle(global::Ssmp.ConnectedClient connectedClient, byte[] message)
-        {");
+        {{");
 
             sb.Append(@"
              var any = global::Google.Protobuf.WellKnownTypes.Any.Parser.ParseFrom(message);
