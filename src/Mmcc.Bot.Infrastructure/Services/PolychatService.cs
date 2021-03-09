@@ -72,6 +72,10 @@ namespace Mmcc.Bot.Infrastructure.Services
         private readonly ILogger<PolychatService> _logger;
         private readonly ConcurrentDictionary<string, OnlineServer> _onlineServers;
 
+        /// <summary>
+        /// Instantiates a new instance of <see cref="PolychatService"/>.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
         public PolychatService(ILogger<PolychatService> logger)
         {
             _logger = logger;
