@@ -34,7 +34,7 @@ namespace Mmcc.Bot.Generators
 
         private static string GenerateService(List<INamedTypeSymbol> messages)
         {
-            const string interfaceToInherit = "global::Mmcc.Bot.Infrastructure.Services.ITcpMessageProcessingService";
+            const string interfaceToImplement = "global::Mmcc.Bot.Infrastructure.Services.ITcpMessageProcessingService";
             
             if (messages is null || !messages.Any())
             {
@@ -42,7 +42,7 @@ namespace Mmcc.Bot.Generators
 // auto-generated
 namespace Mmcc.Bot.Infrastructure.Services
 {{
-    public class TcpMessageProcessingService : {interfaceToInherit}
+    public class TcpMessageProcessingService : {interfaceToImplement}
     {{
         private readonly global::MediatR.IMediator _mediator;
         
@@ -66,7 +66,7 @@ namespace Mmcc.Bot.Infrastructure.Services
 // auto-generated
 namespace Mmcc.Bot.Infrastructure.Services
 {{
-    public class TcpMessageProcessingService : {interfaceToInherit}
+    public class TcpMessageProcessingService : {interfaceToImplement}
     {{
         private readonly global::MediatR.IMediator _mediator;
         
