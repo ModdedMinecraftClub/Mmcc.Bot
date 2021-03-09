@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using MediatR;
@@ -11,6 +12,7 @@ using Mmcc.Bot.CommandGroups;
 using Mmcc.Bot.CommandGroups.Diagnostics;
 using Mmcc.Bot.CommandGroups.Minecraft;
 using Mmcc.Bot.CommandGroups.Moderation;
+using Mmcc.Bot.Core;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Database;
@@ -137,6 +139,7 @@ namespace Mmcc.Bot
                     });
                     
                     // set up central server;
+                    services.AddSingleton<IPolychatService, PolychatService>();
                     services.AddSingleton(provider => new CentralServerService(
                         async (client, message) =>
                         {

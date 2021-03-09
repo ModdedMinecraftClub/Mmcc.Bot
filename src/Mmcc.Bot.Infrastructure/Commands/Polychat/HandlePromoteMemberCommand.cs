@@ -5,7 +5,7 @@ using MediatR;
 using Mmcc.Bot.Infrastructure.Requests.Generic;
 using Mmcc.Bot.Protos;
 
-namespace Mmcc.Bot.Infrastructure.Commands.TcpRequests
+namespace Mmcc.Bot.Infrastructure.Commands.Polychat
 {
     public class HandlePromoteMemberCommand
     {

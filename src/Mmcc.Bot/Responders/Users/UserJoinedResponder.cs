@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
+using Mmcc.Bot.Core.Extensions.Remora.Discord.API.Abstractions.Rest;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
-using Mmcc.Bot.Infrastructure.Queries.Discord;
 using Remora.Discord.API.Abstractions.Gateway.Events;
 using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
@@ -22,34 +21,34 @@ namespace Mmcc.Bot.Responders.Users
     {
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly DiscordSettings _discordSettings;
-        private readonly IMediator _mediator;
         private readonly ColourPalette _colourPalette;
+        private readonly IDiscordRestGuildAPI _guildApi;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="UserJoinedResponder"/> class.
         /// </summary>
         /// <param name="channelApi">The channel API.</param>
         /// <param name="discordSettings">The Discord settings.</param>
-        /// <param name="mediator">The mediator.</param>
         /// <param name="colourPalette">The colour palette.</param>
+        /// <param name="guildApi">The guild API.</param>
         public UserJoinedResponder(
             IDiscordRestChannelAPI channelApi,
             DiscordSettings discordSettings,
-            IMediator mediator,
-            ColourPalette colourPalette
+            ColourPalette colourPalette,
+            IDiscordRestGuildAPI guildApi
         )
         {
             _channelApi = channelApi;
             _discordSettings = discordSettings;
-            _mediator = mediator;
             _colourPalette = colourPalette;
+            _guildApi = guildApi;
         }
 
         /// <inheritdoc />
         public async Task<Result> RespondAsync(IGuildMemberAdd ev, CancellationToken ct = default)
         {
-            var getLogsChannelResult = await _mediator.Send(new GetChannelByName.Query
-                {GuildId = ev.GuildID, ChannelName = _discordSettings.ChannelNames.LogsSpam}, ct);
+            var getLogsChannelResult =
+                await _guildApi.FindGuildChannelByName(ev.GuildID, _discordSettings.ChannelNames.LogsSpam);
             if (!getLogsChannelResult.IsSuccess)
             {
                 return Result.FromError(getLogsChannelResult.Error);
@@ -73,16 +72,16 @@ namespace Mmcc.Bot.Responders.Users
             {
                 var url = $"https://cdn.discordapp.com/avatars/{user.ID.Value}/{user.Avatar.Value}.png";
                 iconUrl = url;
-                embedThumbnail = new EmbedThumbnail(url, new(), new(), new());
+                embedThumbnail = new EmbedThumbnail(url);
             }
             
             var embed = new Embed
             {
-                Author = new EmbedAuthor($"{user.Username}#{user.Discriminator}", $"https://discord.com/users/{user.ID}",  iconUrl, new()),
+                Author = new EmbedAuthor($"{user.Username}#{user.Discriminator}", $"https://discord.com/users/{user.ID}",  iconUrl),
                 Description = $":inbox_tray: <@{user.ID}> joined the server.",
                 Thumbnail = embedThumbnail,
                 Colour = _colourPalette.Green,
-                Footer = new EmbedFooter($"ID: {user.ID}", new(), new()),
+                Footer = new EmbedFooter($"ID: {user.ID}"),
                 Timestamp = DateTimeOffset.UtcNow
             };
             var sendMessageResult =

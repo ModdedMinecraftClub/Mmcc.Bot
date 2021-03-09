@@ -8,10 +8,10 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Mmcc.Bot.Core.Extensions.Remora.Discord.API.Abstractions.Rest;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Database.Entities;
-using Mmcc.Bot.Infrastructure.Queries.Discord;
 using Mmcc.Bot.Infrastructure.Queries.ModerationActions;
 using Mmcc.Bot.Infrastructure.Services;
 using Remora.Discord.API.Abstractions.Rest;
@@ -71,6 +71,7 @@ namespace Mmcc.Bot.Infrastructure.Workers
             
             using var scope = _sp.CreateScope();
             var provider = scope.ServiceProvider;
+            var guildApi = provider.GetRequiredService<IDiscordRestGuildAPI>();
             var mediator = provider.GetRequiredService<IMediator>();
             var ms = provider.GetRequiredService<IModerationService>();
             var channelApi = provider.GetRequiredService<IDiscordRestChannelAPI>();
@@ -90,11 +91,8 @@ namespace Mmcc.Bot.Infrastructure.Workers
 
             foreach (var ma in actionsToDeactivate)
             {
-                var getLogsChannel = await mediator.Send(new GetChannelByName.Query
-                {
-                    ChannelName = _discordSettings.ChannelNames.ModerationLogs,
-                    GuildId = new Snowflake(ma.GuildId)
-                }, ct);
+                var getLogsChannel = await guildApi.FindGuildChannelByName(new Snowflake(ma.GuildId),
+                    _discordSettings.ChannelNames.ModerationLogs);
                 if (!getLogsChannel.IsSuccess)
                 {
                     _logger.LogError($"Error in {nameof(ModerationWorker)}" + "\n" + getLogsChannel.Error);

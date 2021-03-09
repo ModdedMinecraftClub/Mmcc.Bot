@@ -19,5 +19,10 @@
         /// Buffer size for the proto messages.
         /// </summary>
         public int BufferSize { get; set; }
+        
+        /// <summary>
+        /// ID of the channel where MC chat will be forwarded to.
+        /// </summary>
+        public ulong ChatChannelId { get; set; }
     }
 }

@@ -15,6 +15,13 @@ namespace Mmcc.Bot.Infrastructure.Services
     public interface IPolychatService
     {
         /// <summary>
+        /// Tries to get the online server with the specified ID.
+        /// </summary>
+        /// <param name="id">ID of the server.</param>
+        /// <returns>Online server associated with the specified ID or default in case of a failure.</returns>
+        OnlineServer? GetOnlineServerOrDefault(string id);
+        
+        /// <summary>
         /// Adds or updates an online server.
         /// </summary>
         /// <param name="id">ID of the server to add/update.</param>
@@ -89,9 +96,10 @@ namespace Mmcc.Bot.Infrastructure.Services
             _logger = logger;
             _onlineServers = new();
         }
-        
-        
-        
+
+        /// <inheritdoc />
+        public OnlineServer? GetOnlineServerOrDefault(string id) => _onlineServers.GetValueOrDefault(id);
+
         /// <inheritdoc />
         public OnlineServer AddOrUpdateOnlineServer(string id, OnlineServer onlineServer) =>
             _onlineServers.AddOrUpdate(id, onlineServer, (_, _) => onlineServer);

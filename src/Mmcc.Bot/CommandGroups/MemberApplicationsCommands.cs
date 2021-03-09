@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Extensions.Database.Entities;
+using Mmcc.Bot.Core.Extensions.Remora.Discord.API.Abstractions.Rest;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.Database.Entities;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
-using Mmcc.Bot.Infrastructure.Queries.Discord;
 using Mmcc.Bot.Infrastructure.Queries.MemberApplications;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
@@ -35,6 +35,7 @@ namespace Mmcc.Bot.CommandGroups
         private readonly IMediator _mediator;
         private readonly ColourPalette _colourPalette;
         private readonly DiscordSettings _discordSettings;
+        private readonly IDiscordRestGuildAPI _guildApi;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="MemberApplicationsCommands"/>.
@@ -44,12 +45,14 @@ namespace Mmcc.Bot.CommandGroups
         /// <param name="mediator">The mediator.</param>
         /// <param name="colourPalette">The colour palette.</param>
         /// <param name="discordSettings">The Discord settings.</param>
+        /// <param name="guildApi">The guild API.</param>
         public MemberApplicationsCommands(
             MessageContext context,
             IDiscordRestChannelAPI channelApi,
             IMediator mediator,
             ColourPalette colourPalette,
-            DiscordSettings discordSettings
+            DiscordSettings discordSettings,
+            IDiscordRestGuildAPI guildApi
         )
         {
             _context = context;
@@ -57,6 +60,7 @@ namespace Mmcc.Bot.CommandGroups
             _mediator = mediator;
             _colourPalette = colourPalette;
             _discordSettings = discordSettings;
+            _guildApi = guildApi;
         }
 
         /// <summary>
@@ -295,14 +299,9 @@ namespace Mmcc.Bot.CommandGroups
                     new ValidationError("Parameter `ignsList` cannot be empty.")
                 );
             }
-            
-            var getMembersChannelResult = await _mediator.Send(
-                new GetChannelByName.Query
-                {
-                    GuildId = _context.Message.GuildID.Value,
-                    ChannelName = _discordSettings.ChannelNames.MemberApps
-                }
-            );
+
+            var getMembersChannelResult = await _guildApi.FindGuildChannelByName(_context.Message.GuildID.Value,
+                _discordSettings.ChannelNames.MemberApps);
             if (!getMembersChannelResult.IsSuccess)
             {
                 return Result.FromError(getMembersChannelResult.Error);
@@ -330,7 +329,7 @@ namespace Mmcc.Bot.CommandGroups
                 Colour = _colourPalette.Green,
                 Fields = new List<EmbedField>
                 {
-                    new("Approved by", $"<@{_context.User.ID}>", new())
+                    new("Approved by", $"<@{_context.User.ID}>", false)
                 }
             };
             var sendUserNotificationEmbedResult =
@@ -384,14 +383,9 @@ namespace Mmcc.Bot.CommandGroups
                     new ValidationError("Parameter `reason` cannot be shorter than `4` characters.")
                 );
             }
-
-            var getMembersChannelResult = await _mediator.Send(
-                new GetChannelByName.Query
-                {
-                    GuildId = _context.Message.GuildID.Value,
-                    ChannelName = _discordSettings.ChannelNames.MemberApps
-                }
-            );
+            
+            var getMembersChannelResult = await _guildApi.FindGuildChannelByName(_context.Message.GuildID.Value,
+                _discordSettings.ChannelNames.MemberApps);
             if (!getMembersChannelResult.IsSuccess)
             {
                 return Result.FromError(getMembersChannelResult.Error);
@@ -412,8 +406,8 @@ namespace Mmcc.Bot.CommandGroups
                 Colour = _colourPalette.Red,
                 Fields = new List<EmbedField>
                 {
-                    new("Reason", reason, new()),
-                    new("Rejected by", $"<@{_context.User.ID}>", new())
+                    new("Reason", reason, false),
+                    new("Rejected by", $"<@{_context.User.ID}>", false)
                 }
             };
             var sendUserNotificationEmbedResult =

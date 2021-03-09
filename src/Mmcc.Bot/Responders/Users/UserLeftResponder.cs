@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
+using Mmcc.Bot.Core.Extensions.Remora.Discord.API.Abstractions.Rest;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
-using Mmcc.Bot.Infrastructure.Queries.Discord;
 using Remora.Discord.API.Abstractions.Gateway.Events;
 using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
@@ -22,34 +21,34 @@ namespace Mmcc.Bot.Responders.Users
     {
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly DiscordSettings _discordSettings;
-        private readonly IMediator _mediator;
         private readonly ColourPalette _colourPalette;
-        
+        private readonly IDiscordRestGuildAPI _guildApi;
+
         /// <summary>
         /// Instantiates a new instance of <see cref="UserLeftResponder"/> class.
         /// </summary>
         /// <param name="channelApi">The channel API.</param>
         /// <param name="discordSettings">The Discord settings.</param>
-        /// <param name="mediator">The mediator.</param>
         /// <param name="colourPalette">The colour palette.</param>
+        /// <param name="guildApi">The guild API.</param>
         public UserLeftResponder(
             IDiscordRestChannelAPI channelApi,
             DiscordSettings discordSettings,
-            IMediator mediator,
-            ColourPalette colourPalette
+            ColourPalette colourPalette,
+            IDiscordRestGuildAPI guildApi
         )
         {
             _channelApi = channelApi;
             _discordSettings = discordSettings;
-            _mediator = mediator;
             _colourPalette = colourPalette;
+            _guildApi = guildApi;
         }
-        
+
         /// <inheritdoc />
         public async Task<Result> RespondAsync(IGuildMemberRemove ev, CancellationToken ct = default)
         {
-            var getLogsChannelResult = await _mediator.Send(new GetChannelByName.Query
-                {GuildId = ev.GuildID, ChannelName = _discordSettings.ChannelNames.LogsSpam}, ct);
+            var getLogsChannelResult =
+                await _guildApi.FindGuildChannelByName(ev.GuildID, _discordSettings.ChannelNames.LogsSpam);
             if (!getLogsChannelResult.IsSuccess)
             {
                 return Result.FromError(getLogsChannelResult.Error);
