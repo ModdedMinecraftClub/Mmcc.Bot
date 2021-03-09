@@ -18,7 +18,7 @@ namespace Mmcc.Bot.Generators
             if (!context.Compilation.AssemblyName!.Equals("Mmcc.Bot.Infrastructure")) return; 
             
             var messageType = context.Compilation.GetTypeByMetadataName("Google.Protobuf.IMessage");
-            var messages = context.Compilation.GlobalNamespace?
+            var messages = context.Compilation.GlobalNamespace
                 .GetNamespaceMembers()
                 .FirstOrDefault(n => n.Name.Equals("Mmcc"))?
                 .GetNamespaceMembers()
@@ -115,7 +115,7 @@ namespace Mmcc.Bot.Infrastructure.Services
             mediatorSb.AppendLine();
             mediatorSb.AppendLine(@$"                   var request = new global::Mmcc.Bot.Infrastructure.Requests.Generic.TcpRequest<{messageTypeWithNamespace}>(connectedClient, unpackedMsg);");
             mediatorSb.AppendLine(@"                   await _mediator.Send(request);");
-            innerSb.AppendLine(mediatorSb.ToString());
+            innerSb.Append(mediatorSb);
             innerSb.AppendLine("             }");
     
             return innerSb.ToString();
