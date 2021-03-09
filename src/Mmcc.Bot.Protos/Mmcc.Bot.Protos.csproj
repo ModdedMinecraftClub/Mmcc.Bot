@@ -16,7 +16,6 @@
 
     <ItemGroup>
         <Protobuf Include=".\Protos\messages\*.proto" GrpcServices="None" />
-        <ProjectReference Include="..\Mmcc.Bot.Generators\Mmcc.Bot.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>
