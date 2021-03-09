@@ -42,13 +42,14 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat
 
                 if (server is not null)
                 {
-                    //_polychatService.ForwardMessage(unformattedId, msg);
+                    _polychatService.ForwardMessage(unformattedId, msg);
 
                     if (msg.Status == ServerStatus.Types.ServerStatusEnum.Stopped
                         || msg.Status == ServerStatus.Types.ServerStatusEnum.Crashed
                     )
                     {
                         _polychatService.RemoveOnlineServer(unformattedId);
+                        _logger.LogInformation("Removed server {id} from the list of online servers.", unformattedId);
                     }
 
                     var getChatChannelResult =
