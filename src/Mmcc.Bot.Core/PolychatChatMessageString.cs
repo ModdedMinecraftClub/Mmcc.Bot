@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace Mmcc.Bot.Core
 {
@@ -16,9 +17,11 @@ namespace Mmcc.Bot.Core
         /// Creates a new <see cref="PolychatChatMessageString"/> with the given <paramref name="value"/>.
         /// </summary>
         /// <param name="value">The raw value.</param>
-        public PolychatChatMessageString(string? value)
+        /// <param name="sanitise">Whether to sanitise the message. Defaults to <code>false</code>.</param>
+        public PolychatChatMessageString(string? value, bool sanitise = false)
         {
             Value = value ?? string.Empty;
+            if (sanitise) Sanitise();
         }
 
         /// <summary>
@@ -26,16 +29,18 @@ namespace Mmcc.Bot.Core
         /// </summary>
         /// <param name="serverId">Server ID.</param>
         /// <param name="messageBody">Message body.</param>
-        public PolychatChatMessageString(string serverId, string? messageBody)
+        /// <param name="sanitise">Whether to sanitise the message. Defaults to <code>false</code>.</param>
+        public PolychatChatMessageString(string serverId, string? messageBody, bool sanitise = false)
         {
             var msg = messageBody ?? string.Empty;
             Value = $"[{serverId.ToUpperInvariant()}] {msg}";
+            if (sanitise) Sanitise();
         }
         
         /// <summary>
         /// The value.
         /// </summary>
-        public string Value { get; }
+        public string Value { get; private set; }
 
         /// <summary>
         /// Gets whether <see cref="Value"/> has a meaningful value.
@@ -80,5 +85,10 @@ namespace Mmcc.Bot.Core
         
         public static bool operator !=(PolychatChatMessageString left, PolychatChatMessageString right)
             => !left.Equals(right);
+
+        /// <summary>
+        /// Sanitises the string, that is removes the Minecraft colour formatting.
+        /// </summary>
+        private void Sanitise() => Value = Regex.Replace(Value, "§.", "");
     }
 }
