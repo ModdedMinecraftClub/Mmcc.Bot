@@ -30,7 +30,7 @@ namespace Mmcc.Bot.Infrastructure.Services
         /// Sends a protobuf message to a server.
         /// </summary>
         /// <param name="destinationServer">Destination server.</param>
-        /// <param name="packedMsgBytes">Protobuf message packed as <see cref="Any"/> in a <code>byte[]</code> form to be sent.</param>
+        /// <param name="packedMsgBytes">Protobuf message packed as <see cref="Any"/> in a <see cref="byte"/> <see cref="Array"/> form to be sent.</param>
         void SendMessage(OnlineServer destinationServer, byte[] packedMsgBytes);
         
         /// <summary>
