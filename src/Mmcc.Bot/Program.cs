@@ -141,7 +141,7 @@ namespace Mmcc.Bot
                         async (client, message) =>
                         {
                             using var scope = provider.CreateScope();
-                            var handlingService = scope.ServiceProvider.GetRequiredService<TcpMessageProcessingService>();
+                            var handlingService = scope.ServiceProvider.GetRequiredService<ITcpMessageProcessingService>();
                             var logger = scope.ServiceProvider.GetRequiredService<ILogger<CentralServerService>>();
                             try
                             {
