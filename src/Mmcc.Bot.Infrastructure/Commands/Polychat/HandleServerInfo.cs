@@ -28,7 +28,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat
                 var onlineServer = new OnlineServer(request.Message, request.ConnectedClient);
                 
                 _polychatService.AddOrUpdateOnlineServer(onlineServer.ServerId, onlineServer);
-                _logger.LogInformation("Registered a new server {id}.", onlineServer.ServerId);
+                _logger.LogInformation("Added server {id} to the list of online servers.", onlineServer.ServerId);
             }
         }
     }
