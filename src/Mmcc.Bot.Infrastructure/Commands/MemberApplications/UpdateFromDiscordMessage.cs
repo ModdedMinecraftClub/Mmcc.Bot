@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Entities;
 using Remora.Discord.API.Abstractions.Gateway.Events;
@@ -53,7 +54,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
 
                     if (app is null)
                     {
-                        return new GenericError("Application corresponding to the edited message could not be found.");
+                        return new NotFoundError("Application corresponding to the edited message could not be found.");
                     }
 
                     if (app.AppStatus != ApplicationStatus.Pending)

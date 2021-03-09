@@ -78,11 +78,11 @@ namespace Mmcc.Bot.Infrastructure.Services
                 await using var responseStream = await response.Content.ReadAsStreamAsync();
                 var res = await JsonSerializer.DeserializeAsync<ErrorResponse?>(responseStream, _serializerOptions);
                 return res is null
-                    ? new GenericError($"API error: {response.StatusCode.ToString()}")
-                    : new GenericError($"{res.Error}; {res.ErrorMessage}");
+                    ? new MojangApiError($"API error: {response.StatusCode.ToString()}")
+                    : new MojangApiError($"{res.Error}; {res.ErrorMessage}");
             }
 
-            return new GenericError($"API error: {response.StatusCode.ToString()}");
+            return new MojangApiError($"API error: {response.StatusCode.ToString()}");
         }
         
         /// <inheritdoc />
@@ -93,7 +93,7 @@ namespace Mmcc.Bot.Infrastructure.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                return new GenericError($"API error: {response.StatusCode.ToString()}");
+                return new MojangApiError($"API error: {response.StatusCode.ToString()}");
             }
             
             await using var responseStream = await response.Content.ReadAsStreamAsync();

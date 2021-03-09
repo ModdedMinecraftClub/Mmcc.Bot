@@ -12,6 +12,7 @@ using Mmcc.Bot.Database.Entities;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Protos;
 using Remora.Discord.API.Abstractions.Rest;
+using Remora.Discord.API.Errors;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Core;
 using Remora.Results;
@@ -84,9 +85,9 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             {
                 var ma = request.ModerationAction;
                 if (ma.ModerationActionType != ModerationActionType.Ban)
-                    return new GenericError(
+                    return new UnsupportedArgumentError(
                         $"Wrong moderation action type. Expected: {ModerationActionType.Ban}, got: {ma.ModerationActionType}"); 
-                if (!ma.IsActive) return new GenericError("Moderation action was already inactive.");
+                if (!ma.IsActive) return new ValidationError("Moderation action is already inactive.");
 
                 if (ma.UserIgn is not null)
                 {

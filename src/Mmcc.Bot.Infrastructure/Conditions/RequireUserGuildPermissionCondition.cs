@@ -68,13 +68,13 @@ namespace Mmcc.Bot.Infrastructure.Conditions
             var everyoneRole = guildRoles.FirstOrDefault(r => r.Name.Equals("@everyone"));
             if (everyoneRole is null)
             {
-                return new GenericError("No @everyone role found.");
+                return new NotFoundError("No @everyone role found.");
             }
 
             var user = getGuildMember.Entity;
             if (user is null)
             {
-                return new GenericError("Executing user not found");
+                return new NotFoundError("Executing user not found");
             }
 
             var getGuild = await _guildApi.GetGuildAsync(guildId, ct: ct);

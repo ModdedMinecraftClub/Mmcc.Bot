@@ -55,7 +55,6 @@ namespace Mmcc.Bot.Infrastructure.Services
                     break;
                 case ModerationActionType.Mute:
                     throw new NotImplementedException();
-                    break;
                 default:
                     return new UnsupportedFeatureError("Unsupported moderation type.");
             }

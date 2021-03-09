@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Remora.Discord.API.Abstractions.Gateway.Events;
@@ -96,7 +97,7 @@ namespace Mmcc.Bot.Responders.Messages
             var channelName = getChannelNameResult.Entity.Name;
             if (!channelName.HasValue)
             {
-                return new GenericError("Channel in which a potential application was sent has no name.");
+                return new PropertyMissingOrNullError("Channel in which a potential application was sent has no name.");
             }
             
             // return if the message isn't in #member-apps;
