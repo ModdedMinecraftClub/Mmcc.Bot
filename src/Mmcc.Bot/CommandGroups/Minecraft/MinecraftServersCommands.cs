@@ -77,6 +77,13 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
                 ServerId = "TEST"
             };
             await _mediator.Send(new TcpRequest<ServerStatus>(default, serverStarted));
+
+            var serverStopped = new ServerStatus
+            {
+                Status = ServerStatus.Types.ServerStatusEnum.Stopped,
+                ServerId = "TEST"
+            };
+            await _mediator.Send(new TcpRequest<ServerStatus>(default, serverStopped));
             
             return Result.FromSuccess();
         }
