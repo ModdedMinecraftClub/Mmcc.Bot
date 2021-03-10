@@ -20,9 +20,9 @@ using Mmcc.Bot.Database.Settings;
 using Mmcc.Bot.Infrastructure;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions;
+using Mmcc.Bot.Infrastructure.HostedServices;
 using Mmcc.Bot.Infrastructure.Parsers;
 using Mmcc.Bot.Infrastructure.Services;
-using Mmcc.Bot.Infrastructure.Workers;
 using Mmcc.Bot.Responders.Guilds;
 using Mmcc.Bot.Responders.Messages;
 using Mmcc.Bot.Responders.Users;
@@ -166,9 +166,9 @@ namespace Mmcc.Bot
                     services.AddSingleton<DiscordService>();
                     services.AddSingleton<IHostedService, DiscordService>(provider =>
                         provider.GetRequiredService<DiscordService>());
-                    services.AddSingleton<ModerationWorker>();
-                    services.AddSingleton<IHostedService, ModerationWorker>(provider =>
-                        provider.GetRequiredService<ModerationWorker>());
+                    services.AddSingleton<ModerationBackgroundService>();
+                    services.AddSingleton<IHostedService, ModerationBackgroundService>(provider =>
+                        provider.GetRequiredService<ModerationBackgroundService>());
 
                     services.AddDiscordCaching();
                     services.Configure<CacheSettings>(settings =>

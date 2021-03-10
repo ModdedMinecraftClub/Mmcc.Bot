@@ -18,30 +18,30 @@ using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Core;
 
-namespace Mmcc.Bot.Infrastructure.Workers
+namespace Mmcc.Bot.Infrastructure.HostedServices
 {
     /// <summary>
     /// Timed background service that deactivates moderation actions once they have expired.
     /// </summary>
     ///
     /// <inheritdoc cref="BackgroundService"/>
-    public class ModerationWorker : BackgroundService
+    public class ModerationBackgroundService : BackgroundService
     {
         private readonly IServiceProvider _sp;
-        private readonly ILogger<ModerationWorker> _logger;
+        private readonly ILogger<ModerationBackgroundService> _logger;
         private readonly ColourPalette _colourPalette;
         private readonly DiscordSettings _discordSettings;
 
         private const int TimeBetweenIterationsInMillis = 2 * 60 * 1000;
 
         /// <summary>
-        /// Instantiates a new instance of the <see cref="ModerationWorker"/> class.
+        /// Instantiates a new instance of the <see cref="ModerationBackgroundService"/> class.
         /// </summary>
         /// <param name="sp">The service provider.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="colourPalette">The colour palette.</param>
         /// <param name="discordSettings">The Discord settings.</param>
-        public ModerationWorker(IServiceProvider sp, ILogger<ModerationWorker> logger, ColourPalette colourPalette, DiscordSettings discordSettings)
+        public ModerationBackgroundService(IServiceProvider sp, ILogger<ModerationBackgroundService> logger, ColourPalette colourPalette, DiscordSettings discordSettings)
         {
             _sp = sp;
             _logger = logger;
@@ -95,7 +95,7 @@ namespace Mmcc.Bot.Infrastructure.Workers
                     _discordSettings.ChannelNames.ModerationLogs);
                 if (!getLogsChannel.IsSuccess)
                 {
-                    _logger.LogError($"Error in {nameof(ModerationWorker)}" + "\n" + getLogsChannel.Error);
+                    _logger.LogError($"Error in {nameof(ModerationBackgroundService)}" + "\n" + getLogsChannel.Error);
                     break;
                 }
 
