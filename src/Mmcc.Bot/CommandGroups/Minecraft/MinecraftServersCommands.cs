@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
-using Mmcc.Bot.Core;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
+using Mmcc.Bot.Infrastructure.Commands.Polychat;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
-using Mmcc.Bot.Infrastructure.Requests.Generic;
 using Mmcc.Bot.Infrastructure.Services;
-using Mmcc.Bot.Protos;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
@@ -57,36 +54,43 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
             _colourPalette = colourPalette;
             _polychatService = polychatService;
         }
+        
+        /// <summary>
+        /// Shows current TPS of a MC server.
+        /// </summary>
+        /// <param name="serverId">ID of the server.</param>
+        /// <returns>Result of the operation.</returns>
+        [Command("tps")]
+        [Description("Shows current TPS of a MC server")]
+        [RequireGuild]
+        public async Task<IResult> Tps(string serverId) =>
+            await _mediator.Send(new SendTpsCommand.Command(serverId, _context.ChannelID));
 
-        [Command("dev")]
+        /// <summary>
+        /// Executes a command on a MC server.
+        /// </summary>
+        /// <param name="serverId">ID of the server.</param>
+        /// <param name="command">MC command to execute.</param>
+        /// <param name="args">Command arguments.</param>
+        /// <returns>Result of the operation.</returns>
+        [Command("exec", "e", "execute")]
+        [Description("Executes a command on a MC server")]
+        [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
-        public async Task<IResult> Dev()
-        {
-            var serverInfo = new ServerInfo
-            {
-                ServerId = "test",
-                ServerAddress = "mmcc.com",
-                ServerName = "Test server",
-                MaxPlayers = 20
-            };
-            await _mediator.Send(new TcpRequest<ServerInfo>(default, serverInfo));
+        public async Task<IResult> Exec(string serverId, string command, [Greedy] IEnumerable<string> args) =>
+            await _mediator.Send(new SendExecCommand.Command(serverId, _context.ChannelID, args));
 
-            var serverStarted = new ServerStatus
-            {
-                Status = ServerStatus.Types.ServerStatusEnum.Started,
-                ServerId = "TEST"
-            };
-            await _mediator.Send(new TcpRequest<ServerStatus>(default, serverStarted));
-
-            var serverStopped = new ServerStatus
-            {
-                Status = ServerStatus.Types.ServerStatusEnum.Stopped,
-                ServerId = "TEST"
-            };
-            await _mediator.Send(new TcpRequest<ServerStatus>(default, serverStopped));
-            
-            return Result.FromSuccess();
-        }
+        /// <summary>
+        /// Restarts a MC server.
+        /// </summary>
+        /// <param name="serverId">ID of the server to restart.</param>
+        /// <returns>Result of the operation.</returns>
+        [Command("restart", "r")]
+        [Description("Restarts a server")]
+        [RequireGuild]
+        [RequireUserGuildPermission(DiscordPermission.BanMembers)]
+        public async Task<IResult> Restart(string serverId) =>
+            await _mediator.Send(new SendRestartCommand.Command(serverId, _context.ChannelID));
 
         /// <summary>
         /// Shows info about online servers.
@@ -138,52 +142,6 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
             return !sendMessageResult.IsSuccess
                 ? Result.FromError(sendMessageResult)
                 : Result.FromSuccess();
-        }
-
-        /// <summary>
-        /// Shows current TPS of a MC server.
-        /// </summary>
-        /// <param name="serverId">ID of the server.</param>
-        /// <returns>Result of the operation.</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        [Command("tps")]
-        [Description("Shows current TPS of a MC server")]
-        [RequireGuild]
-        public async Task<IResult> Tps(string serverId)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Executes a command on a MC server.
-        /// </summary>
-        /// <param name="serverId">ID of the server.</param>
-        /// <param name="command">MC command to execute.</param>
-        /// <param name="args">Command arguments.</param>
-        /// <returns>Result of the operation.</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        [Command("exec", "e", "execute")]
-        [Description("Executes a command on a MC server")]
-        [RequireGuild]
-        [RequireUserGuildPermission(DiscordPermission.BanMembers)]
-        public async Task<IResult> Exec(string serverId, string command, [Greedy] IEnumerable<string> args)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Restarts a MC server.
-        /// </summary>
-        /// <param name="serverId">ID of the server to restart.</param>
-        /// <returns>Result of the operation.</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        [Command("restart", "r")]
-        [Description("Restarts a server")]
-        [RequireGuild]
-        [RequireUserGuildPermission(DiscordPermission.BanMembers)]
-        public async Task<IResult> Restart(string serverId)
-        {
-            throw new NotImplementedException();
         }
     }
 }
