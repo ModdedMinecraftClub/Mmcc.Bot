@@ -52,17 +52,16 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
         /// <inheritdoc />
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Starting the worker...");
-            _logger.LogInformation("Started the worker.");
+            _logger.LogInformation("Starting {service}...", nameof(ModerationBackgroundService));
+            _logger.LogInformation("Started {service}...", nameof(ModerationBackgroundService));
             
             while (!stoppingToken.IsCancellationRequested)
             {
-                stoppingToken.ThrowIfCancellationRequested();
                 await RunIterationAsync(stoppingToken);
                 await Task.Delay(TimeBetweenIterationsInMillis, stoppingToken);
             }
 
-            _logger.LogInformation("Stopped the worker.");
+            _logger.LogInformation("Stopped {service}...", nameof(ModerationBackgroundService));
         }
 
         private async Task RunIterationAsync(CancellationToken ct)
