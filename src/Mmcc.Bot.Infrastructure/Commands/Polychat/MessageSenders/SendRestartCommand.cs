@@ -31,11 +31,12 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.MessageSenders
             {
                 try
                 {
-                    var server = _polychatService.GetOnlineServerOrDefault(request.ServerId);
+                    var id = request.ServerId.ToUpperInvariant();
+                    var server = _polychatService.GetOnlineServerOrDefault(id);
 
                     if (server is null)
                     {
-                        return new NotFoundError($"Could not find server with ID: {request.ServerId}");
+                        return new NotFoundError($"Could not find server with ID: {id}");
                     }
 
                     var msg = new GenericCommand
