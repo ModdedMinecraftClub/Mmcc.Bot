@@ -154,7 +154,7 @@ namespace Mmcc.Bot
                                 logger.LogError("Error in the central server's TCP byte[] message handler.", e);
                             }
                         },
-                        1024, // TODO: make configurable;
+                        provider.GetRequiredService<PolychatSettings>().MessageQueueLimit,
                         IPAddress.Loopback,
                         provider.GetRequiredService<PolychatSettings>().Port
                         ));

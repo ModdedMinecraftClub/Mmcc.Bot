@@ -6,19 +6,14 @@
     public class PolychatSettings
     {
         /// <summary>
-        /// IP of the central Polychat2 server.
-        /// </summary>
-        public string ServerIp { get; set; } = null!;
-        
-        /// <summary>
-        /// Port of the central Polychat2 server.
+        /// Port on which we will listen to incoming Polychat2 messages.
         /// </summary>
         public int Port { get; set; }
         
         /// <summary>
-        /// Buffer size for the proto messages.
+        /// The limit of the message queue.
         /// </summary>
-        public int BufferSize { get; set; }
+        public int MessageQueueLimit { get; set; }
         
         /// <summary>
         /// ID of the channel where MC chat will be forwarded to.
