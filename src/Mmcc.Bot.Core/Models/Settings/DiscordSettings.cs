@@ -29,5 +29,10 @@
         /// ID of the feedback channel.
         /// </summary>
         public ulong FeedbackChannelId { get; set; }
+
+        /// <summary>
+        /// Url to the appeals page.
+        /// </summary>
+        public string AppealsUrl { get; set; } = null!;
     }
 }

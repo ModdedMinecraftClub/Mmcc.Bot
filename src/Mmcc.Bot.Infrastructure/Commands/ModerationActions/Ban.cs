@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Core.Models;
+using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Entities;
@@ -68,6 +69,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             private readonly ColourPalette _colourPalette;
             private readonly ILogger<Handler> _logger;
             private readonly IDiscordRestChannelAPI _channelApi;
+            private readonly DiscordSettings _discordSettings;
 
             /// <summary>
             /// Instantiates a new instance of <see cref="Handler"/> class.
@@ -79,6 +81,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             /// <param name="colourPalette">The colour palette.</param>
             /// <param name="logger">The logger.</param>
             /// <param name="channelApi">The channel API.</param>
+            /// <param name="discordSettings">The Discord settings.</param>
             public Handler(
                 BotContext context,
                 IDiscordRestGuildAPI guildApi,
@@ -86,7 +89,8 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                 IDiscordRestUserAPI userApi,
                 ColourPalette colourPalette,
                 ILogger<Handler> logger,
-                IDiscordRestChannelAPI channelApi
+                IDiscordRestChannelAPI channelApi,
+                DiscordSettings discordSettings
             )
             {
                 _context = context;
@@ -96,6 +100,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                 _colourPalette = colourPalette;
                 _logger = logger;
                 _channelApi = channelApi;
+                _discordSettings = discordSettings;
             }
 
             /// <inheritdoc />
@@ -155,6 +160,10 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                                     ? "Permanent"
                                     : $"{DateTimeOffset.FromUnixTimeMilliseconds(request.ExpiryDate.Value).UtcDateTime} UTC",
                                 false
+                            ),
+                            new(
+                                "Appeals",
+                                $"You can appeal this decision **[here]({_discordSettings.AppealsUrl})**."
                             )
                         }
                     };
