@@ -58,12 +58,7 @@ namespace Mmcc.Bot.Infrastructure.Services
                 return Result.FromSuccess();
             }
 
-            var err = executionResult.Inner is null
-                      || executionResult.Inner.IsSuccess
-                      || executionResult.Inner.Error is null
-                ? executionResult.Error
-                : executionResult.Inner.Error;
-
+            var err = executionResult.Unwrap();
             var errorEmbed = new Embed(Thumbnail: EmbedProperties.MmccLogoThumbnail, Colour: _colourPalette.Red);
             errorEmbed = err switch
             {
