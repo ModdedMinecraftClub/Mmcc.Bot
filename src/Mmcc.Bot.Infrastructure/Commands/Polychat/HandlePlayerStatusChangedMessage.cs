@@ -18,11 +18,11 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat
     {
         public class Handler : AsyncRequestHandler<TcpRequest<ServerPlayerStatusChangedEvent>>
         {
-            private readonly PolychatService _polychatService;
+            private readonly IPolychatService _polychatService;
             private readonly PolychatSettings _polychatSettings;
             private readonly IDiscordRestChannelAPI _channelApi;
 
-            public Handler(PolychatService polychatService, PolychatSettings polychatSettings, IDiscordRestChannelAPI channelApi)
+            public Handler(IPolychatService polychatService, PolychatSettings polychatSettings, IDiscordRestChannelAPI channelApi)
             {
                 _polychatService = polychatService;
                 _polychatSettings = polychatSettings;

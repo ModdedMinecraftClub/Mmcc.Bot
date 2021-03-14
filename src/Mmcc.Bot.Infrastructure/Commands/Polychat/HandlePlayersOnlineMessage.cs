@@ -12,9 +12,9 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat
     {
         public class Handler : RequestHandler<TcpRequest<ServerPlayersOnline>>
         {
-            private readonly PolychatService _polychatService;
+            private readonly IPolychatService _polychatService;
 
-            public Handler(PolychatService polychatService)
+            public Handler(IPolychatService polychatService)
             {
                 _polychatService = polychatService;
             }
