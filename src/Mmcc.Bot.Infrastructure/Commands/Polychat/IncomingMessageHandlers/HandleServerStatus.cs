@@ -71,7 +71,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
                                             "Could not forward message to Discord.");
                     }
 
-                    _logger.LogInformation("Server {id} changed status to {newStatus}", msg.ServerId,
+                    _logger.LogInformation("Server {id} changed status to {newStatus}", unformattedId,
                         msg.Status);
                 }
                 else
@@ -80,7 +80,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
                     {
                         _logger.LogWarning(
                             "Server {id} has unexpectedly sent ServerStatus message before sending ServerInfo message.",
-                            msg.ServerId);
+                            unformattedId);
                     }
                     else
                     {

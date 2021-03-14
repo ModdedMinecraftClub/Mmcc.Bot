@@ -46,7 +46,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.MessageSenders
                         return Result.FromSuccess();
                     }
 
-                    var server = _polychatService.GetOnlineServerOrDefault(request.ServerId);
+                    var server = _polychatService.GetOnlineServerOrDefault(request.ServerId.ToUpperInvariant());
 
                     if (server is null)
                     {

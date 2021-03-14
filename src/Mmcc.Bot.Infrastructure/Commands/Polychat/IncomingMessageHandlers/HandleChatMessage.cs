@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core;
 using Mmcc.Bot.Core.Models.Settings;
+using Mmcc.Bot.Core.Utilities;
 using Mmcc.Bot.Infrastructure.Requests.Generic;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Protos;
@@ -28,7 +29,8 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
             
             protected override async Task Handle(TcpRequest<ChatMessage> request, CancellationToken cancellationToken)
             {
-                _polychatService.ForwardMessage(request.Message.ServerId, request.Message);
+                var id = PolychatStringUtils.SanitiseMcId(request.Message.ServerId).ToUpperInvariant();
+                _polychatService.ForwardMessage(id, request.Message);
                 
                 var getChatChannelResult =
                     await _channelApi.GetChannelAsync(new(_polychatSettings.ChatChannelId), cancellationToken);

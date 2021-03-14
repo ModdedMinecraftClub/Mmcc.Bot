@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Core;
+using Mmcc.Bot.Core.Utilities;
 using Mmcc.Bot.Infrastructure.Requests.Generic;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Protos;
@@ -26,9 +27,10 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
             protected override void Handle(TcpRequest<ServerInfo> request)
             {
                 var onlineServer = new OnlineServer(request.Message, request.ConnectedClient);
+                var unformattedId = PolychatStringUtils.SanitiseMcId(onlineServer.ServerId.ToUpperInvariant());
                 
-                _polychatService.AddOrUpdateOnlineServer(onlineServer.ServerId, onlineServer);
-                _logger.LogInformation("Added server {id} to the list of online servers.", onlineServer.ServerId);
+                _polychatService.AddOrUpdateOnlineServer(unformattedId, onlineServer);
+                _logger.LogInformation("Added server {id} to the list of online servers.", unformattedId);
             }
         }
     }
