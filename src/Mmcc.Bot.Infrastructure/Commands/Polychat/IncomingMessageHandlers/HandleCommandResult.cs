@@ -34,6 +34,15 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
             protected override async Task Handle(TcpRequest<GenericCommandResult> request, CancellationToken cancellationToken)
             {
                 var msg = request.Message;
+                // we want an exception if failed, as the handler can't proceed if failed, hence Parse instead of TryParse;
+                var parsedId = ulong.Parse(request.Message.DiscordChannelId);
+                var channelSnowflake = new Snowflake(parsedId);
+                var getChannelResult = await _channelApi.GetChannelAsync(channelSnowflake, cancellationToken);
+
+                if (!getChannelResult.IsSuccess || getChannelResult.Entity is null)
+                {
+                    throw new Exception(getChannelResult.Error?.Message ?? $"Could not get channel with ID {parsedId}");
+                }
                 
                 // because why would ColorTranslator use the established pattern of TryParse 
                 // when it can have only one method that throws if it fails to parse instead
@@ -47,17 +56,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
                 {
                     colour = _colourPalette.Blue;
                 }
-                
-                // we want an exception if failed, as the handler can't proceed if failed, hence Parse instead of TryParse;
-                var parsedId = ulong.Parse(request.Message.DiscordChannelId);
-                var channelSnowflake = new Snowflake(parsedId);
-                var getChannelResult = await _channelApi.GetChannelAsync(channelSnowflake, cancellationToken);
 
-                if (!getChannelResult.IsSuccess || getChannelResult.Entity is null)
-                {
-                    throw new Exception(getChannelResult.Error?.Message ?? $"Could not get channel with ID {parsedId}");
-                }
-                
                 var embeds = new List<Embed>
                 {
                     new()
