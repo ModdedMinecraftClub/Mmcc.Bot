@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,9 @@ using Remora.Discord.Commands.Services;
 using Remora.Discord.Gateway;
 using Remora.Discord.Gateway.Extensions;
 using Remora.Discord.Hosting.Services;
+using Serilog;
+using Serilog.Core;
+using Serilog.Events;
 using Ssmp;
 
 namespace Mmcc.Bot
@@ -42,7 +46,28 @@ namespace Mmcc.Bot
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .WriteTo.File(Path.Combine("logs", "log.txt"), rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 3, levelSwitch: new LoggingLevelSwitch(LogEventLevel.Warning))
+                .CreateLogger();
+
+            try
+            {
+                Log.Information("Starting the host...");
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception e)
+            {
+                Log.Fatal(e, "Host terminated unexpectedly.");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -190,6 +215,7 @@ namespace Mmcc.Bot
                         settings.SetAbsoluteExpiration<IGuildMember>(TimeSpan.FromHours(6));
                         settings.SetSlidingExpiration<IGuildMember>(TimeSpan.FromHours(1));
                     });
-                });
+                })
+                .UseSerilog();
     }
 }

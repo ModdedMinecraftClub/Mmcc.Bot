@@ -1,3 +1,6 @@
+# Ignore logs
+logs
+
 # Don't include secrets
 appsettings.json
 appsettings.Development.json
