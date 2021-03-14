@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Infrastructure.Requests.Generic;
 using Mmcc.Bot.Protos;
 using MoreLinq;
@@ -20,16 +22,32 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat
         {
             private readonly IDiscordRestChannelAPI _channelApi;
             private readonly ILogger<HandleCommandResult> _logger;
+            private readonly ColourPalette _colourPalette;
 
-            public Handler(IDiscordRestChannelAPI channelApi, ILogger<HandleCommandResult> logger)
+            public Handler(IDiscordRestChannelAPI channelApi, ILogger<HandleCommandResult> logger, ColourPalette colourPalette)
             {
                 _channelApi = channelApi;
                 _logger = logger;
+                _colourPalette = colourPalette;
             }
 
             protected override async Task Handle(TcpRequest<GenericCommandResult> request, CancellationToken cancellationToken)
             {
                 var msg = request.Message;
+                
+                // because why would ColorTranslator use the established pattern of TryParse 
+                // when it can have only one method that throws if it fails to parse instead
+                // FFS
+                Color colour;
+                try
+                {
+                    colour = ColorTranslator.FromHtml(request.Message.Colour);
+                }
+                catch
+                {
+                    colour = _colourPalette.Blue;
+                }
+                
                 // we want an exception if failed, hence Parse instead of TryParse;
                 var parsedId = ulong.Parse(request.Message.DiscordChannelId);
                 var channelSnowflake = new Snowflake(parsedId);
@@ -44,26 +62,30 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat
                 {
                     new()
                     {
-                        Title = $"Command {msg.Command} executed!",
+                        Title = $"Command `{msg.Command}` executed!",
                         Fields = new List<EmbedField>
                         {
                             new("Server", msg.ServerId, false)
-                        }
+                        },
+                        Timestamp = DateTimeOffset.UtcNow,
+                        Colour = colour
                     }
                 };
                 var output = msg.CommandOutput
                     .Batch(1024)
-                    .Select(charArr => charArr.ToString())
+                    .Select(charArr => new string(charArr.ToArray()))
                     .ToList();
                 embeds
                     .AddRange(output
                         .Select((str, i) => new Embed
                         {
-                            Title = $"[{i + 1}/{output.Count}] Command {msg.Command} output",
+                            Title = $"[{i + 1}/{output.Count}] Command `{msg.Command}`'s output",
                             Fields = new List<EmbedField>
                             {
                                 new("Output message", string.IsNullOrEmpty(str) ? "*No output*" : str!, false)
-                            }
+                            },
+                            Timestamp = DateTimeOffset.UtcNow,
+                            Colour = colour
                         }));
 
                 foreach (var embed in embeds)
