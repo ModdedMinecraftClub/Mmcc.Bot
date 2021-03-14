@@ -53,7 +53,7 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
 
             _logger.LogInformation("Started {service}...", nameof(BroadcastsHostedService));
 
-            _timer = new Timer(RunIteration, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(IntervalInMinutes));
+            _timer = new Timer(RunIteration, null, TimeSpan.Zero, TimeSpan.FromMinutes(IntervalInMinutes));
             
             return Task.CompletedTask;
         }
