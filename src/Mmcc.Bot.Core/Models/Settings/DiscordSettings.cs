@@ -24,5 +24,10 @@
         /// Role names settings.
         /// </summary>
         public RoleNamesSettings RoleNames { get; set; } = null!;
+        
+        /// <summary>
+        /// ID of the feedback channel.
+        /// </summary>
+        public ulong FeedbackChannelId { get; set; }
     }
 }

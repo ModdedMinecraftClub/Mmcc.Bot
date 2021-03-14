@@ -75,7 +75,8 @@ namespace Mmcc.Bot
                             GatewayIntents.Guilds
                             | GatewayIntents.GuildMembers
                             | GatewayIntents.GuildBans
-                            | GatewayIntents.GuildMessages;
+                            | GatewayIntents.GuildMessages
+                            | GatewayIntents.GuildMessageReactions;
                     });
                     
                     services.AddDbContext<BotContext>((provider, options) =>
@@ -125,6 +126,7 @@ namespace Mmcc.Bot
                     services.AddResponder<GuildCreatedResponder>();
                     services.AddResponder<UserJoinedResponder>();
                     services.AddResponder<UserLeftResponder>();
+                    services.AddResponder<FeedbackPostedResponder>();
                     services.AddResponder<MemberApplicationCreatedResponder>();
                     services.AddResponder<MemberApplicationUpdatedResponder>();
 
