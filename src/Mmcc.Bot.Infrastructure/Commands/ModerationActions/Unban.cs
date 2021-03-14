@@ -44,7 +44,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
         public class Handler : IRequestHandler<Command, Result>
         {
             private readonly BotContext _context;
-            private readonly IPolychatCommunicationService _pcs;
+            private readonly IPolychatService _ps;
             private readonly IDiscordRestGuildAPI _guildApi;
             private readonly IDiscordRestUserAPI _userApi;
             private readonly IDiscordRestChannelAPI _channelApi;
@@ -55,7 +55,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             /// Instantiates a new instance of <see cref="Handler"/> class.
             /// </summary>
             /// <param name="context">The DB context.</param>
-            /// <param name="pcs">The polychat communication service.</param>
+            /// <param name="ps">The polychat service.</param>
             /// <param name="guildApi">The guild API.</param>
             /// <param name="userApi">The user API.</param>
             /// <param name="channelApi">The channel API.</param>
@@ -63,7 +63,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             /// <param name="logger">The logger.</param>
             public Handler(
                 BotContext context,
-                IPolychatCommunicationService pcs,
+                IPolychatService ps,
                 IDiscordRestGuildAPI guildApi,
                 IDiscordRestUserAPI userApi,
                 IDiscordRestChannelAPI channelApi,
@@ -72,7 +72,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             )
             {
                 _context = context;
-                _pcs = pcs;
+                _ps = ps;
                 _guildApi = guildApi;
                 _userApi = userApi;
                 _channelApi = channelApi;
@@ -91,23 +91,14 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
 
                 if (ma.UserIgn is not null)
                 {
-                    var protobufMessage = new GenericServerCommand
+                    var proto = new GenericCommand
                     {
-                        ServerId = "<all>",
-                        Command = new GenericCommand
-                        {
-                            DefaultCommand = "ban",
-                            DiscordCommandName = "ban",
-                            DiscordChannelId = request.ChannelId.Value.ToString(),
-                            Args = {request.ModerationAction.UserIgn}
-                        }
+                        DefaultCommand = "ban",
+                        DiscordCommandName = "ban",
+                        DiscordChannelId = request.ChannelId.ToString(),
+                        Args = {request.ModerationAction.UserIgn}
                     };
-                    var sendProtobufMessageResult = await _pcs.SendProtobufMessage(protobufMessage);
-                    if (!sendProtobufMessageResult.IsSuccess)
-                    {
-                        return new PolychatError(
-                            "Could not communicate with polychat2's central server. Please see the logs.");
-                    }
+                    _ps.BroadcastMessage(proto);
                 }
                 
                 if (request.ModerationAction.UserDiscordId is not null)

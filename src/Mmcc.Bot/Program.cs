@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using MediatR;
@@ -12,12 +11,10 @@ using Mmcc.Bot.CommandGroups;
 using Mmcc.Bot.CommandGroups.Diagnostics;
 using Mmcc.Bot.CommandGroups.Minecraft;
 using Mmcc.Bot.CommandGroups.Moderation;
-using Mmcc.Bot.Core;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Settings;
-using Mmcc.Bot.Infrastructure;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions;
 using Mmcc.Bot.Infrastructure.HostedServices;
@@ -94,7 +91,6 @@ namespace Mmcc.Bot
                     services.AddTailwindColourPalette();
                     
                     services.AddScoped<IExecutionEventService, ErrorNotificationService>();
-                    services.AddScoped<IPolychatCommunicationService, PolychatCommunicationService>();
                     services.AddScoped<IMojangApiService, MojangApiService>();
                     services.AddScoped<IModerationService, ModerationService>();
                     services.AddScoped<ITcpMessageProcessingService, TcpMessageProcessingService>();

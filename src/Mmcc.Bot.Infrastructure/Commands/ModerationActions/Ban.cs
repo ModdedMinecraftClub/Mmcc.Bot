@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.Database;
@@ -64,7 +63,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
         {
             private readonly BotContext _context;
             private readonly IDiscordRestGuildAPI _guildApi;
-            private readonly IPolychatCommunicationService _pcs;
+            private readonly IPolychatService _ps;
             private readonly IDiscordRestUserAPI _userApi;
             private readonly ColourPalette _colourPalette;
             private readonly ILogger<Handler> _logger;
@@ -75,7 +74,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             /// </summary>
             /// <param name="context">The DB context.</param>
             /// <param name="guildApi">The guild API.</param>
-            /// <param name="pcs">The polychat communication service.</param>
+            /// <param name="ps">The polychat service.</param>
             /// <param name="userApi">The user API.</param>
             /// <param name="colourPalette">The colour palette.</param>
             /// <param name="logger">The logger.</param>
@@ -83,7 +82,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             public Handler(
                 BotContext context,
                 IDiscordRestGuildAPI guildApi,
-                IPolychatCommunicationService pcs,
+                IPolychatService ps,
                 IDiscordRestUserAPI userApi,
                 ColourPalette colourPalette,
                 ILogger<Handler> logger,
@@ -92,7 +91,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             {
                 _context = context;
                 _guildApi = guildApi;
-                _pcs = pcs;
+                _ps = ps;
                 _userApi = userApi;
                 _colourPalette = colourPalette;
                 _logger = logger;
@@ -116,23 +115,15 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
 
                 if (request.UserIgn is not null)
                 {
-                    var protobufMessage = new GenericServerCommand
+                    var proto = new GenericCommand
                     {
-                        ServerId = "<all>",
-                        Command = new GenericCommand
-                        {
-                            DefaultCommand = "ban",
-                            DiscordCommandName = "ban",
-                            DiscordChannelId = request.ChannelId.Value.ToString(),
-                            Args = {request.UserIgn}
-                        }
+
+                        DefaultCommand = "ban",
+                        DiscordCommandName = "ban",
+                        DiscordChannelId = request.ChannelId.Value.ToString(),
+                        Args = {request.UserIgn}
                     };
-                    var sendProtobufMessageResult = await _pcs.SendProtobufMessage(protobufMessage);
-                    if (!sendProtobufMessageResult.IsSuccess)
-                    {
-                        return new PolychatError(
-                            "Could not communicate with polychat2's central server. Please see the logs.");
-                    }
+                    _ps.BroadcastMessage(proto);
                 }
 
                 if (request.UserDiscordId is not null)

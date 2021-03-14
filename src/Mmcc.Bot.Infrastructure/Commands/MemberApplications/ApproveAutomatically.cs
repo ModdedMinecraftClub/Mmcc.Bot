@@ -35,6 +35,11 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
             /// ID of the Guild.
             /// </summary>
             public Snowflake GuildId { get; set; }
+            
+            /// <summary>
+            /// ID of the channel.
+            /// </summary>
+            public Snowflake ChannelId { get; set; }
 
             /// <summary>
             /// Prefix of server.
@@ -52,19 +57,19 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
         {
             private readonly BotContext _context;
             private readonly IDiscordRestGuildAPI _guildApi;
-            private readonly IPolychatCommunicationService _polychatCommunicationService;
+            private readonly IPolychatService _ps;
 
             /// <summary>
             /// Instantiates a new instance of <see cref="Handler"/>.
             /// </summary>
             /// <param name="context">The db context.</param>
             /// <param name="guildApi">The guild API.</param>
-            /// <param name="polychatCommunicationService">The polychat communication service.</param>
-            public Handler(BotContext context, IDiscordRestGuildAPI guildApi, IPolychatCommunicationService polychatCommunicationService)
+            /// <param name="ps">The polychat service.</param>
+            public Handler(BotContext context, IDiscordRestGuildAPI guildApi, IPolychatService ps)
             {
                 _context = context;
                 _guildApi = guildApi;
-                _polychatCommunicationService = polychatCommunicationService;
+                _ps = ps;
             }
             
             /// <inheritdoc />
@@ -117,19 +122,23 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
 
                 foreach (var ign in request.Igns)
                 {
-                    var polychatProtoMsg = new PromoteMemberCommand
+                    var proto = new GenericCommand
                     {
-                        ServerId = request.ServerPrefix,
-                        Username = ign
+                        DiscordChannelId = request.ChannelId.ToString(),
+                        DiscordCommandName = "promote",
+                        DefaultCommand = "ranks add $1 member",
+                        Args = { ign }
                     };
-
-                    var sendPolychatProtoMsgResult =
-                        await _polychatCommunicationService.SendProtobufMessage(polychatProtoMsg);
-                    if (!sendPolychatProtoMsgResult.IsSuccess)
+                    var id = request.ServerPrefix.ToUpperInvariant();
+                    var server = _ps.GetOnlineServerOrDefault(id);
+                    
+                    if (server is null)
                     {
-                        return new PolychatError(
-                            "Could not communicate with polychat2's central server. Please see the logs.");
+                        return Result<MemberApplication>.FromError(
+                            new NotFoundError($"Could not find server with ID {id}"));
                     }
+
+                    _ps.SendMessage(server, proto);
                 }
                 
                 var addRoleResult =

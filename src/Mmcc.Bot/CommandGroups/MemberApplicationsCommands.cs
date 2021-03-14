@@ -312,6 +312,7 @@ namespace Mmcc.Bot.CommandGroups
                 {
                     Id = id,
                     GuildId = _context.Message.GuildID.Value,
+                    ChannelId = _context.ChannelID,
                     ServerPrefix = serverPrefix,
                     Igns = ignsList
                 }
