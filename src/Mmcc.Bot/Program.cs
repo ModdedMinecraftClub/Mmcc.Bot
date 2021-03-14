@@ -85,8 +85,9 @@ namespace Mmcc.Bot
                         var connString =
                             $"Server={config.ServerIp};Port={config.Port};Database={config.DatabaseName};Uid={config.Username};Pwd={config.Password};Allow User Variables=True";
                         var serverVersion = ServerVersion.FromString("10.4.11-mariadb");
-                        
-                        options.UseMySql(connString, serverVersion);
+
+                        options.UseMySql(connString, serverVersion,
+                            contextOptions => contextOptions.EnableRetryOnFailure(3));
                     });
                     
                     services.AddTailwindColourPalette();
