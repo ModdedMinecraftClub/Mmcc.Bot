@@ -48,7 +48,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat
                     colour = _colourPalette.Blue;
                 }
                 
-                // we want an exception if failed, hence Parse instead of TryParse;
+                // we want an exception if failed, as the handler can't proceed if failed, hence Parse instead of TryParse;
                 var parsedId = ulong.Parse(request.Message.DiscordChannelId);
                 var channelSnowflake = new Snowflake(parsedId);
                 var getChannelResult = await _channelApi.GetChannelAsync(channelSnowflake, cancellationToken);
