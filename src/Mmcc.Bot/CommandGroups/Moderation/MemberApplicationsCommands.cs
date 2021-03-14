@@ -21,7 +21,7 @@ using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
 
-namespace Mmcc.Bot.CommandGroups
+namespace Mmcc.Bot.CommandGroups.Moderation
 {
     /// <summary>
     /// Commands for managing member applications.
