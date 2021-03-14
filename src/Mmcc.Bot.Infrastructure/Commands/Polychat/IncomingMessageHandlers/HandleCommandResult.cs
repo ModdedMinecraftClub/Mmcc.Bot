@@ -14,7 +14,7 @@ using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Core;
 
-namespace Mmcc.Bot.Infrastructure.Commands.Polychat
+namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
 {
     public class HandleCommandResult
     {

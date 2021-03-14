@@ -9,7 +9,7 @@ using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Protos;
 using Remora.Discord.API.Abstractions.Rest;
 
-namespace Mmcc.Bot.Infrastructure.Commands.Polychat
+namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
 {
     public class HandleChatMessage
     {

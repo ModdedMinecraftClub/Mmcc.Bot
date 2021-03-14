@@ -6,15 +6,15 @@ using Mmcc.Bot.Protos;
 using Remora.Discord.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Infrastructure.Commands.Polychat
+namespace Mmcc.Bot.Infrastructure.Commands.Polychat.MessageSenders
 {
     /// <summary>
-    /// Sends a restart command to a server.
+    /// Sends a TPS command to a server.
     /// </summary>
-    public class SendRestartCommand
+    public class SendTpsCommand
     {
         /// <summary>
-        /// Command to send a restart command to a server.
+        /// Command to send a TPS command to a server.
         /// </summary>
         public record Command(string ServerId, Snowflake ChannelId) : IRequest<Result>;
 
@@ -40,8 +40,8 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat
 
                     var msg = new GenericCommand
                     {
-                        DiscordCommandName = "restart",
-                        DefaultCommand = "stop",
+                        DiscordCommandName = "tps",
+                        DefaultCommand = "forge tps",
                         DiscordChannelId = request.ChannelId.ToString()
                     };
 

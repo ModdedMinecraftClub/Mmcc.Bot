@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Infrastructure.Services;
@@ -7,18 +6,18 @@ using Mmcc.Bot.Protos;
 using Remora.Discord.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Infrastructure.Commands.Polychat
+namespace Mmcc.Bot.Infrastructure.Commands.Polychat.MessageSenders
 {
     /// <summary>
-    /// Sends a command to server(s).
+    /// Sends a restart command to a server.
     /// </summary>
-    public class SendExecCommand
+    public class SendRestartCommand
     {
         /// <summary>
-        /// Command to send a command to server(s).
+        /// Command to send a restart command to a server.
         /// </summary>
-        public record Command(string ServerId, Snowflake ChannelId, IEnumerable<string> McCmdArgs) : IRequest<Result>;
-        
+        public record Command(string ServerId, Snowflake ChannelId) : IRequest<Result>;
+
         public class Handler : RequestHandler<Command, Result>
         {
             private readonly IPolychatService _polychatService;
@@ -27,31 +26,24 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat
             {
                 _polychatService = polychatService;
             }
-
+            
             protected override Result Handle(Command request)
             {
                 try
                 {
-                    var msg = new GenericCommand
-                    {
-                        DiscordCommandName = "exec",
-                        DefaultCommand = "$exec",
-                        Args = {request.McCmdArgs},
-                        DiscordChannelId = request.ChannelId.ToString()
-                    };
-
-                    if (request.ServerId.Equals("<all>"))
-                    {
-                        _polychatService.BroadcastMessage(msg);
-                        return Result.FromSuccess();
-                    }
-
                     var server = _polychatService.GetOnlineServerOrDefault(request.ServerId);
 
                     if (server is null)
                     {
                         return new NotFoundError($"Could not find server with ID: {request.ServerId}");
                     }
+
+                    var msg = new GenericCommand
+                    {
+                        DiscordCommandName = "restart",
+                        DefaultCommand = "stop",
+                        DiscordChannelId = request.ChannelId.ToString()
+                    };
 
                     _polychatService.SendMessage(server, msg);
                     return Result.FromSuccess();

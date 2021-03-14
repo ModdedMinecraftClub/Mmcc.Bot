@@ -5,7 +5,7 @@ using Mmcc.Bot.Infrastructure.Requests.Generic;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Protos;
 
-namespace Mmcc.Bot.Infrastructure.Commands.Polychat
+namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
 {
     /// <summary>
     /// Handles an incoming <see cref="ServerInfo"/> message.
