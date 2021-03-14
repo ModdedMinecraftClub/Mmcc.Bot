@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -83,7 +84,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat
                     }
                     else
                     {
-                        throw new NullReferenceException(nameof(OnlineServer));
+                        throw new KeyNotFoundException($"Could not find server {unformattedId} in the list of online servers");
                     }
                 }
             }
