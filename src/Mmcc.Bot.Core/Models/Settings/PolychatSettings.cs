@@ -19,5 +19,10 @@
         /// ID of the channel where MC chat will be forwarded to.
         /// </summary>
         public ulong ChatChannelId { get; set; }
+
+        /// <summary>
+        /// Settings for broadcasts.
+        /// </summary>
+        public BroadcastsSettings? BroadcastsSettings { get; set; }
     }
 }

@@ -23,8 +23,6 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
     /// <summary>
     /// Timed background service that deactivates moderation actions once they have expired.
     /// </summary>
-    ///
-    /// <inheritdoc cref="BackgroundService"/>
     public class ModerationBackgroundService : BackgroundService
     {
         private readonly IServiceProvider _sp;

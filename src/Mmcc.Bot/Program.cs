@@ -161,6 +161,9 @@ namespace Mmcc.Bot
                     services.AddSingleton<CentralServerBackgroundService>();
                     services.AddSingleton<IHostedService, CentralServerBackgroundService>(provider =>
                         provider.GetRequiredService<CentralServerBackgroundService>());
+                    services.AddSingleton<BroadcastsHostedService>();
+                    services.AddSingleton<IHostedService, BroadcastsHostedService>(provider =>
+                        provider.GetRequiredService<BroadcastsHostedService>());
 
                     services.AddSingleton<DiscordService>();
                     services.AddSingleton<IHostedService, DiscordService>(provider =>
