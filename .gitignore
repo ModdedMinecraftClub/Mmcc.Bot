@@ -4,6 +4,7 @@ logs
 # Don't include secrets
 appsettings.json
 appsettings.Development.json
+*.env
 
 # Ignore VSCode files
 .vscode/
