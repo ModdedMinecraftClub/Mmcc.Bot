@@ -15,10 +15,11 @@ services:
     build:
       context: "./src"
       dockerfile: "Mmcc.Bot/Dockerfile"
-    depends_on: 
-      - db
+    restart: always
     ports:
       - 5005:5005
+    depends_on: 
+      - db    
 
   phpmyadmin:
     image: phpmyadmin
