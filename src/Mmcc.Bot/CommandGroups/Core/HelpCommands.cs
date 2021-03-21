@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Google.Protobuf.WellKnownTypes;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
 using Remora.Commands.Attributes;
@@ -16,7 +14,7 @@ using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
 
-namespace Mmcc.Bot.CommandGroups
+namespace Mmcc.Bot.CommandGroups.Core
 {
     /// <summary>
     /// Help commands.
