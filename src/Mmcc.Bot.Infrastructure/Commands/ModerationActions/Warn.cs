@@ -117,9 +117,17 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
 
                 if (request.UserDiscordId is not null)
                 {
+                    var guildResult = await _guildApi.GetGuildAsync(request.GuildId, ct: cancellationToken);
+
+                    if (!guildResult.IsSuccess)
+                    {
+                        return Result.FromError(guildResult.Error);
+                    }
+                    
+                    var guildName = guildResult.Entity.Name;
                     var embed = new Embed
                     {
-                        Title = "You have been warned in Modded Minecraft Club.",
+                        Title = $"You have been warned in {guildName}.",
                         Colour = _colourPalette.Yellow,
                         Thumbnail = EmbedProperties.MmccLogoThumbnail,
                         Timestamp = DateTimeOffset.UtcNow,

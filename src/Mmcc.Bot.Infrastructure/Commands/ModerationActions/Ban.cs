@@ -133,6 +133,13 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
 
                 if (request.UserDiscordId is not null)
                 {
+                    var guildResult = await _guildApi.GetGuildAsync(request.GuildId, ct: cancellationToken);
+
+                    if (!guildResult.IsSuccess)
+                    {
+                        return Result.FromError(guildResult.Error);
+                    }
+                    
                     var banResult = await _guildApi.CreateGuildBanAsync(
                         request.GuildId,
                         request.UserDiscordId.Value,
@@ -145,9 +152,10 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                         return Result.FromError(banResult.Error);
                     }
 
+                    var guildName = guildResult.Entity.Name;
                     var embed = new Embed
                     {
-                        Title = "You have been banned from Modded Minecraft Club.",
+                        Title = $"You have been banned from {guildName}.",
                         Colour = _colourPalette.Red,
                         Thumbnail = EmbedProperties.MmccLogoThumbnail,
                         Timestamp = DateTimeOffset.UtcNow,
