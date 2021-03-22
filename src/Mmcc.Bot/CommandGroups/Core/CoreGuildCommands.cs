@@ -84,10 +84,7 @@ namespace Mmcc.Bot.CommandGroups.Core
 
             if (guildInfo.GuildIconUrl is not null)
             {
-                embed = embed with
-                {
-                    Thumbnail = new EmbedThumbnail(guildInfo.GuildIconUrl.ToString())
-                };
+                embed = embed with {Thumbnail = new EmbedThumbnail(guildInfo.GuildIconUrl.ToString())};
             }
 
             var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
