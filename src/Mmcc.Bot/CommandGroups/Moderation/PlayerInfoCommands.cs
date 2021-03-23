@@ -14,6 +14,7 @@ using Mmcc.Bot.Infrastructure.Queries.ModerationActions;
 using Mmcc.Bot.Infrastructure.Services;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
+using Remora.Discord.API;
 using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
@@ -79,9 +80,14 @@ namespace Mmcc.Bot.CommandGroups.Moderation
 
             if (user.Avatar?.Value is not null)
             {
-                var url = $"https://cdn.discordapp.com/avatars/{user.ID.Value}/{user.Avatar.Value}.png";
-                iconUrl = url;
-                embedThumbnail = new EmbedThumbnail(url, new(), new(), new());
+                var url = CDN.GetUserAvatarUrl(user, CDNImageFormat.PNG);
+                
+                if (url.IsSuccess)
+                {
+                    var urlString = url.Entity.ToString();
+                    iconUrl = urlString;
+                    embedThumbnail = new EmbedThumbnail(urlString);
+                }
             }
             
             var embed = new Embed
@@ -93,6 +99,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
             fields.Add(user.GetEmbedField());
             
             var getGuildMemberResult = await _guildApi.GetGuildMemberAsync(_context.Message.GuildID.Value, user.ID);
+            
             if (getGuildMemberResult.IsSuccess)
             {
                 var guildMember = getGuildMemberResult.Entity;
@@ -106,12 +113,12 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 }
 
                 guildParticipationEmbedFieldValue.AppendLine($"Roles: {rolesStrB}");
-                fields.Add(new EmbedField(":regional_indicator_m: Guild participation",
+                fields.Add(new EmbedField(":people_hugging: Guild participation",
                     guildParticipationEmbedFieldValue.ToString(), false));
             }
             else
             {
-                fields.Add(new EmbedField(":regional_indicator_m: Guild participation",
+                fields.Add(new EmbedField(":people_hugging: Guild participation",
                     "The user is not a member of the current guild.", false));
             }
 
@@ -132,7 +139,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
             else
             {
                 fields.Add(new EmbedField(":regional_indicator_m: Moderation events",
-                    $":x: Error: {queryResult.Error.Message}", false));
+                    $":x: Error obtaining moderation events: {queryResult.Error.Message}", false));
             }
             
             embed = embed with
