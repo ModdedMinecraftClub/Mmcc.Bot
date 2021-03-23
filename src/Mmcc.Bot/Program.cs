@@ -99,6 +99,7 @@ namespace Mmcc.Bot
                     {
                         options.Intents =
                             GatewayIntents.Guilds
+                            | GatewayIntents.DirectMessages
                             | GatewayIntents.GuildMembers
                             | GatewayIntents.GuildBans
                             | GatewayIntents.GuildMessages
