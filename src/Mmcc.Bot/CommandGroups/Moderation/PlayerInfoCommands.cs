@@ -28,6 +28,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
     /// </summary>
     [Group("info")]
     [Description("Information about players")]
+    [RequireGuild]
     public class PlayerInfoCommands : CommandGroup
     {
         private readonly MessageContext _context;
@@ -70,7 +71,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <returns>Result of the operation.</returns>
         [Command("discord", "d")]
         [Description("Obtains information about a Discord user")]
-        [RequireGuild]
         public async Task<IResult> InfoDiscord(IUser user)
         {
             var fields = new List<EmbedField>();
@@ -153,7 +153,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <returns>The result of the operation.</returns>
         [Command("ig")]
         [Description("Obtains information about a player by IGN")]
-        [RequireGuild]
         public async Task<IResult> InfoIg(string ign)
         {
             var embed = new Embed
