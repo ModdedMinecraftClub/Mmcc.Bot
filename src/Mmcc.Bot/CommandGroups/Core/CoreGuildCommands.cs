@@ -2,20 +2,16 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using MediatR;
-using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
 using Mmcc.Bot.Infrastructure.Queries.Basic;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
-using Remora.Discord.API;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
-using Remora.Discord.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.CommandGroups.Core
@@ -23,6 +19,7 @@ namespace Mmcc.Bot.CommandGroups.Core
     /// <summary>
     /// Core commands.
     /// </summary>
+    [RequireGuild]
     public class CoreGuildCommands : CommandGroup
     {
         private readonly MessageContext _context;
@@ -56,7 +53,6 @@ namespace Mmcc.Bot.CommandGroups.Core
 
         [Command("guild")]
         [Description("Provides information about the current guild.")]
-        [RequireGuild]
         public async Task<IResult> GuildInfo()
         {
             var queryResult = await _mediator.Send(new GetGuildInfo.Query(_context.GuildID.Value));
@@ -95,7 +91,6 @@ namespace Mmcc.Bot.CommandGroups.Core
 
         [Command("invite")]
         [Description("Gives an invite link to the current guild.")]
-        [RequireGuild]
         public async Task<IResult> Invite()
         {
             var queryResult = await _mediator.Send(new GetInviteLink.Query(_context.GuildID.Value));
