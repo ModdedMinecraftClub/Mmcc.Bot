@@ -164,7 +164,7 @@ namespace Mmcc.Bot
                         return discordConfig.Token;
                     });
                     
-                    // set up central server;
+                    // set up polychat central server;
                     services.AddSingleton<IPolychatService, PolychatService>();
                     services.AddSingleton(provider => new CentralServerService(
                         async (client, message) =>
@@ -185,19 +185,11 @@ namespace Mmcc.Bot
                         IPAddress.Loopback,
                         provider.GetRequiredService<PolychatSettings>().Port
                         ));
-                    services.AddSingleton<CentralServerBackgroundService>();
-                    services.AddSingleton<IHostedService, CentralServerBackgroundService>(provider =>
-                        provider.GetRequiredService<CentralServerBackgroundService>());
-                    services.AddSingleton<BroadcastsHostedService>();
-                    services.AddSingleton<IHostedService, BroadcastsHostedService>(provider =>
-                        provider.GetRequiredService<BroadcastsHostedService>());
-
-                    services.AddSingleton<DiscordService>();
-                    services.AddSingleton<IHostedService, DiscordService>(provider =>
-                        provider.GetRequiredService<DiscordService>());
-                    services.AddSingleton<ModerationBackgroundService>();
-                    services.AddSingleton<IHostedService, ModerationBackgroundService>(provider =>
-                        provider.GetRequiredService<ModerationBackgroundService>());
+                    services.AddHostedService<CentralServerBackgroundService>();
+                    services.AddHostedService<BroadcastsHostedService>();
+                    
+                    services.AddHostedService<DiscordService>();
+                    services.AddHostedService<ModerationBackgroundService>();
 
                     services.AddDiscordCaching();
                     services.Configure<CacheSettings>(settings =>
