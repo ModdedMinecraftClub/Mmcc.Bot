@@ -29,6 +29,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
     /// </summary>
     [Group("apps")]
     [Description("Member applications")]
+    [RequireGuild]
     public class MemberApplicationsCommands : CommandGroup
     {
         private readonly MessageContext _context;
@@ -66,7 +67,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
 
         [Command("info")]
         [Description("Gets info about the member role")]
-        [RequireGuild]
         public async Task<IResult> Info()
         {
             var getDataResult = await _mediator.Send(new GetInfoData.Query(_context.GuildID.Value));
@@ -114,7 +114,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <returns>Result of the operation.</returns>
         [Command("view", "v")]
         [Description("Views a member application by ID.")]
-        [RequireGuild]
         public async Task<IResult> View(int id)
         {
             if (id < 0)
@@ -156,7 +155,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <returns>Result of the operation.</returns>
         [Command("next", "n")]
         [Description("Views the next pending application in the queue")]
-        [RequireGuild]
         public async Task<IResult> ViewNextPending()
         {
             var queryResult = await _mediator.Send(new GetNextPending.Query {GuildId = _context.Message.GuildID.Value});
@@ -195,7 +193,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <returns>Result of the operation.</returns>
         [Command("pending", "p")]
         [Description("Views pending applications.")]
-        [RequireGuild]
         public async Task<IResult> ViewPending()
         {
             var queryResult = await _mediator.Send(
@@ -234,7 +231,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <returns>Result of the operation.</returns>
         [Command("approved")]
         [Description("Views last 10 approved applications.")]
-        [RequireGuild]
         public async Task<IResult> ViewApproved()
         {
             var queryResult = await _mediator.Send(
@@ -273,7 +269,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <returns>Result of the operation</returns>
         [Command("rejected")]
         [Description("Views last 10 rejected applications.")]
-        [RequireGuild]
         public async Task<IResult> ViewRejected()
         {
             var queryResult = await _mediator.Send(
@@ -315,7 +310,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <returns>The result of the operation.</returns>
         [Command("approve", "a")]
         [Description("Approves a member application.")]
-        [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> Approve(int id, string serverPrefix, List<string> ignsList)
         {
@@ -406,7 +400,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <returns>The result of the operation.</returns>
         [Command("reject", "r")]
         [Description("Rejects a member application.")]
-        [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> Reject(int id, [Greedy] string reason)
         {
