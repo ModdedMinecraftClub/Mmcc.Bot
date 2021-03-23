@@ -24,7 +24,6 @@ namespace Mmcc.Bot.CommandGroups.Core
     {
         private readonly MessageContext _context;
         private readonly IDiscordRestChannelAPI _channelApi;
-        private readonly IDiscordRestGuildAPI _guildApi;
         private readonly ColourPalette _colourPalette;
         private readonly IMediator _mediator;
 
@@ -33,20 +32,17 @@ namespace Mmcc.Bot.CommandGroups.Core
         /// </summary>
         /// <param name="context">The message context.</param>
         /// <param name="channelApi">The channel API.</param>
-        /// <param name="guildApi">The guild API.</param>
         /// <param name="colourPalette">The colour palette.</param>
         /// <param name="mediator">The mediator.</param>
         public CoreGuildCommands(
             MessageContext context,
             IDiscordRestChannelAPI channelApi,
-            IDiscordRestGuildAPI guildApi,
             ColourPalette colourPalette,
             IMediator mediator
         )
         {
             _context = context;
             _channelApi = channelApi;
-            _guildApi = guildApi;
             _colourPalette = colourPalette;
             _mediator = mediator;
         }
