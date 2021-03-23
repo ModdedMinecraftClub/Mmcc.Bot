@@ -19,6 +19,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
     /// Commands for banning users.
     /// </summary>
     [Group("ban")]
+    [RequireGuild]
     public class BanCommands : CommandGroup
     {
         private readonly MessageContext _context;
@@ -56,7 +57,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <remarks>This command is for Discord user only. It will not ban from MC servers.</remarks>
         [Command("discord", "d")]
         [Description("Bans a Discord user (Discord only)")]
-        [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> BanDiscord(IUser user, ExpiryDate expiryDate, [Greedy] string reason)
         {
@@ -99,7 +99,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <remarks>This command is for MC user only. It will not ban from Discord.</remarks>
         [Command("ig")]
         [Description("Bans a user from all MC servers. (In-game only)")]
-        [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> BanIg(string ign, ExpiryDate expiryDate, [Greedy] string reason)
         {
@@ -141,7 +140,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <returns>Result of the operation.</returns>
         [Command("all", "a")]
         [Description("Bans the user from both MC servers and Discord")]
-        [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> BanAll(IUser discordUser, string ign, ExpiryDate expiryDate, [Greedy] string reason)
         {
