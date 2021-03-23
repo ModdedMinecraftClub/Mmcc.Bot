@@ -2,18 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
-using Mmcc.Bot.Infrastructure.Commands.Polychat;
 using Mmcc.Bot.Infrastructure.Commands.Polychat.MessageSenders;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
-using Mmcc.Bot.Infrastructure.Requests.Generic;
 using Mmcc.Bot.Infrastructure.Services;
-using Mmcc.Bot.Protos;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
@@ -21,7 +17,6 @@ using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
-using Ssmp;
 
 namespace Mmcc.Bot.CommandGroups.Minecraft
 {
@@ -29,6 +24,7 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
     /// Commands for managing MC servers.
     /// </summary>
     [Group("mc")]
+    [RequireGuild]
     public class MinecraftServersCommands : CommandGroup
     {
         private readonly MessageContext _context;
@@ -67,7 +63,6 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
         /// <returns>Result of the operation.</returns>
         [Command("tps")]
         [Description("Shows current TPS of a MC server")]
-        [RequireGuild]
         public async Task<IResult> Tps(string serverId) =>
             await _mediator.Send(new SendTpsCommand.Command(serverId, _context.ChannelID));
 
@@ -80,7 +75,6 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
         /// <returns>Result of the operation.</returns>
         [Command("exec", "e", "execute")]
         [Description("Executes a command on a MC server")]
-        [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> Exec(string serverId, string command, [Greedy] IEnumerable<string> args) =>
             await _mediator.Send(new SendExecCommand.Command(serverId, _context.ChannelID, args));
@@ -92,7 +86,6 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
         /// <returns>Result of the operation.</returns>
         [Command("restart", "r")]
         [Description("Restarts a server")]
-        [RequireGuild]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> Restart(string serverId) =>
             await _mediator.Send(new SendRestartCommand.Command(serverId, _context.ChannelID));
@@ -103,7 +96,6 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
         /// <returns>Result of the operation.</returns>
         [Command("online", "o")]
         [Description("Shows info about online servers")]
-        [RequireGuild]
         public async Task<IResult> Online()
         {
             var totalServers = 0;
