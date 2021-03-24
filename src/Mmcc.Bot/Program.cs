@@ -148,6 +148,7 @@ namespace Mmcc.Bot
                     services.AddCommandGroup<MemberApplicationsCommands>();
 
                     // moderation;
+                    services.AddCommandGroup<GeneralModerationCommands>();
                     services.AddCommandGroup<PlayerInfoCommands>();
                     services.AddCommandGroup<BanCommands>();
                     services.AddCommandGroup<WarnCommands>();
