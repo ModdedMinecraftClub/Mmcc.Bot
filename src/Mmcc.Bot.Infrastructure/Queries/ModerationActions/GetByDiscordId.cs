@@ -20,18 +20,7 @@ namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
         /// <summary>
         /// Query to get moderation actions by Discord user ID.
         /// </summary>
-        public class Query : IRequest<Result<IList<ModerationAction>>>
-        {
-            /// <summary>
-            /// ID of the guild.
-            /// </summary>
-            public Snowflake GuildId { get; set; }
-            
-            /// <summary>
-            /// ID of the Discord user.
-            /// </summary>
-            public ulong DiscordUserId { get; set; }
-        }
+        public record Query(Snowflake GuildId, ulong DiscordUserId) : IRequest<Result<IList<ModerationAction>>>;
 
         /// <inheritdoc />
         public class Handler : IRequestHandler<Query, Result<IList<ModerationAction>>>

@@ -14,18 +14,12 @@ namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
     /// <summary>
     /// Gets all active moderation actions.
     /// </summary>
-    public class GetAllActive
+    public class GetActionsToDisable
     {
         /// <summary>
         /// Query to get all active moderation actions.
         /// </summary>
-        public class Query : IRequest<Result<IList<ModerationAction>>>
-        {
-            /// <summary>
-            /// Whether to enable tracking.
-            /// </summary>
-            public bool EnableTracking { get; set; } = true;
-        }
+        public record Query(bool EnableTracking = true) : IRequest<Result<IList<ModerationAction>>>;
         
         /// <inheritdoc />
         public class Handler : IRequestHandler<Query, Result<IList<ModerationAction>>>
@@ -46,8 +40,12 @@ namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
             {
                 try
                 {
+                    var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     var cmd = _context.ModerationActions
-                        .Where(ma => ma.IsActive);
+                        .Where(ma => ma.IsActive
+                                     && ma.ExpiryDate != null
+                                     && ma.ModerationActionType != ModerationActionType.Warn
+                                     && ma.ExpiryDate < now);
 
                     if (!request.EnableTracking)
                     {

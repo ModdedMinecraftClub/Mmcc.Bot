@@ -20,7 +20,7 @@ namespace Mmcc.Bot.Infrastructure.Services
         /// <param name="moderationAction">Moderation action to deactivate.</param>
         /// <param name="channelId">Channel ID to which polychat2 will send the notification if needed.</param>
         /// <returns>Result of the operation.</returns>
-        Task<Result> Deactivate(ModerationAction moderationAction, Snowflake channelId);
+        Task<Result<ModerationAction>> Deactivate(ModerationAction moderationAction, Snowflake channelId);
     }
     
     /// <inheritdoc />
@@ -38,7 +38,7 @@ namespace Mmcc.Bot.Infrastructure.Services
         }
 
         /// <inheritdoc />
-        public async Task<Result> Deactivate(ModerationAction moderationAction, Snowflake channelId)
+        public async Task<Result<ModerationAction>> Deactivate(ModerationAction moderationAction, Snowflake channelId)
         {
             // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
             switch (moderationAction.ModerationActionType)
@@ -46,20 +46,10 @@ namespace Mmcc.Bot.Infrastructure.Services
                 case ModerationActionType.Ban:
                     var command = await _mediator.Send(new Unban.Command
                         {ModerationAction = moderationAction, ChannelId = channelId});
-                    
-                    if (!command.IsSuccess)
-                    {
-                        return Result.FromError(command.Error);
-                    }
-                    
-                    break;
-                case ModerationActionType.Mute:
-                    throw new NotImplementedException();
+                    return !command.IsSuccess ? Result<ModerationAction>.FromError(command.Error) : command.Entity;
                 default:
                     return new UnsupportedFeatureError("Unsupported moderation type.");
             }
-            
-            return Result.FromSuccess();
         }
     }
 }

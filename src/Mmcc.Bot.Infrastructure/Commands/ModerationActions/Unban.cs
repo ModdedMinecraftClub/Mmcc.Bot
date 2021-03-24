@@ -27,7 +27,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
         /// <summary>
         /// Command to unban a user.
         /// </summary>
-        public class Command : IRequest<Result>
+        public class Command : IRequest<Result<ModerationAction>>
         {
             /// <summary>
             /// Moderation action.
@@ -41,7 +41,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
         }
         
         /// <inheritdoc />
-        public class Handler : IRequestHandler<Command, Result>
+        public class Handler : IRequestHandler<Command, Result<ModerationAction>>
         {
             private readonly BotContext _context;
             private readonly IPolychatService _ps;
@@ -81,7 +81,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             }
 
             /// <inheritdoc />
-            public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<ModerationAction>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var ma = request.ModerationAction;
                 if (ma.ModerationActionType != ModerationActionType.Ban)
@@ -112,7 +112,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
 
                     if (!banResult.IsSuccess)
                     {
-                        return Result.FromError(banResult.Error);
+                        return Result<ModerationAction>.FromError(banResult.Error);
                     }
 
                     var embed = new Embed
@@ -150,7 +150,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                     return e;
                 }
                 
-                return Result.FromSuccess();
+                return ma;
             }
         }
     }

@@ -20,19 +20,8 @@ namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
         /// <summary>
         /// Query to get moderation actions by IGN.
         /// </summary>
-        public class Query : IRequest<Result<IList<ModerationAction>>>
-        {
-            /// <summary>
-            /// ID of the guild.
-            /// </summary>
-            public Snowflake GuildId { get; set; }
+        public record Query(Snowflake GuildId, string Ign) : IRequest<Result<IList<ModerationAction>>>;
 
-            /// <summary>
-            /// Minecraft IGN of the user.
-            /// </summary>
-            public string Ign { get; set; } = null!;
-        }
-        
         /// <inheritdoc />
         public class Handler : IRequestHandler<Query, Result<IList<ModerationAction>>>
         {
@@ -55,8 +44,9 @@ namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
                     var res = _context.ModerationActions
                         .AsNoTracking()
                         .Where(ma =>
-                            ma.UserIgn != null && ma.UserIgn.Equals(request.Ign) &&
-                            ma.GuildId == request.GuildId.Value);
+                            ma.UserIgn != null
+                            && ma.UserIgn.Equals(request.Ign)
+                            && ma.GuildId == request.GuildId.Value);
                     return await res.ToListAsync(cancellationToken);
                 }
                 catch (Exception e)

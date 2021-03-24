@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Mmcc.Bot.Core.Extensions.Database.Entities;
 using Mmcc.Bot.Core.Extensions.Remora.Discord.API.Abstractions.Rest;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
@@ -72,7 +73,7 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
             var mediator = provider.GetRequiredService<IMediator>();
             var ms = provider.GetRequiredService<IModerationService>();
             var channelApi = provider.GetRequiredService<IDiscordRestChannelAPI>();
-            var getAllPendingResult = await mediator.Send(new GetAllActive.Query(), ct);
+            var getAllPendingResult = await mediator.Send(new GetActionsToDisable.Query(), ct);
 
             if (!getAllPendingResult.IsSuccess)
             {
@@ -80,14 +81,12 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
                 return;
             }
 
-            var actionsToDeactivate = getAllPendingResult.Entity
-                .Where(ma =>
-                    ma.ModerationActionType != ModerationActionType.Mute
-                    && ma.ExpiryDate is not null
-                    && DateTimeOffset.FromUnixTimeMilliseconds(ma.ExpiryDate.Value) < DateTimeOffset.Now);
+            var actionsToDeactivate = getAllPendingResult.Entity;
 
             foreach (var ma in actionsToDeactivate)
             {
+                if (ma is null) break;
+                
                 var getLogsChannel = await guildApi.FindGuildChannelByName(new Snowflake(ma.GuildId),
                     _discordSettings.ChannelNames.ModerationLogs);
                 if (!getLogsChannel.IsSuccess)
@@ -108,12 +107,7 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
                     $"Successfully deactivated expired moderation action with ID: {ma.ModerationActionId} but failed to send a notification to the logs channel." +
                     " It may be because the bot doesn't have permissions in that channel or has since been removed from the guild. This warning can in most cases be ignored.";
 
-                var typeString = ma.ModerationActionType switch
-                {
-                    ModerationActionType.Mute => $":no_mouth: {ma.ModerationActionType.ToString()}",
-                    ModerationActionType.Ban => $":no_pedestrians: {ma.ModerationActionType.ToString()}",
-                    _ => "`Unsupported`"
-                };
+                var typeString = ma.ModerationActionType.ToStringWithEmoji();
                 var userSb = new StringBuilder();
 
                 if (ma.UserDiscordId is not null)

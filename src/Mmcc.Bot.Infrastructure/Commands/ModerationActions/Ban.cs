@@ -26,7 +26,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
         /// <summary>
         /// Command to ban a user.
         /// </summary>
-        public class Command : IRequest<Result>
+        public class Command : IRequest<Result<ModerationAction>>
         {
             /// <summary>
             /// Channel ID.
@@ -60,7 +60,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
         }
         
         /// <inheritdoc />
-        public class Handler : IRequestHandler<Command, Result>
+        public class Handler : IRequestHandler<Command, Result<ModerationAction>>
         {
             private readonly BotContext _context;
             private readonly IDiscordRestGuildAPI _guildApi;
@@ -104,7 +104,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             }
 
             /// <inheritdoc />
-            public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<ModerationAction>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var banModerationAction = new ModerationAction
                 (
@@ -137,7 +137,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
 
                     if (!guildResult.IsSuccess)
                     {
-                        return Result.FromError(guildResult.Error);
+                        return Result<ModerationAction>.FromError(guildResult.Error);
                     }
                     
                     var banResult = await _guildApi.CreateGuildBanAsync(
@@ -149,7 +149,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
 
                     if (!banResult.IsSuccess)
                     {
-                        return Result.FromError(banResult.Error);
+                        return Result<ModerationAction>.FromError(banResult.Error);
                     }
 
                     var guildName = guildResult.Entity.Name;
@@ -204,7 +204,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                     return e;
                 }
                 
-                return Result.FromSuccess();
+                return banModerationAction;
             }
         }
     }

@@ -122,13 +122,8 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     "The user is not a member of the current guild.", false));
             }
 
-            var queryResult = await _mediator.Send(
-                new GetByDiscordId.Query
-                {
-                    DiscordUserId = user.ID.Value,
-                    GuildId = _context.Message.GuildID.Value
-                }
-            );
+            var queryResult =
+                await _mediator.Send(new GetByDiscordId.Query(_context.Message.GuildID.Value, user.ID.Value));
             
             if (queryResult.IsSuccess)
             {
@@ -169,13 +164,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 Thumbnail = EmbedProperties.MmccLogoThumbnail
             };
             var fields = new List<EmbedField>();
-            var queryResult = await _mediator.Send(
-                new GetByIgn.Query
-                {
-                    Ign = ign,
-                    GuildId = _context.Message.GuildID.Value
-                }
-            );
+            var queryResult = await _mediator.Send(new GetByIgn.Query(_context.Message.GuildID.Value, ign));
             var getUuid = await _mojangApi.GetPlayerUuidInfo(ign);
             
             if (getUuid.IsSuccess && getUuid.Entity is not null)
