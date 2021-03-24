@@ -143,6 +143,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                 try
                 {
                     ma.IsActive = false;
+                    ma.ExpiryDate = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     await _context.SaveChangesAsync(cancellationToken);
                 }
                 catch (Exception e)
