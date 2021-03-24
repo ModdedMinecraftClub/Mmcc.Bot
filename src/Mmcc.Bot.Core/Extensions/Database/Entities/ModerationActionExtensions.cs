@@ -47,14 +47,14 @@ namespace Mmcc.Bot.Core.Extensions.Database.Entities
                     if (showAssociatedDiscord)
                     {
                         fieldValue.AppendLine(moderationAction.UserDiscordId is null
-                            ? "Associated Discord user: `None`"
+                            ? "Associated Discord user: None"
                             : $"Associated Discord user: <@{moderationAction.UserDiscordId}>");
                     }
                     
                     if (showAssociatedIgn)
                     {
                         fieldValue.AppendLine(moderationAction.UserIgn is null
-                            ? "Associated IGN user: `None`"
+                            ? "Associated IGN user: None"
                             : $"Associated IGN user: `{moderationAction.UserIgn}`");
                     }
                     
