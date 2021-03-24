@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Extensions.Database.Entities;
 using Mmcc.Bot.Core.Models;
+using Mmcc.Bot.Core.Statics;
+using Mmcc.Bot.Database.Entities;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
 using Mmcc.Bot.Infrastructure.Queries.ModerationActions;
 using Mmcc.Bot.Infrastructure.Services;
@@ -15,6 +18,7 @@ using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
+using Remora.Discord.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.CommandGroups.Moderation
@@ -86,8 +90,15 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                             ? $"<@{getAppResult.Entity.UserDiscordId}>"
                             : "None", false)
                 },
-                Timestamp = DateTimeOffset.UtcNow,
-                Colour = _colourPalette.Green
+                Colour = getAppResult.Entity.ModerationActionType switch
+                {
+                    ModerationActionType.Ban => _colourPalette.Red,
+                    ModerationActionType.Mute => _colourPalette.Pink,
+                    ModerationActionType.Warn => _colourPalette.Yellow,
+                    _ => new Optional<Color>()
+                },
+                Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                Timestamp = DateTimeOffset.UtcNow
             };
             return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed); 
         }
@@ -135,8 +146,9 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                             ? $"<@{deactivateResult.Entity.UserDiscordId}>"
                             : "None", false)
                 },
-                Timestamp = DateTimeOffset.UtcNow,
-                Colour = _colourPalette.Green
+                Colour = _colourPalette.Green,
+                Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                Timestamp = DateTimeOffset.UtcNow
             };
             return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed); 
         }
