@@ -53,7 +53,7 @@ namespace Mmcc.Bot.Core.Extensions.Database.Entities
                     
                     if (showAssociatedIgn)
                     {
-                        fieldValue.AppendLine(moderationAction.UserDiscordId is null
+                        fieldValue.AppendLine(moderationAction.UserIgn is null
                             ? "Associated IGN user: `None`"
                             : $"Associated IGN user: `{moderationAction.UserIgn}`");
                     }
