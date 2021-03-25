@@ -51,16 +51,14 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         [Description("Warns a Discord user (Discord only)")]
         public async Task<IResult> WarnDiscord(IUser user, [Greedy] string reason)
         {
-            var commandResult = await _mediator.Send
-            (
-                new Warn.Command
-                {
-                    UserDiscordId = user.ID,
-                    GuildId = _context.Message.GuildID.Value,
-                    Reason = reason,
-                    UserIgn = null
-                }
-            );
+            var commandResult = await _mediator.Send(new Warn.Command
+            {
+                UserDiscordId = user.ID,
+                GuildId = _context.Message.GuildID.Value,
+                Reason = reason,
+                UserIgn = null
+            });
+            
             if (!commandResult.IsSuccess)
             {
                 return Result.FromError(commandResult.Error);
@@ -71,29 +69,24 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 Title = ":white_check_mark: Discord user has been successfully warned (Discord only).",
                 Timestamp = DateTimeOffset.UtcNow
             };
-            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-            return !sendMessageResult.IsSuccess
-                ? Result.FromError(sendMessageResult)
-                : Result.FromSuccess();
+            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
         }
 
         [Command("ig")]
         [Description("Warns a player in-game (in-game only).")]
         public async Task<IResult> WarnIg(string ign, [Greedy] string reason)
         {
-            var commandResult = await _mediator.Send
-            (
-                new Warn.Command
-                {
-                    UserIgn = ign,
-                    GuildId = _context.Message.GuildID.Value,
-                    Reason = reason,
-                    UserDiscordId = null
-                }
-            );
+            var commandResult = await _mediator.Send(new Warn.Command
+            {
+                UserIgn = ign,
+                GuildId = _context.Message.GuildID.Value,
+                Reason = reason,
+                UserDiscordId = null
+            });
+            
             if (!commandResult.IsSuccess)
             {
-                return Result.FromError(commandResult.Error);
+                return commandResult;
             }
 
             var embed = _embedBase with
@@ -101,10 +94,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 Title = ":white_check_mark: In-game user has been successfully warned (In-game only).",
                 Timestamp = DateTimeOffset.UtcNow
             };
-            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-            return !sendMessageResult.IsSuccess
-                ? Result.FromError(sendMessageResult)
-                : Result.FromSuccess();
+            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
         }
 
         [Command("all", "a")]
@@ -123,7 +113,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
             );
             if (!commandResult.IsSuccess)
             {
-                return Result.FromError(commandResult.Error);
+                return commandResult;
             }
 
             var embed = _embedBase with
@@ -131,10 +121,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 Title = ":white_check_mark: User has been successfully warned both in-game and on Discord.",
                 Timestamp = DateTimeOffset.UtcNow
             };
-            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-            return !sendMessageResult.IsSuccess
-                ? Result.FromError(sendMessageResult)
-                : Result.FromSuccess();
+            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
         }
     }
 }

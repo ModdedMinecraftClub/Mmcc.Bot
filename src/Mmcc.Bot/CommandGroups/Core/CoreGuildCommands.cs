@@ -79,10 +79,7 @@ namespace Mmcc.Bot.CommandGroups.Core
                 embed = embed with {Thumbnail = new EmbedThumbnail(guildInfo.GuildIconUrl.ToString())};
             }
 
-            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-            return !sendMessageResult.IsSuccess
-                ? Result.FromError(sendMessageResult)
-                : Result.FromSuccess();
+            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
         }
 
         [Command("invite")]
@@ -97,10 +94,7 @@ namespace Mmcc.Bot.CommandGroups.Core
             }
 
             var msg = $"https://discord.gg/{queryResult.Entity}";
-            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, msg);
-            return !sendMessageResult.IsSuccess
-                ? Result.FromError(sendMessageResult)
-                : Result.FromSuccess();
+            return await _channelApi.CreateMessageAsync(_context.ChannelID, msg);
         }
     }
 }

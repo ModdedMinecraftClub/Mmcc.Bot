@@ -101,10 +101,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 Timestamp = DateTimeOffset.UtcNow,
                 Colour = _colourPalette.Blue
             };
-            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-            return !sendMessageResult.IsSuccess
-                ? Result.FromError(sendMessageResult)
-                : Result.FromSuccess();
+            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
         }
 
         /// <summary>
@@ -123,13 +120,11 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 );
             }
 
-            var query = await _mediator.Send(
-                new GetById.Query
-                {
-                    ApplicationId = id,
-                    GuildId = _context.Message.GuildID.Value
-                }
-            );
+            var query = await _mediator.Send(new GetById.Query
+            {
+                ApplicationId = id,
+                GuildId = _context.Message.GuildID.Value
+            });
             if (!query.IsSuccess)
             {
                 return Result.FromError(query.Error);

@@ -65,7 +65,7 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
                 Timestamp = DateTimeOffset.Now
             };
             var createMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-            if (!createMessageResult.IsSuccess || createMessageResult.Entity is null)
+            if (!createMessageResult.IsSuccess)
             {
                 return Result.FromError(createMessageResult);
             }
@@ -105,11 +105,7 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
                 Timestamp = DateTimeOffset.UtcNow,
                 Colour = _colourPalette.Green
             };
-            var modifyMessageResult =
-                await _channelApi.EditMessageAsync(_context.ChannelID, createMessageResult.Entity.ID, embed: newEmbed);
-            return !modifyMessageResult.IsSuccess
-                ? Result.FromError(modifyMessageResult)
-                : Result.FromSuccess();
+            return await _channelApi.EditMessageAsync(_context.ChannelID, createMessageResult.Entity.ID, embed: newEmbed);
         }
 
         /// <summary>
@@ -149,14 +145,11 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
                 Title = "Drives diagnostics",
                 Colour = _colourPalette.Blue,
                 Thumbnail = EmbedProperties.MmccLogoThumbnail,
-                Footer = new EmbedFooter("Dedicated server", new(), new()),
+                Footer = new EmbedFooter("Dedicated server"),
                 Timestamp = DateTimeOffset.UtcNow,
                 Fields = embedFields
             };
-            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-            return !sendMessageResult.IsSuccess
-                ? Result.FromError(sendMessageResult)
-                : Result.FromSuccess();
+            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
         }
     }
 }

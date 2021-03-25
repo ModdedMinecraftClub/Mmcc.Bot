@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Threading.Tasks;
 using MediatR;
-using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Extensions.Database.Entities;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
@@ -63,20 +62,13 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         [Description("Views a moderation action.")]
         public async Task<IResult> View(int id)
         {
-            var getAppResult =
-                await _mediator.Send(new GetById.Query(ModerationActionId: id, GuildId: _context.GuildID.Value,
-                    EnableTracking: false));
+            var getAppResult = await _mediator.Send(new GetById.Query(id, _context.GuildID.Value, false));
             
             if (!getAppResult.IsSuccess)
             {
                 return getAppResult;
             }
-            if (getAppResult.Entity is null)
-            {
-                return Result.FromError(
-                    new NotFoundError($"Could not find application with ID {id} that belongs to current guild."));
-            }
-            
+
             var embed = new Embed
             {
                 Title = "Moderation action information",
@@ -118,11 +110,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
             if (!getAppResult.IsSuccess)
             {
                 return getAppResult;
-            }
-            if (getAppResult.Entity is null)
-            {
-                return Result.FromError(
-                    new NotFoundError($"Could not find application with ID {id} that belongs to current guild."));
             }
 
             var deactivateResult = await _moderationService.Deactivate(getAppResult.Entity, _context.ChannelID);

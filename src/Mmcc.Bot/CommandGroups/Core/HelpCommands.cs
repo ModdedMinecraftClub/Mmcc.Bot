@@ -63,7 +63,7 @@ namespace Mmcc.Bot.CommandGroups.Core
                 var sendEmbedResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
                 if (!sendEmbedResult.IsSuccess)
                 {
-                    return Result.FromError(sendEmbedResult);
+                    return sendEmbedResult;
                 }
             }
             

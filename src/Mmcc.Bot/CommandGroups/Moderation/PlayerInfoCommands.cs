@@ -80,11 +80,11 @@ namespace Mmcc.Bot.CommandGroups.Moderation
 
             if (user.Avatar?.Value is not null)
             {
-                var url = CDN.GetUserAvatarUrl(user, CDNImageFormat.PNG);
+                var getUrlResult = CDN.GetUserAvatarUrl(user, CDNImageFormat.PNG);
                 
-                if (url.IsSuccess)
+                if (getUrlResult.IsSuccess)
                 {
-                    var urlString = url.Entity.ToString();
+                    var urlString = getUrlResult.Entity.ToString();
                     iconUrl = urlString;
                     embedThumbnail = new EmbedThumbnail(urlString);
                 }
@@ -142,10 +142,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 Fields = fields,
                 Timestamp = DateTimeOffset.Now
             };
-            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-            return !sendMessageResult.IsSuccess
-                ? Result.FromError(sendMessageResult)
-                : Result.FromSuccess();
+            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
         }
 
         /// <summary>
@@ -198,10 +195,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 Fields = fields,
                 Timestamp = DateTimeOffset.Now
             };
-            var sendMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-            return !sendMessageResult.IsSuccess
-                ? Result.FromError(sendMessageResult)
-                : Result.FromSuccess();
+            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
         }
     }
 }
