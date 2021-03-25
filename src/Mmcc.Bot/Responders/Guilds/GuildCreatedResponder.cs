@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -43,24 +45,33 @@ namespace Mmcc.Bot.Responders.Guilds
             _logger.LogInformation($"Setting up guild with ID: \"{ev.ID}\" and Name: \"{ev.Name}\"");
             
             var channels = ev.Channels;
-            string[] requiredChannels =
-            {
-                _discordSettings.ChannelNames.LogsSpam, _discordSettings.ChannelNames.MemberApps,
-                _discordSettings.ChannelNames.ModerationLogs
-            };
+
+            List<string> requiredChannels = _discordSettings.ChannelNames
+                .GetType()
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .Where(p => p.CanRead && p.PropertyType == typeof(string))
+                .Select(p => p.GetValue(_discordSettings.ChannelNames) as string)
+                .Where(s => s is not null)
+                .ToList()!;
             
             if (!channels.HasValue)
             {
                 foreach (var requiredChannel in requiredChannels)
                 {
                     var createChannelResult = await _guildApi.CreateGuildChannelAsync(ev.ID, requiredChannel, ChannelType.GuildText, ct :ct);
-                    if (!createChannelResult.IsSuccess) return new SetupError("Failed to create required channels.");
+
+                    if (!createChannelResult.IsSuccess)
+                    {
+                        return new SetupError("Failed to create required channels.");    
+                    }
+                    
                     _logger.LogInformation(
                         $"Created required channel \"{requiredChannel}\" in guild with ID: \"{ev.ID}\" and Name: \"{ev.Name}\"");
                 }
             }
             else
             {
+                // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
                 foreach (var requiredChannel in requiredChannels)
                 {
                     // ReSharper disable once InvertIf
