@@ -3,7 +3,7 @@ version: "3.8"
 services:
   db:
     image: mariadb:latest
-    restart: always
+    restart: unless-stopped
     ports:
       - 3306:3306
     env_file:
@@ -15,7 +15,7 @@ services:
     build:
       context: "./src"
       dockerfile: "Mmcc.Bot/Dockerfile"
-    restart: always
+    restart: unless-stopped
     ports:
       - 5005:5005
     depends_on: 
@@ -23,7 +23,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin
-    restart: always
+    restart: unless-stopped
     ports:
       - 5006:80
     environment:
