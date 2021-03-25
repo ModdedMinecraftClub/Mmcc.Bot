@@ -45,7 +45,6 @@ namespace Mmcc.Bot.Responders.Guilds
             _logger.LogInformation($"Setting up guild with ID: \"{ev.ID}\" and Name: \"{ev.Name}\"");
             
             var channels = ev.Channels;
-
             List<string> requiredChannels = _discordSettings.ChannelNames
                 .GetType()
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
