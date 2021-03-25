@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Mmcc.Bot.Database.Entities
+﻿namespace Mmcc.Bot.Database.Entities
 {
     /// <summary>
     /// Represents a tag.
@@ -55,6 +53,17 @@ namespace Mmcc.Bot.Database.Entities
         /// </summary>
         public ulong? LastModifiedByDiscordId { get; set; }
 
+        /// <summary>
+        /// Instantiates a new instance of the <see cref="Tag"/> class.
+        /// </summary>
+        /// <param name="guildId">ID of the guild.</param>
+        /// <param name="tagName">Name of the tag.</param>
+        /// <param name="content">Content of the tag.</param>
+        /// <param name="createdAt">When the tag was created.</param>
+        /// <param name="createdByDiscordId">Discord ID of the user that created the tag.</param>
+        /// <param name="tagDescription">Description of the tag. Set to <code>null</code> if no description.</param>
+        /// <param name="lastModifiedAt">When the tag was last modified. Set to <code>null</code> if the tag has not been modified since its creation.</param>
+        /// <param name="lastModifiedByDiscordId">Discord ID of the user that has last modified the tag. Set to <code>null</code> if the tag has not been modified since its creation.</param>
         public Tag(
             ulong guildId,
             string tagName,
