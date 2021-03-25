@@ -70,7 +70,12 @@ namespace Mmcc.Bot.Responders.Guilds
                     )
                     {
                         var createChannelResult = await _guildApi.CreateGuildChannelAsync(ev.ID, requiredChannel, ChannelType.GuildText, ct :ct);
-                        if (!createChannelResult.IsSuccess) return new SetupError("Failed to create required channels.");
+
+                        if (!createChannelResult.IsSuccess)
+                        {
+                            return new SetupError("Failed to create required channels.");    
+                        }
+                        
                         _logger.LogInformation(
                             $"Created required channel \"{requiredChannel}\" in guild with ID: \"{ev.ID}\" and Name: \"{ev.Name}\"");
                     }
