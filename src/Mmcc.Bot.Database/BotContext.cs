@@ -7,14 +7,19 @@ namespace Mmcc.Bot.Database
     public class BotContext : DbContext
     {
         /// <summary>
-        /// Member applications <see cref="DbSet{TEntity}"/>.
+        /// Member applications.
         /// </summary>
         public DbSet<MemberApplication> MemberApplications { get; set; } = null!;
         
         /// <summary>
-        /// Moderation actions <see cref="DbSet{TEntity}"/>.
+        /// Moderation actions.
         /// </summary>
         public DbSet<ModerationAction> ModerationActions { get; set; } = null!;
+
+        /// <summary>
+        /// Tags.
+        /// </summary>
+        public DbSet<Tag> Tags { get; set; } = null!;
         
         /// <inheritdoc />
         public BotContext(DbContextOptions<BotContext> options)
@@ -42,6 +47,14 @@ namespace Mmcc.Bot.Database
 
                 e.Property(m => m.ModerationActionType)
                     .HasColumnType("int(1)");
+            });
+            
+            modelBuilder.Entity<Tag>(e =>
+            {
+                e.HasKey(t => new {t.GuildId, t.TagName});
+                
+                e.HasIndex(t => t.GuildId);
+                e.HasIndex(t => t.TagName);
             });
         }
     }
