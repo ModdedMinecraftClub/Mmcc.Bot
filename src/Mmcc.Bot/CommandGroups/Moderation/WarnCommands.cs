@@ -19,6 +19,8 @@ namespace Mmcc.Bot.CommandGroups.Moderation
     /// Commands for issuing warnings.
     /// </summary>
     [Group("warn")]
+    [RequireGuild]
+    [RequireUserGuildPermission(DiscordPermission.BanMembers)]
     public class WarnCommands : CommandGroup
     {
         private readonly MessageContext _context;
@@ -47,8 +49,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
 
         [Command("discord", "d")]
         [Description("Warns a Discord user (Discord only)")]
-        [RequireGuild]
-        [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> WarnDiscord(IUser user, [Greedy] string reason)
         {
             var commandResult = await _mediator.Send
@@ -79,8 +79,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
 
         [Command("ig")]
         [Description("Warns a player in-game (in-game only).")]
-        [RequireGuild]
-        [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> WarnIg(string ign, [Greedy] string reason)
         {
             var commandResult = await _mediator.Send
@@ -111,8 +109,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
 
         [Command("all", "a")]
         [Description("Warns a player both in-game and on Discord.")]
-        [RequireGuild]
-        [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> WarnAll(IUser discordUser, string ign, [Greedy] string reason)
         {
             var commandResult = await _mediator.Send
