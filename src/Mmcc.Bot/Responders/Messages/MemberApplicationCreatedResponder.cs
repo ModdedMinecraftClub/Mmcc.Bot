@@ -46,23 +46,12 @@ namespace Mmcc.Bot.Responders.Messages
         public async Task<Result> RespondAsync(IMessageCreate ev, CancellationToken ct = default)
         {
             // return if the message has no screenshot;
-            if (ev.Attachments.Count == 0)
-            {
-                return Result.FromSuccess();
-            }
-            
-            // return if the message is by a bot;
-            var isBot = ev.Author.IsBot;
-            if (isBot.HasValue)
-            {
-                if (isBot.Value)
-                {
-                    return Result.FromSuccess();
-                }
-            }
-            
-            // return if not in a guild;
-            if (!ev.GuildID.HasValue)
+            if (
+                ev.Attachments.Count == 0
+                || ev.Author.IsBot.HasValue && ev.Author.IsBot.Value
+                || ev.Author.IsSystem.HasValue && ev.Author.IsSystem.Value
+                || !ev.GuildID.HasValue
+            )
             {
                 return Result.FromSuccess();
             }

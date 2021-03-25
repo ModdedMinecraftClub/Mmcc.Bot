@@ -45,49 +45,19 @@ namespace Mmcc.Bot.Responders.Messages
         /// <inheritdoc />
         public async Task<Result> RespondAsync(IMessageUpdate ev, CancellationToken ct = default)
         {
-            // return if the message has no screenshot;
-            if (!ev.Attachments.HasValue)
-            {
-                return Result.FromSuccess();
-            }
-            if (ev.Attachments.Value.Count == 0)
-            {
-                return Result.FromSuccess();
-            }
-            
-            // return if no ID;
-            if (!ev.ID.HasValue)
-            {
-                return Result.FromSuccess();
-            }
-            
-            // return if no author;
-            if (!ev.Author.HasValue)
-            {
-                return Result.FromSuccess();
-            }
-            
-            // return if bot
-            if (ev.Author.Value.IsBot.HasValue)
-            {
-                if (ev.Author.Value.IsBot.Value)
-                {
-                    return Result.FromSuccess();
-                }
-            }
-            
-            // return if not in a guild;
-            if (!ev.GuildID.HasValue)
+            if (
+                !ev.Attachments.HasValue
+                || ev.Attachments.Value.Count == 0
+                || !ev.ID.HasValue
+                || !ev.Author.HasValue
+                || ev.Author.Value.IsBot.HasValue && ev.Author.Value.IsBot.Value
+                || !ev.GuildID.HasValue
+                || !ev.ChannelID.HasValue
+            )
             {
                 return Result.FromSuccess();
             }
 
-            // return if no channel;
-            if (!ev.ChannelID.HasValue)
-            {
-                return Result.FromSuccess();
-            }
-            
             var getChannelNameResult = await _channelApi.GetChannelAsync(ev.ChannelID.Value, ct);
             if (!getChannelNameResult.IsSuccess)
             {
