@@ -13,6 +13,7 @@ using Mmcc.Bot.CommandGroups.Core;
 using Mmcc.Bot.CommandGroups.Diagnostics;
 using Mmcc.Bot.CommandGroups.Minecraft;
 using Mmcc.Bot.CommandGroups.Moderation;
+using Mmcc.Bot.CommandGroups.Tags;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Database;
@@ -137,6 +138,10 @@ namespace Mmcc.Bot
                     // core commands;
                     services.AddCommandGroup<HelpCommands>();
                     services.AddCommandGroup<CoreGuildCommands>();
+                    
+                    // tags;
+                    services.AddCommandGroup<TagsManagementCommands>();
+                    services.AddCommandGroup<TagsUsageCommands>();
 
                     // diagnostics;
                     services.AddCommandGroup<DiagnosticsCommands>();
