@@ -162,6 +162,7 @@ namespace Mmcc.Bot
                     services.AddResponder<UserJoinedResponder>();
                     services.AddResponder<UserLeftResponder>();
                     services.AddResponder<FeedbackPostedResponder>();
+                    services.AddResponder<FeedbackAddressedResponder>();
                     services.AddResponder<MemberApplicationCreatedResponder>();
                     services.AddResponder<MemberApplicationUpdatedResponder>();
 
