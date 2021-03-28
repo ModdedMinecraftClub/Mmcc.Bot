@@ -113,13 +113,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         [Description("Views a member application by ID.")]
         public async Task<IResult> View(int id)
         {
-            if (id < 0)
-            {
-                return Result.FromError(
-                    new ValidationError("Parameter `id` cannot be less than 0.")
-                );
-            }
-
             var query = await _mediator.Send(new GetById.Query
             {
                 ApplicationId = id,
@@ -308,31 +301,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> Approve(int id, string serverPrefix, List<string> ignsList)
         {
-            if (id < 0)
-            {
-                return Result.FromError(
-                    new ValidationError("Parameter `id` cannot be less than 0.")
-                );
-            }
-            if (string.IsNullOrWhiteSpace(serverPrefix))
-            {
-                return Result.FromError(
-                    new ValidationError("Parameter `serverPrefix` cannot be null, empty or whitespace.")
-                );
-            }
-            if (serverPrefix.Length < 2)
-            {
-                return Result.FromError(
-                    new ValidationError("Parameter `serverPrefix` cannot be shorter than `2` characters.")
-                );
-            }
-            if (!ignsList.Any())
-            {
-                return Result.FromError(
-                    new ValidationError("Parameter `ignsList` cannot be empty.")
-                );
-            }
-
             var getMembersChannelResult = await _guildApi.FindGuildChannelByName(_context.Message.GuildID.Value,
                 _discordSettings.ChannelNames.MemberApps);
             if (!getMembersChannelResult.IsSuccess)
@@ -398,25 +366,6 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> Reject(int id, [Greedy] string reason)
         {
-            if (id < 0)
-            {
-                return Result.FromError(
-                    new ValidationError("Parameter `id` cannot be less than 0.")
-                );
-            }
-            if (string.IsNullOrWhiteSpace(reason))
-            {
-                return Result.FromError(
-                    new ValidationError("Parameter `serverPrefix` cannot be null, empty or whitespace.")
-                );
-            }
-            if (reason.Length < 4)
-            {
-                return Result.FromError(
-                    new ValidationError("Parameter `reason` cannot be shorter than `4` characters.")
-                );
-            }
-            
             var getMembersChannelResult = await _guildApi.FindGuildChannelByName(_context.Message.GuildID.Value,
                 _discordSettings.ChannelNames.MemberApps);
             if (!getMembersChannelResult.IsSuccess)

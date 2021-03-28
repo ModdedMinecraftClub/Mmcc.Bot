@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
+using Mmcc.Bot.Infrastructure.Queries;
 using Mmcc.Bot.Infrastructure.Queries.Basic;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
@@ -45,6 +46,21 @@ namespace Mmcc.Bot.CommandGroups.Core
             _channelApi = channelApi;
             _colourPalette = colourPalette;
             _mediator = mediator;
+        }
+
+        [Command("dev")]
+        [Description("Test")]
+        public async Task<IResult> Dev()
+        {
+            try
+            {
+                var queryResult = await _mediator.Send(new TestQuery.Query(null));
+                return queryResult;
+            }
+            catch (Exception e)
+            {
+                return Result.FromError(new ExceptionError(e));
+            }
         }
 
         [Command("guild")]

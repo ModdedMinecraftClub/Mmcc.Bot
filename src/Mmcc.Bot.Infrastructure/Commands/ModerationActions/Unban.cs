@@ -87,7 +87,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                 if (ma.ModerationActionType != ModerationActionType.Ban)
                     return new UnsupportedArgumentError(
                         $"Wrong moderation action type. Expected: {ModerationActionType.Ban}, got: {ma.ModerationActionType}"); 
-                if (!ma.IsActive) return new ValidationError("Moderation action is already inactive.");
+                //if (!ma.IsActive) return new ValidationError("Moderation action is already inactive.");
 
                 if (ma.UserIgn is not null)
                 {

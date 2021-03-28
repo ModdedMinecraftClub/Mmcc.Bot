@@ -1,15 +1,18 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Core.Errors;
+using Mmcc.Bot.Core.Extensions.FluentValidation.Results;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
 using Remora.Discord.Commands.Services;
-using Remora.Discord.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.Infrastructure.Services
@@ -59,13 +62,19 @@ namespace Mmcc.Bot.Infrastructure.Services
             }
 
             var err = executionResult.Unwrap();
-            var errorEmbed = new Embed(Thumbnail: EmbedProperties.MmccLogoThumbnail, Colour: _colourPalette.Red);
+            var errorEmbed = new Embed
+            {
+                Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                Colour = _colourPalette.Red,
+                Timestamp = DateTimeOffset.UtcNow
+            };
             errorEmbed = err switch
             {
-                ValidationError => errorEmbed with
+                ValidationError vErr => errorEmbed with
                 {
                     Title = ":exclamation: Validation error.",
-                    Description = err.Message
+                    Description = vErr.Message.Replace('\'', '`'),
+                    Fields = new List<EmbedField> {vErr.ValidationFailures.ToEmbedField()}
                 },
                 NotFoundError => errorEmbed with
                 {

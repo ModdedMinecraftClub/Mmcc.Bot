@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,10 +19,12 @@ using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Settings;
+using Mmcc.Bot.Infrastructure.Behaviours;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions;
 using Mmcc.Bot.Infrastructure.HostedServices;
 using Mmcc.Bot.Infrastructure.Parsers;
+using Mmcc.Bot.Infrastructure.Queries;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Responders.Guilds;
 using Mmcc.Bot.Responders.Messages;
@@ -125,7 +128,9 @@ namespace Mmcc.Bot
                     services.AddScoped<IModerationService, ModerationService>();
                     services.AddScoped<ITcpMessageProcessingService, TcpMessageProcessingService>();
 
+                    services.AddValidatorsFromAssemblyContaining<TestQuery>();
                     services.AddMediatR(typeof(CreateFromDiscordMessage));
+                    services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
                     
                     services.AddDiscordCommands();
                     
