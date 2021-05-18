@@ -124,6 +124,9 @@ namespace Mmcc.Bot.Infrastructure.Services
         {
             try
             {
+                // if this bit of code ever goes tits up with a NullReferenceException, please send an email to
+                // john01dav@gmail.com as he has personally assured me that ConnectedClient
+                // can't be null (Discord message ID: 818759362839183360);
                 destinationServer.ConnectedClient!.SendMessage(packedMsgBytes);
             }
             catch (Exception e)
