@@ -25,7 +25,8 @@ namespace Mmcc.Bot.CommandGroups.Core
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly CommandTree _tree;
         private readonly ColourPalette _colourPalette;
-        
+        private readonly IDiscordRestUserAPI _userApi;
+
         /// <summary>
         /// Instantiates a new instance of <see cref="HelpCommands"/> class.
         /// </summary>
@@ -33,12 +34,14 @@ namespace Mmcc.Bot.CommandGroups.Core
         /// <param name="channelApi">The channel API.</param>
         /// <param name="tree">The command tree.</param>
         /// <param name="colourPalette">The colour palette.</param>
-        public HelpCommands(MessageContext context, IDiscordRestChannelAPI channelApi, CommandTree tree, ColourPalette colourPalette)
+        /// <param name="userApi">The user API.</param>
+        public HelpCommands(MessageContext context, IDiscordRestChannelAPI channelApi, CommandTree tree, ColourPalette colourPalette, IDiscordRestUserAPI userApi)
         {
             _context = context;
             _channelApi = channelApi;
             _tree = tree;
             _colourPalette = colourPalette;
+            _userApi = userApi;
         }
 
         [Command("help")]
@@ -58,16 +61,24 @@ namespace Mmcc.Bot.CommandGroups.Core
             
             Traverse(_tree.Root.Children.ToList(), embeds);
 
+            // this might create problems in the future, I'm not sure;
+            var createDmResult = await _userApi.CreateDMAsync(_context.User.ID);
+            if (!createDmResult.IsSuccess)
+            {
+                return createDmResult;
+            }
+
             foreach (var embed in embeds)
             {
-                var sendEmbedResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
+                var sendEmbedResult = await _channelApi.CreateMessageAsync(createDmResult.Entity.ID, embed: embed);
                 if (!sendEmbedResult.IsSuccess)
                 {
                     return sendEmbedResult;
                 }
             }
-            
-            return Result.FromSuccess();
+
+            return await _channelApi.CreateMessageAsync(_context.ChannelID, "Help has been sent to your DMs :smile:.",
+                messageReference: new MessageReference(_context.MessageID, FailIfNotExists: true));
         }
         
         /// <summary>
@@ -87,8 +98,6 @@ namespace Mmcc.Bot.CommandGroups.Core
             
             foreach (var orphan in orphans)
             {
-                if (orphan is null) break;
-                
                 var nameString = new StringBuilder();
                 var orphanParams = orphan.Shape.Parameters;
 
