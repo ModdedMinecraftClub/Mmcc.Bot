@@ -205,23 +205,6 @@ namespace Mmcc.Bot
                     services.AddHostedService<ModerationBackgroundService>();
 
                     services.AddDiscordCaching();
-                    services.Configure<CacheSettings>(settings =>
-                    {
-                        settings.SetAbsoluteExpiration<IGuild>(TimeSpan.FromDays(2));
-                        settings.SetSlidingExpiration<IGuild>(TimeSpan.FromDays(1));
-                        
-                        settings.SetAbsoluteExpiration<IRole>(TimeSpan.FromDays(2));
-                        settings.SetSlidingExpiration<IRole>(TimeSpan.FromDays(1));
-                        
-                        settings.SetAbsoluteExpiration<IReadOnlyList<IRole>>(TimeSpan.FromDays(2));
-                        settings.SetSlidingExpiration<IReadOnlyList<IRole>>(TimeSpan.FromDays(1));
-
-                        settings.SetAbsoluteExpiration<IChannel>(TimeSpan.FromDays(1));
-                        settings.SetSlidingExpiration<IChannel>(TimeSpan.FromHours(6));
-
-                        settings.SetAbsoluteExpiration<IGuildMember>(TimeSpan.FromHours(6));
-                        settings.SetSlidingExpiration<IGuildMember>(TimeSpan.FromHours(1));
-                    });
                 })
                 .UseSerilog();
     }
