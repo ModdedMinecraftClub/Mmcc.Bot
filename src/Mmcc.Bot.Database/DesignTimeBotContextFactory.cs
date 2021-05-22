@@ -24,7 +24,7 @@ namespace Mmcc.Bot.Database
                 $"Server={boundConfig.ServerIp};Port={boundConfig.Port};Database={boundConfig.DatabaseName};Uid={boundConfig.Username};Pwd={boundConfig.Password};Allow User Variables=True";
             optionsBuilder.UseMySql(
                 connString,
-                ServerVersion.FromString("10.4.11-mariadb"),
+                ServerVersion.Parse("10.4.11-mariadb"),
                 b => b.MigrationsAssembly("Mmcc.Bot.Database"));
 
             return new BotContext(optionsBuilder.Options);

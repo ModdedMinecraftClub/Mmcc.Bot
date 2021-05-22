@@ -115,7 +115,7 @@ namespace Mmcc.Bot
                         var config = provider.GetRequiredService<MySqlSettings>();
                         var connString =
                             $"Server={config.ServerIp};Port={config.Port};Database={config.DatabaseName};Uid={config.Username};Pwd={config.Password};Allow User Variables=True";
-                        var serverVersion = ServerVersion.FromString("10.4.11-mariadb");
+                        var serverVersion = ServerVersion.Parse("10.4.11-mariadb");
 
                         options.UseMySql(connString, serverVersion,
                             contextOptions => contextOptions.EnableRetryOnFailure(3));
