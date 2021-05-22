@@ -7,7 +7,7 @@ using MediatR;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
 using Mmcc.Bot.Infrastructure.Queries;
-using Mmcc.Bot.Infrastructure.Queries.Basic;
+using Mmcc.Bot.Infrastructure.Queries.Core;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Rest;

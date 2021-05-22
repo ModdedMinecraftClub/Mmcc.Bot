@@ -8,11 +8,10 @@ using Mmcc.Bot.Core.Errors;
 using Remora.Discord.API;
 using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
-using Remora.Discord.API.Objects;
 using Remora.Discord.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Infrastructure.Queries.Basic
+namespace Mmcc.Bot.Infrastructure.Queries.Core
 {
     /// <summary>
     /// Gets guild info.

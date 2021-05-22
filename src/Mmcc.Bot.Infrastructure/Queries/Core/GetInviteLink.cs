@@ -3,12 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
-using MoreLinq;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Infrastructure.Queries.Basic
+namespace Mmcc.Bot.Infrastructure.Queries.Core
 {
     /// <summary>
     /// Gets an invite link to a guild.
