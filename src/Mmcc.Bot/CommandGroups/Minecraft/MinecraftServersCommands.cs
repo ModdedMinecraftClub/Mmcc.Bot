@@ -98,13 +98,12 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
         [Description("Shows info about online servers")]
         public async Task<IResult> Online()
         {
-            var totalServers = 0;
+            var serversInformation = _polychatService.GetInformationAboutOnlineServers().ToList();
             var totalOnlinePlayers = 0;
             var fields = new List<EmbedField>();
 
-            foreach (var serverInformation in _polychatService.GetInformationAboutOnlineServers())
+            foreach (var serverInformation in serversInformation)
             {
-                totalServers += 1;
                 totalOnlinePlayers += serverInformation.PlayersOnline;
 
                 var fieldName =
@@ -120,16 +119,13 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
 
                 fields.Add(new(fieldName, fieldValueSb.ToString(), false));
             }
-
-            var descriptionSb = new StringBuilder();
             
-            descriptionSb.AppendLine($"**Servers online:** {totalServers}");
-            descriptionSb.AppendLine($"**Total players online:** {totalOnlinePlayers}");
-            
+            var description =
+                $"**Servers online:** {serversInformation.Count}\n**Total players online:** {totalOnlinePlayers}";
             var embed = new Embed
             {
                 Title = "Online servers",
-                Description = descriptionSb.ToString(),
+                Description = description,
                 Colour = _colourPalette.Green,
                 Timestamp = DateTimeOffset.UtcNow,
                 Thumbnail = EmbedProperties.MmccLogoThumbnail,

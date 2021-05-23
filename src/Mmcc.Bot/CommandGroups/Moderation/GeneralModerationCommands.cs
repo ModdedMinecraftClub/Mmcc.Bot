@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Threading.Tasks;
 using MediatR;
+using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Extensions.Database.Entities;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
@@ -60,40 +61,39 @@ namespace Mmcc.Bot.CommandGroups.Moderation
 
         [Command("view", "v")]
         [Description("Views a moderation action.")]
-        public async Task<IResult> View(int id)
-        {
-            var getAppResult = await _mediator.Send(new GetById.Query(id, _context.GuildID.Value, false));
-            
-            if (!getAppResult.IsSuccess)
+        public async Task<IResult> View(int id) =>
+            await _mediator.Send(new GetById.Query(id, _context.GuildID.Value, false)) switch
             {
-                return getAppResult;
-            }
+                {IsSuccess: true, Entity: { } e} =>
+                    await _channelApi.CreateMessageAsync(_context.ChannelID, embed: new Embed
+                    {
+                        Title = "Moderation action information",
+                        Fields = new List<EmbedField>
+                        {
+                            new("ID", e.ModerationActionId.ToString(), false),
+                            new("Type", e.ModerationActionType.ToStringWithEmoji(), false),
+                            new("User's IGN", e.UserIgn ?? "None", false),
+                            new("User's Discord",
+                                e.UserDiscordId is not null
+                                    ? $"<@{e.UserDiscordId}>"
+                                    : "None", false)
+                        },
+                        Colour = e.ModerationActionType switch
+                        {
+                            ModerationActionType.Ban => _colourPalette.Red,
+                            ModerationActionType.Mute => _colourPalette.Pink,
+                            ModerationActionType.Warn => _colourPalette.Yellow,
+                            _ => new()
+                        },
+                        Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                        Timestamp = DateTimeOffset.UtcNow
+                    }),
 
-            var embed = new Embed
-            {
-                Title = "Moderation action information",
-                Fields = new List<EmbedField>
-                {
-                    new("ID", getAppResult.Entity.ModerationActionId.ToString(), false),
-                    new("Type", getAppResult.Entity.ModerationActionType.ToStringWithEmoji(), false),
-                    new("User's IGN", getAppResult.Entity.UserIgn ?? "None", false),
-                    new("User's Discord",
-                        getAppResult.Entity.UserDiscordId is not null
-                            ? $"<@{getAppResult.Entity.UserDiscordId}>"
-                            : "None", false)
-                },
-                Colour = getAppResult.Entity.ModerationActionType switch
-                {
-                    ModerationActionType.Ban => _colourPalette.Red,
-                    ModerationActionType.Mute => _colourPalette.Pink,
-                    ModerationActionType.Warn => _colourPalette.Yellow,
-                    _ => new Optional<Color>()
-                },
-                Thumbnail = EmbedProperties.MmccLogoThumbnail,
-                Timestamp = DateTimeOffset.UtcNow
+                {IsSuccess: true} =>
+                    Result.FromError(new NotFoundError($"Could not find a moderation action with ID: {id}")),
+
+                {IsSuccess: false} res => res
             };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed); 
-        }
 
         /// <summary>
         /// Deactivates a moderation action by ID.
@@ -106,14 +106,12 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         public async Task<IResult> Deactivate(int id)
         {
             var getAppResult = await _mediator.Send(new GetById.Query(id, _context.GuildID.Value));
-
             if (!getAppResult.IsSuccess)
             {
                 return getAppResult;
             }
 
             var deactivateResult = await _moderationService.Deactivate(getAppResult.Entity, _context.ChannelID);
-
             if (!deactivateResult.IsSuccess)
             {
                 return deactivateResult;

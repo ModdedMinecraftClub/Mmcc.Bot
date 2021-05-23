@@ -76,30 +76,17 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         {
             var fields = new List<EmbedField>();
             var iconUrl = new Optional<string>();
-            var embedThumbnail = new Optional<IEmbedThumbnail>();
-
-            if (user.Avatar?.Value is not null)
-            {
-                var getUrlResult = CDN.GetUserAvatarUrl(user, CDNImageFormat.PNG);
-                
-                if (getUrlResult.IsSuccess)
+            Optional<IEmbedThumbnail> embedThumbnail = user.Avatar?.Value is null
+                ? new()
+                : CDN.GetUserAvatarUrl(user, CDNImageFormat.PNG) switch
                 {
-                    var urlString = getUrlResult.Entity.ToString();
-                    iconUrl = urlString;
-                    embedThumbnail = new EmbedThumbnail(urlString);
-                }
-            }
-            
-            var embed = new Embed
-            {
-                Author = new EmbedAuthor($"{user.Username}#{user.Discriminator}", $"https://discord.com/users/{user.ID}",  iconUrl, new()),
-                Thumbnail = embedThumbnail
-            };
-            
+                    {IsSuccess: true, Entity: { } e} => new EmbedThumbnail(e.ToString()),
+                    _ => new()
+                };
+
             fields.Add(user.GetEmbedField());
             
             var getGuildMemberResult = await _guildApi.GetGuildMemberAsync(_context.Message.GuildID.Value, user.ID);
-            
             if (getGuildMemberResult.IsSuccess)
             {
                 var guildMember = getGuildMemberResult.Entity;
@@ -137,8 +124,10 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     $":x: Error obtaining moderation events: {queryResult.Error.Message}", false));
             }
             
-            embed = embed with
+            var embed = new Embed
             {
+                Author = new EmbedAuthor($"{user.Username}#{user.Discriminator}", $"https://discord.com/users/{user.ID}",  iconUrl),
+                Thumbnail = embedThumbnail,
                 Fields = fields,
                 Timestamp = DateTimeOffset.Now
             };

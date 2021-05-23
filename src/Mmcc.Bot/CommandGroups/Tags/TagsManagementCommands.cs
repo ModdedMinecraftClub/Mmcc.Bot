@@ -53,29 +53,26 @@ namespace Mmcc.Bot.CommandGroups.Tags
                 description = null;
             }
 
-            var commandResult = await _mediator.Send(new Create.Command(_context.GuildID.Value, _context.User.ID,
-                tagName, description, content));
-
-            if (!commandResult.IsSuccess)
-            {
-                return commandResult;
-            }
-
-            var tag = commandResult.Entity;
-            var embed = new Embed
-            {
-                Title = "Tag created.",
-                Description = "The tag has been successfully created.",
-                Fields = new List<EmbedField>
+            return await _mediator.Send(new Create.Command(_context.GuildID.Value, _context.User.ID,
+                    tagName, description, content)) switch
                 {
-                    new("Tag name", tag.Content, false),
-                    new("Tag description", tag.TagDescription ?? "None", false),
-                    new("Created by", $"<@{tag.CreatedByDiscordId}>")
-                },
-                Colour = _colourPalette.Green,
-                Timestamp = DateTimeOffset.UtcNow
-            };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
+                    {IsSuccess: true, Entity: { } e} =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: new Embed
+                        {
+                            Title = "Tag created.",
+                            Description = "The tag has been successfully created.",
+                            Fields = new List<EmbedField>
+                            {
+                                new("Tag name", e.Content, false),
+                                new("Tag description", e.TagDescription ?? "None", false),
+                                new("Created by", $"<@{e.CreatedByDiscordId}>")
+                            },
+                            Colour = _colourPalette.Green,
+                            Timestamp = DateTimeOffset.UtcNow
+                        }),
+
+                    {IsSuccess: false} res => res
+                };
         }
 
         [Command("update")]
@@ -87,54 +84,47 @@ namespace Mmcc.Bot.CommandGroups.Tags
                 description = null;
             }
 
-            var commandResult = await _mediator.Send(new Update.Command(_context.GuildID.Value, _context.User.ID,
-                tagName, description, content));
-            
-            if (!commandResult.IsSuccess)
-            {
-                return commandResult;
-            }
-            
-            var tag = commandResult.Entity;
-            var embed = new Embed
-            {
-                Title = "Tag updated.",
-                Description = "The tag has been successfully updated.",
-                Fields = new List<EmbedField>
+            return await _mediator.Send(new Update.Command(_context.GuildID.Value, _context.User.ID,
+                    tagName, description, content)) switch
                 {
-                    new("Tag name", tag.Content, false),
-                    new("Tag description", tag.TagDescription ?? "None", false),
-                    new("Updated by", $"<@{tag.LastModifiedByDiscordId}>")
-                },
-                Colour = _colourPalette.Green,
-                Timestamp = DateTimeOffset.UtcNow
-            };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
+                    {IsSuccess: true, Entity: { } e} =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: new Embed
+                        {
+                            Title = "Tag updated.",
+                            Description = "The tag has been successfully updated.",
+                            Fields = new List<EmbedField>
+                            {
+                                new("Tag name", e.Content, false),
+                                new("Tag description", e.TagDescription ?? "None", false),
+                                new("Updated by", $"<@{e.LastModifiedByDiscordId}>")
+                            },
+                            Colour = _colourPalette.Green,
+                            Timestamp = DateTimeOffset.UtcNow
+                        }),
+
+                    {IsSuccess: false} res => res
+                };
         }
 
         [Command("delete", "del")]
         [Description("Deletes a tag belonging to the current guild.")]
-        public async Task<IResult> DeleteTag(string tagName)
-        {
-            var commandResult = await _mediator.Send(new Delete.Command(_context.GuildID.Value, tagName));
-            
-            if (!commandResult.IsSuccess)
+        public async Task<IResult> DeleteTag(string tagName) =>
+            await _mediator.Send(new Delete.Command(_context.GuildID.Value, tagName)) switch
             {
-                return commandResult;
-            }
-            
-            var embed = new Embed
-            {
-                Title = "Tag deleted.",
-                Description = "The tag has been successfully deleted.",
-                Fields = new List<EmbedField>
-                {
-                    new("Tag name", tagName, false)
-                },
-                Colour = _colourPalette.Green,
-                Timestamp = DateTimeOffset.UtcNow
+                {IsSuccess: true, Entity: { }} =>
+                    await _channelApi.CreateMessageAsync(_context.ChannelID, embed: new Embed
+                    {
+                        Title = "Tag deleted.",
+                        Description = "The tag has been successfully deleted.",
+                        Fields = new List<EmbedField>
+                        {
+                            new("Tag name", tagName, false)
+                        },
+                        Colour = _colourPalette.Green,
+                        Timestamp = DateTimeOffset.UtcNow
+                    }),
+
+                {IsSuccess: false} res => res
             };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-        }
     }
 }

@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
-using Mmcc.Bot.Infrastructure.Queries;
 using Mmcc.Bot.Infrastructure.Queries.Core;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
@@ -48,69 +48,47 @@ namespace Mmcc.Bot.CommandGroups.Core
             _mediator = mediator;
         }
 
-        [Command("dev")]
-        [Description("Test")]
-        public async Task<IResult> Dev()
-        {
-            try
-            {
-                var queryResult = await _mediator.Send(new TestQuery.Query(null));
-                return queryResult;
-            }
-            catch (Exception e)
-            {
-                return Result.FromError(new ExceptionError(e));
-            }
-        }
-
         [Command("guild")]
         [Description("Provides information about the current guild.")]
-        public async Task<IResult> GuildInfo()
-        {
-            var queryResult = await _mediator.Send(new GetGuildInfo.Query(_context.GuildID.Value));
-
-            if (!queryResult.IsSuccess)
+        public async Task<IResult> GuildInfo() =>
+            await _mediator.Send(new GetGuildInfo.Query(_context.GuildID.Value)) switch
             {
-                return queryResult;
-            }
+                {IsSuccess: true, Entity: { } e} =>
+                    await _channelApi.CreateMessageAsync(_context.ChannelID, embed: new Embed
+                    {
+                        Title = "Guild info",
+                        Description = "Information about the current guild.",
+                        Fields = new List<EmbedField>
+                        {
+                            new("Name", e.GuildName, false),
+                            new("Owner", $"<@{e.GuildOwnerId}>"),
+                            new("Max members", e.GuildMaxMembers.ToString() ?? "Unavailable", false),
+                            new("Available roles", string.Join(", ", e.GuildRoles.Select(r => $"<@&{r.ID}>")))
+                        },
+                        Timestamp = DateTimeOffset.UtcNow,
+                        Colour = _colourPalette.Blue,
+                        Thumbnail = e.GuildIconUrl is null
+                            ? new()
+                            : new EmbedThumbnail(e.GuildIconUrl.ToString())
+                    }),
 
-            var guildInfo = queryResult.Entity;
-            var embed = new Embed
-            {
-                Title = "Guild info",
-                Description = "Information about the current guild.",
-                Fields = new List<EmbedField>
-                {
-                    new("Name", guildInfo.GuildName, false),
-                    new("Owner", $"<@{guildInfo.GuildOwnerId}>"),
-                    new("Max members", guildInfo.GuildMaxMembers.ToString() ?? "Unavailable", false),
-                    new("Available roles", string.Join(", ", guildInfo.GuildRoles.Select(r => $"<@&{r.ID}>")))
-                },
-                Timestamp = DateTimeOffset.UtcNow,
-                Colour = _colourPalette.Blue
+                {IsSuccess: true} =>
+                    Result.FromError(new NotFoundError($"Guild with ID: {_context.GuildID.Value} not found")),
+
+                {IsSuccess: false} res => res,
             };
-
-            if (guildInfo.GuildIconUrl is not null)
-            {
-                embed = embed with {Thumbnail = new EmbedThumbnail(guildInfo.GuildIconUrl.ToString())};
-            }
-
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-        }
 
         [Command("invite")]
         [Description("Gives an invite link to the current guild.")]
-        public async Task<IResult> Invite()
-        {
-            var queryResult = await _mediator.Send(new GetInviteLink.Query(_context.GuildID.Value));
-
-            if (!queryResult.IsSuccess)
+        public async Task<IResult> Invite() =>
+            await _mediator.Send(new GetInviteLink.Query(_context.GuildID.Value)) switch
             {
-                return queryResult;
-            }
+                {IsSuccess: true, Entity: { } e} =>
+                    await _channelApi.CreateMessageAsync(_context.ChannelID, $"https://discord.gg/{e}"),
 
-            var msg = $"https://discord.gg/{queryResult.Entity}";
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, msg);
-        }
+                {IsSuccess: true} => Result.FromError(new NotFoundError("Could not find invite link for this guild.")),
+
+                {IsSuccess: false} res => res
+            };
     }
 }

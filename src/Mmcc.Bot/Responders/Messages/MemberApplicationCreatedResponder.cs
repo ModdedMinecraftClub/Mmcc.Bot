@@ -7,6 +7,7 @@ using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Remora.Discord.API.Abstractions.Gateway.Events;
 using Remora.Discord.API.Abstractions.Rest;
+using Remora.Discord.API.Objects;
 using Remora.Discord.Gateway.Responders;
 using Remora.Results;
 
@@ -74,15 +75,23 @@ namespace Mmcc.Bot.Responders.Messages
                 return Result.FromSuccess();
             }
 
-            var res = await _mediator.Send(
+            var createMemberAppResult = await _mediator.Send(
                 new CreateFromDiscordMessage.Command {DiscordMessageCreatedEvent = ev}, ct);
-
-            if (res.IsSuccess)
+            if (createMemberAppResult.IsSuccess)
             {
                 _logger.LogInformation($"Added a new application for message: {ev.ID}");
             }
-            
-            return res;
+            else
+            {
+                return createMemberAppResult;
+            }
+
+            var sendConfirmationResult = await _channelApi.CreateMessageAsync(ev.ChannelID,
+                "Your application has been submitted and you will be pinged once it has been processed.",
+                messageReference: new MessageReference(ev.ID), ct: ct);
+            return sendConfirmationResult.IsSuccess
+                ? Result.FromSuccess()
+                : Result.FromError(sendConfirmationResult.Error);
         }
     }
 }

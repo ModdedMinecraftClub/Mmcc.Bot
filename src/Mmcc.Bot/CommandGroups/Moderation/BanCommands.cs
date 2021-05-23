@@ -12,7 +12,6 @@ using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
 
-// this is pretty vile but I really cba to type out this entire namespace every time I want to use Ban.
 using BanModerationAction = Mmcc.Bot.Infrastructure.Commands.ModerationActions.Ban;
 
 namespace Mmcc.Bot.CommandGroups.Moderation
@@ -60,30 +59,27 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <remarks>This command is for Discord user only. It will not ban from MC servers.</remarks>
         [Command("discord", "d")]
         [Description("Bans a Discord user (Discord only)")]
-        public async Task<IResult> BanDiscord(IUser user, ExpiryDate expiryDate, [Greedy] string reason)
-        {
-            var commandResult = await _mediator.Send(new BanModerationAction.Command
-            {
-                GuildId = _context.Message.GuildID.Value,
-                ChannelId = _context.ChannelID,
-                UserDiscordId = user.ID,
-                Reason = reason,
-                ExpiryDate = expiryDate.Value,
-                UserIgn = null
-            });
-            if (!commandResult.IsSuccess)
-            {
-                return commandResult;
-            }
+        public async Task<IResult> BanDiscord(IUser user, ExpiryDate expiryDate, [Greedy] string reason) =>
+            await _mediator.Send(new BanModerationAction.Command
+                {
+                    GuildId = _context.Message.GuildID.Value,
+                    ChannelId = _context.ChannelID,
+                    UserDiscordId = user.ID,
+                    Reason = reason,
+                    ExpiryDate = expiryDate.Value,
+                    UserIgn = null
+                }) switch
+                {
+                    {IsSuccess: true} => 
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: _embedBase with
+                        {
+                            Title = ":white_check_mark: User banned successfully (Discord only).",
+                            Timestamp = DateTimeOffset.UtcNow
+                        }),
+                    
+                    {IsSuccess: false} res => res
+                };
 
-            var embed = _embedBase with
-            {
-                Title = ":white_check_mark: User banned successfully (Discord only).",
-                Timestamp = DateTimeOffset.UtcNow
-            };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-        }
-        
         /// <summary>
         /// Bans a MC user.
         /// </summary>
@@ -95,30 +91,27 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <remarks>This command is for MC user only. It will not ban from Discord.</remarks>
         [Command("ig")]
         [Description("Bans a user from all MC servers. (In-game only)")]
-        public async Task<IResult> BanIg(string ign, ExpiryDate expiryDate, [Greedy] string reason)
-        {
-            var commandResult = await _mediator.Send(new BanModerationAction.Command
-            {
-                GuildId = _context.Message.GuildID.Value,
-                ChannelId = _context.ChannelID,
-                UserIgn = ign,
-                Reason = reason,
-                ExpiryDate = expiryDate.Value,
-                UserDiscordId = null
-            });
-            if (!commandResult.IsSuccess)
-            {
-                return commandResult;
-            }
+        public async Task<IResult> BanIg(string ign, ExpiryDate expiryDate, [Greedy] string reason) =>
+            await _mediator.Send(new BanModerationAction.Command
+                {
+                    GuildId = _context.Message.GuildID.Value,
+                    ChannelId = _context.ChannelID,
+                    UserIgn = ign,
+                    Reason = reason,
+                    ExpiryDate = expiryDate.Value,
+                    UserDiscordId = null
+                }) switch
+                {
+                    {IsSuccess: true} =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: _embedBase with
+                        {
+                            Title = ":white_check_mark: User banned successfully from all MC servers (in-game only).",
+                            Timestamp = DateTimeOffset.UtcNow
+                        }),
 
-            var embed = _embedBase with
-            {
-                Title = ":white_check_mark: User banned successfully from all MC servers (in-game only).",
-                Timestamp = DateTimeOffset.UtcNow
-            };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-        }
-        
+                    {IsSuccess: false} res => res
+                };
+
         /// <summary>
         /// Bans a user from Discord and MC servers.
         /// </summary>
@@ -129,28 +122,25 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <returns>Result of the operation.</returns>
         [Command("all", "a")]
         [Description("Bans the user from both MC servers and Discord")]
-        public async Task<IResult> BanAll(IUser discordUser, string ign, ExpiryDate expiryDate, [Greedy] string reason)
-        {
-            var commandResult = await _mediator.Send(new BanModerationAction.Command
-            {
-                GuildId = _context.Message.GuildID.Value,
-                ChannelId = _context.ChannelID,
-                UserIgn = ign,
-                Reason = reason,
-                ExpiryDate = expiryDate.Value,
-                UserDiscordId = discordUser.ID
-            });
-            if (!commandResult.IsSuccess)
-            {
-                return commandResult;
-            }
+        public async Task<IResult> BanAll(IUser discordUser, string ign, ExpiryDate expiryDate, [Greedy] string reason) =>
+            await _mediator.Send(new BanModerationAction.Command
+                {
+                    GuildId = _context.Message.GuildID.Value,
+                    ChannelId = _context.ChannelID,
+                    UserIgn = ign,
+                    Reason = reason,
+                    ExpiryDate = expiryDate.Value,
+                    UserDiscordId = discordUser.ID
+                }) switch
+                {
+                    {IsSuccess: true} =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: _embedBase with
+                        {
+                            Title = ":white_check_mark: User banned successfully from all MC servers and Discord.",
+                            Timestamp = DateTimeOffset.UtcNow
+                        }),
 
-            var embed = _embedBase with
-            {
-                Title = ":white_check_mark: User banned successfully from all MC servers and Discord.",
-                Timestamp = DateTimeOffset.UtcNow
-            };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-        }
+                    {IsSuccess: false} res => res
+                };
     }
 }

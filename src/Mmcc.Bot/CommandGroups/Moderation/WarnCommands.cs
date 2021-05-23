@@ -40,6 +40,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
             _context = context;
             _channelApi = channelApi;
             _mediator = mediator;
+            
             _embedBase = new Embed
             {
                 Description = "User has been warned successfully.",
@@ -49,79 +50,70 @@ namespace Mmcc.Bot.CommandGroups.Moderation
 
         [Command("discord", "d")]
         [Description("Warns a Discord user (Discord only)")]
-        public async Task<IResult> WarnDiscord(IUser user, [Greedy] string reason)
-        {
-            var commandResult = await _mediator.Send(new Warn.Command
-            {
-                UserDiscordId = user.ID,
-                GuildId = _context.Message.GuildID.Value,
-                Reason = reason,
-                UserIgn = null
-            });
-            
-            if (!commandResult.IsSuccess)
-            {
-                return Result.FromError(commandResult.Error);
-            }
+        public async Task<IResult> WarnDiscord(IUser user, [Greedy] string reason) =>
+            await _mediator.Send(new Warn.Command
+                {
+                    UserDiscordId = user.ID,
+                    GuildId = _context.Message.GuildID.Value,
+                    Reason = reason,
+                    UserIgn = null
+                }) switch
+                {
+                    {IsSuccess: true} =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: _embedBase with
+                        {
+                            Title = ":white_check_mark: Discord user has been successfully warned (Discord only).",
+                            Timestamp = DateTimeOffset.UtcNow
+                        }),
 
-            var embed = _embedBase with
-            {
-                Title = ":white_check_mark: Discord user has been successfully warned (Discord only).",
-                Timestamp = DateTimeOffset.UtcNow
-            };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-        }
+                    {IsSuccess: false} res => res
+                };
 
         [Command("ig")]
         [Description("Warns a player in-game (in-game only).")]
-        public async Task<IResult> WarnIg(string ign, [Greedy] string reason)
-        {
-            var commandResult = await _mediator.Send(new Warn.Command
-            {
-                UserIgn = ign,
-                GuildId = _context.Message.GuildID.Value,
-                Reason = reason,
-                UserDiscordId = null
-            });
-            
-            if (!commandResult.IsSuccess)
-            {
-                return commandResult;
-            }
+        public async Task<IResult> WarnIg(string ign, [Greedy] string reason) =>
+            await _mediator.Send(new Warn.Command
+                {
+                    UserIgn = ign,
+                    GuildId = _context.Message.GuildID.Value,
+                    Reason = reason,
+                    UserDiscordId = null
+                }) switch
+                {
+                    {IsSuccess: true} =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: _embedBase with
+                        {
+                            Title = ":white_check_mark: In-game user has been successfully warned (In-game only).",
+                            Timestamp = DateTimeOffset.UtcNow
+                        }),
 
-            var embed = _embedBase with
-            {
-                Title = ":white_check_mark: In-game user has been successfully warned (In-game only).",
-                Timestamp = DateTimeOffset.UtcNow
-            };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-        }
+                    {IsSuccess: false} res => res
+                };
 
         [Command("all", "a")]
         [Description("Warns a player both in-game and on Discord.")]
         public async Task<IResult> WarnAll(IUser discordUser, string ign, [Greedy] string reason)
         {
-            var commandResult = await _mediator.Send
-            (
-                new Warn.Command
+            return await _mediator.Send
+                (
+                    new Warn.Command
+                    {
+                        UserDiscordId = discordUser.ID,
+                        UserIgn = ign,
+                        GuildId = _context.Message.GuildID.Value,
+                        Reason = reason
+                    }
+                ) switch
                 {
-                    UserDiscordId = discordUser.ID,
-                    UserIgn = ign,
-                    GuildId = _context.Message.GuildID.Value,
-                    Reason = reason
-                }
-            );
-            if (!commandResult.IsSuccess)
-            {
-                return commandResult;
-            }
+                    {IsSuccess: true} =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: _embedBase with
+                        {
+                            Title = ":white_check_mark: User has been successfully warned both in-game and on Discord.",
+                            Timestamp = DateTimeOffset.UtcNow
+                        }),
 
-            var embed = _embedBase with
-            {
-                Title = ":white_check_mark: User has been successfully warned both in-game and on Discord.",
-                Timestamp = DateTimeOffset.UtcNow
-            };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
+                    {IsSuccess: false} res => res
+                };
         }
     }
 }

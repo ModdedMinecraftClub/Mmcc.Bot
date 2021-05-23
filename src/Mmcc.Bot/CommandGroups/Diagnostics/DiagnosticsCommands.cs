@@ -58,25 +58,12 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
         [Description("Show status of the bot and APIs it uses")]
         public async Task<IResult> BotDiagnostics()
         {
-            var embed = new Embed
-            {
-                Title = "Bot diagnostics",
-                Description = "Diagnostics running... Please wait.",
-                Timestamp = DateTimeOffset.Now
-            };
-            var createMessageResult = await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
-            if (!createMessageResult.IsSuccess)
-            {
-                return Result.FromError(createMessageResult);
-            }
-
             var resourcesToPing = new Dictionary<string, string>
             {
                 {"Discord", "discord.com"},
                 {"Mojang API", "api.mojang.com"},
                 {"MMCC", "s4.moddedminecraft.club"}
             };
-
             var fields = new List<EmbedField>
             {
                 new("Bot status", ":green_circle: Operational", false)
@@ -97,7 +84,7 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
                 fields.Add(new($"{name} Status", fieldVal, false));
             }
 
-            var newEmbed = new Embed
+            var embed = new Embed
             {
                 Title = "Bot diagnostics",
                 Description = "Information about the status of the bot and the APIs it uses",
@@ -105,7 +92,7 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
                 Timestamp = DateTimeOffset.UtcNow,
                 Colour = _colourPalette.Green
             };
-            return await _channelApi.EditMessageAsync(_context.ChannelID, createMessageResult.Entity.ID, embed: newEmbed);
+            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
         }
 
         /// <summary>
@@ -123,8 +110,6 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
             
             foreach (var d in drives)
             {
-                if (d is null) break;
-
                 var fieldValue = new StringBuilder();
                 var spaceEmoji = d.PercentageUsed switch
                 {

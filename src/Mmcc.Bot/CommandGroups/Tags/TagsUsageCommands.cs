@@ -38,19 +38,17 @@ namespace Mmcc.Bot.CommandGroups.Tags
         [Description("Sends a given tag.")]
         public async Task<IResult> SendTag(string tagName)
         {
-            var queryResult = await _mediator.Send(new GetOne.Query(_context.GuildID.Value, tagName));
-
-            if (!queryResult.IsSuccess)
+            return await _mediator.Send(new GetOne.Query(_context.GuildID.Value, tagName)) switch
             {
-                return queryResult;
-            }
-            if (queryResult.Entity is null)
-            {
-                return Result.FromError(
-                    new NotFoundError($"Could not find a tag with name {tagName} belonging to the current guild."));
-            }
+                {IsSuccess: true, Entity: { } e} =>
+                    await _channelApi.CreateMessageAsync(_context.ChannelID, e.Content),
 
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, queryResult.Entity.Content);
+                {IsSuccess: true} =>
+                    Result.FromError(
+                        new NotFoundError($"Could not find a tag with name {tagName} belonging to the current guild.")),
+                
+                {IsSuccess: false} res => res
+            };
         }
     }
 }
