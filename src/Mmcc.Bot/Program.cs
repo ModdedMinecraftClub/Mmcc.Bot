@@ -25,6 +25,7 @@ using Mmcc.Bot.Infrastructure.Conditions;
 using Mmcc.Bot.Infrastructure.HostedServices;
 using Mmcc.Bot.Infrastructure.Parsers;
 using Mmcc.Bot.Infrastructure.Queries;
+using Mmcc.Bot.Infrastructure.Queries.Core;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Responders.Guilds;
 using Mmcc.Bot.Responders.Messages;
@@ -128,7 +129,7 @@ namespace Mmcc.Bot
                     services.AddScoped<IModerationService, ModerationService>();
                     services.AddScoped<ITcpMessageProcessingService, TcpMessageProcessingService>();
 
-                    services.AddValidatorsFromAssemblyContaining<TestQuery>();
+                    services.AddValidatorsFromAssemblyContaining<GetGuildInfo>();
                     services.AddMediatR(typeof(CreateFromDiscordMessage));
                     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
                     
