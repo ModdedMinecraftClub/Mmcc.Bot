@@ -15,11 +15,11 @@ namespace Mmcc.Bot.Core.Extensions.System
         public static string ToFriendlyDisplayString(this Type type)
         {
             var typeStr = type.ToString();
-            var displayString = $"{typeStr.Substring(typeStr.LastIndexOf('.') + 1)}";
+            var displayString = $"{typeStr[(typeStr.LastIndexOf('.') + 1)..]}";
 
             if (displayString.Contains('+'))
             {
-                displayString = displayString.Substring(0, displayString.LastIndexOf('+'));
+                displayString = displayString[..displayString.LastIndexOf('+')];
             }
 
             return displayString;
