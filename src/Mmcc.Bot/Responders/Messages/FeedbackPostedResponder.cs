@@ -37,10 +37,7 @@ namespace Mmcc.Bot.Responders.Messages
                 return createUpReactionResult;
             }
 
-            var createDownReactionResult = await _channelApi.CreateReactionAsync(ev.ChannelID, ev.ID, "👎", ct);
-            return !createDownReactionResult.IsSuccess
-                ? createDownReactionResult
-                : Result.FromSuccess();
+            return await _channelApi.CreateReactionAsync(ev.ChannelID, ev.ID, "👎", ct);
         }
     }
 }
