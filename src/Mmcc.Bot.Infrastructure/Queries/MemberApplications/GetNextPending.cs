@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Mmcc.Bot.Database;
@@ -25,6 +26,15 @@ namespace Mmcc.Bot.Infrastructure.Queries.MemberApplications
             /// ID of the Guild.
             /// </summary>
             public Snowflake GuildId { get; set; }
+        }
+
+        public class Validator : AbstractValidator<Query>
+        {
+            public Validator()
+            {
+                RuleFor(q => q.GuildId)
+                    .NotNull();
+            }
         }
         
         /// <inheritdoc />

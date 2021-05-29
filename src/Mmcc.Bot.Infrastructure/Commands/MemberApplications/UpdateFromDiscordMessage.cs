@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Mmcc.Bot.Core.Errors;
@@ -26,6 +27,15 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
             /// Gateway event sent when the message containing the application was updated.
             /// </summary>
             public IMessageUpdate DiscordMessageUpdatedEvent { get; set; } = null!;
+        }
+
+        public class Validator : AbstractValidator<Command>
+        {
+            public Validator()
+            {
+                RuleFor(c => c.DiscordMessageUpdatedEvent)
+                    .NotNull();
+            }
         }
         
         /// <inheritdoc />

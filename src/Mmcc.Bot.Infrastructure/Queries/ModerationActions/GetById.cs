@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Mmcc.Bot.Database;
@@ -15,7 +16,27 @@ namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
     /// </summary>
     public class GetById
     {
-        public record Query(int ModerationActionId, Snowflake GuildId, bool EnableTracking = true) : IRequest<Result<ModerationAction?>>;
+        public record Query(
+            int ModerationActionId,
+            Snowflake GuildId,
+            bool EnableTracking = true
+        ) : IRequest<Result<ModerationAction?>>;
+
+        /// <summary>
+        /// Validates the <see cref="Query"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Query>
+        {
+            public Validator()
+            {
+                RuleFor(q => q.ModerationActionId)
+                    .NotNull()
+                    .GreaterThan(0);
+
+                RuleFor(q => q.GuildId)
+                    .NotNull();
+            }
+        }
         
         public class Handler : IRequestHandler<Query, Result<ModerationAction?>>
         {

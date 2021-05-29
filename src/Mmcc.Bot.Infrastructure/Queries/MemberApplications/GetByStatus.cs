@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Mmcc.Bot.Database;
@@ -42,6 +43,24 @@ namespace Mmcc.Bot.Infrastructure.Queries.MemberApplications
             /// Whether to sort the applications by ID in descending order.
             /// </summary>
             public bool SortByDescending { get; set; }
+        }
+
+        /// <summary>
+        /// Validates the <see cref="Query"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Query>
+        {
+            public Validator()
+            {
+                RuleFor(q => q.GuildId)
+                    .NotNull();
+
+                RuleFor(q => q.ApplicationStatus)
+                    .NotNull();
+
+                RuleFor(q => q.SortByDescending)
+                    .NotNull();
+            }
         }
         
         /// <inheritdoc />

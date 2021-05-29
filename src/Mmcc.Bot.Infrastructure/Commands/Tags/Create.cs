@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Entities;
@@ -17,8 +18,37 @@ namespace Mmcc.Bot.Infrastructure.Commands.Tags
         /// <summary>
         /// Command to create a new tag.
         /// </summary>
-        public record Command
-            (Snowflake GuildId, Snowflake Author, string TagName, string? Description, string Content) : IRequest<Result<Tag>>;
+        public record Command(
+            Snowflake GuildId,
+            Snowflake Author,
+            string TagName,
+            string? Description,
+            string Content
+        ) : IRequest<Result<Tag>>;
+
+        /// <summary>
+        /// Validates the <see cref="Command"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Command>
+        {
+            public Validator()
+            {
+                RuleFor(c => c.GuildId)
+                    .NotNull();
+
+                RuleFor(c => c.Author)
+                    .NotNull();
+
+                RuleFor(c => c.TagName)
+                    .NotEmpty();
+
+                RuleFor(c => c.Description)
+                    .MinimumLength(6).When(c => c.Description is not null);
+
+                RuleFor(c => c.Content)
+                    .NotEmpty();
+            }
+        }
         
         /// <inheritdoc />
         public class Handler : IRequestHandler<Command, Result<Tag>>

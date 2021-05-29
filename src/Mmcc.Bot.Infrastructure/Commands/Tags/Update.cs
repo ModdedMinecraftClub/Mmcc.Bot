@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Mmcc.Bot.Core.Errors;
@@ -19,8 +20,37 @@ namespace Mmcc.Bot.Infrastructure.Commands.Tags
         /// <summary>
         /// Command to update a tag.
         /// </summary>
-        public record Command(Snowflake GuildId, Snowflake UpdateAuthor, string TagName, string? NewDescription,
-            string NewContent) : IRequest<Result<Tag>>;
+        public record Command(
+            Snowflake GuildId,
+            Snowflake UpdateAuthor,
+            string TagName,
+            string? NewDescription,
+            string NewContent
+        ) : IRequest<Result<Tag>>;
+        
+        /// <summary>
+        /// Validates the <see cref="Command"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Command>
+        {
+            public Validator()
+            {
+                RuleFor(c => c.GuildId)
+                    .NotNull();
+
+                RuleFor(c => c.UpdateAuthor)
+                    .NotNull();
+
+                RuleFor(c => c.TagName)
+                    .NotEmpty();
+
+                RuleFor(c => c.NewDescription)
+                    .MinimumLength(6).When(c => c.NewDescription is not null);
+
+                RuleFor(c => c.NewContent)
+                    .NotEmpty();
+            }
+        }
         
         /// <inheritdoc />
         public class Handler : IRequestHandler<Command, Result<Tag>>

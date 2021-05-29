@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Core.Errors;
@@ -38,6 +39,21 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             /// ID of the channel to which polychat2 will send the confirmation message.
             /// </summary>
             public Snowflake ChannelId { get; set; }
+        }
+
+        /// <summary>
+        /// Validates the <see cref="Command"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Command>
+        {
+            public Validator()
+            {
+                RuleFor(c => c.ModerationAction)
+                    .NotNull();
+
+                RuleFor(c => c.ChannelId)
+                    .NotNull();
+            }
         }
         
         /// <inheritdoc />

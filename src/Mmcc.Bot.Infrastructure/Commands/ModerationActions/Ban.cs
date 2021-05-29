@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Core.Models;
@@ -57,6 +58,27 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             /// Expiry date. Set to <code>null</code> if permanent.
             /// </summary>
             public long? ExpiryDate { get; set; }
+        }
+
+        /// <summary>
+        /// Validates the <see cref="Command"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Command>
+        {
+            public Validator()
+            {
+                RuleFor(c => c.ChannelId)
+                    .NotNull();
+
+                RuleFor(c => c.GuildId)
+                    .NotNull();
+
+                RuleFor(c => c.UserIgn)
+                    .NotEmpty().When(c => c.UserIgn is not null);
+                
+                RuleFor(c => c.Reason)
+                    .NotNull();
+            }
         }
         
         /// <inheritdoc />

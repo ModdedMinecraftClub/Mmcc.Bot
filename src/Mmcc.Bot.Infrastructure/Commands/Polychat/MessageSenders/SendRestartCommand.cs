@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentValidation;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Infrastructure.Services;
@@ -17,6 +18,22 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.MessageSenders
         /// Command to send a restart command to a server.
         /// </summary>
         public record Command(string ServerId, Snowflake ChannelId) : IRequest<Result>;
+
+        /// <summary>
+        /// Validates the <see cref="Command"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Command>
+        {
+            public Validator()
+            {
+                RuleFor(c => c.ServerId)
+                    .NotEmpty()
+                    .MinimumLength(2);
+
+                RuleFor(c => c.ChannelId)
+                    .NotNull();
+            }
+        }
 
         public class Handler : RequestHandler<Command, Result>
         {

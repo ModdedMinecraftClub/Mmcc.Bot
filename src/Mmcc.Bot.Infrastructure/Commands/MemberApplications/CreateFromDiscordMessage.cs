@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Entities;
@@ -24,6 +26,45 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
             /// Gateway event sent when the message containing the application was created.
             /// </summary>
             public IMessageCreate DiscordMessageCreatedEvent { get; set; } = null!;
+        }
+
+        /// <summary>
+        /// Validates the <see cref="Command"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Command>
+        {
+            public Validator()
+            {
+                RuleFor(c => c.DiscordMessageCreatedEvent)
+                    .NotNull();
+
+                RuleFor(c => c.DiscordMessageCreatedEvent.GuildID.Value)
+                    .NotNull();
+
+                RuleFor(c => c.DiscordMessageCreatedEvent.GuildID.Value.Value)
+                    .NotNull();
+
+                RuleFor(c => c.DiscordMessageCreatedEvent.ChannelID.Value)
+                    .NotNull();
+
+                RuleFor(c => c.DiscordMessageCreatedEvent.ID.Value)
+                    .NotNull();
+
+                RuleFor(c => c.DiscordMessageCreatedEvent.Author.ID.Value)
+                    .NotNull();
+
+                RuleFor(c => c.DiscordMessageCreatedEvent.Author.Username)
+                    .NotEmpty();
+
+                RuleFor(c => c.DiscordMessageCreatedEvent.Author.Discriminator)
+                    .NotNull();
+
+                RuleFor(c => c.DiscordMessageCreatedEvent.Timestamp)
+                    .NotEmpty();
+
+                RuleFor(c => c.DiscordMessageCreatedEvent.Attachments)
+                    .NotEmpty();
+            }
         }
         
         /// <inheritdoc />

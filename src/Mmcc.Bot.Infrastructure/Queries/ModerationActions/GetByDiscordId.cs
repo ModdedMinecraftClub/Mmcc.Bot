@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Mmcc.Bot.Database;
@@ -21,6 +22,21 @@ namespace Mmcc.Bot.Infrastructure.Queries.ModerationActions
         /// Query to get moderation actions by Discord user ID.
         /// </summary>
         public record Query(Snowflake GuildId, ulong DiscordUserId) : IRequest<Result<IList<ModerationAction>>>;
+
+        /// <summary>
+        /// Validates the <see cref="Query"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Query>
+        {
+            public Validator()
+            {
+                RuleFor(q => q.GuildId)
+                    .NotNull();
+
+                RuleFor(q => q.DiscordUserId)
+                    .NotNull();
+            }
+        }
 
         /// <inheritdoc />
         public class Handler : IRequestHandler<Query, Result<IList<ModerationAction>>>

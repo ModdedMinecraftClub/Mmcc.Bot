@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Core.Errors;
@@ -47,6 +48,24 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             /// Reason
             /// </summary>
             public string Reason { get; set; } = null!;
+        }
+
+        /// <summary>
+        /// Validates the <see cref="Command"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Command>
+        {
+            public Validator()
+            {
+                RuleFor(c => c.GuildId)
+                    .NotNull();
+
+                RuleFor(c => c.UserIgn)
+                    .NotEmpty().When(c => c.UserIgn is not null);
+
+                RuleFor(c => c.Reason)
+                    .NotEmpty();
+            }
         }
 
         /// <inheritdoc />

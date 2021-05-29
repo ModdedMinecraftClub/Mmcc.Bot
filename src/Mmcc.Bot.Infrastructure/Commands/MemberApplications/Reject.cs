@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Mmcc.Bot.Core.Errors;
@@ -31,6 +32,21 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
             /// </summary>
             public Snowflake GuildId { get; set; }
             
+        }
+
+        /// <summary>
+        /// Validates the <see cref="Command"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Command>
+        {
+            public Validator()
+            {
+                RuleFor(c => c.Id)
+                    .NotNull();
+
+                RuleFor(c => c.GuildId)
+                    .NotNull();
+            }
         }
         
         /// <inheritdoc />

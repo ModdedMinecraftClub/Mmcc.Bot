@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Mmcc.Bot.Database;
@@ -20,6 +21,21 @@ namespace Mmcc.Bot.Infrastructure.Queries.Tags
         /// Query to get one tag.
         /// </summary>
         public record Query(Snowflake GuildId, string TagName) : IRequest<Result<Tag?>>;
+
+        /// <summary>
+        /// Validates the <see cref="Query"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Query>
+        {
+            public Validator()
+            {
+                RuleFor(q => q.GuildId)
+                    .NotNull();
+
+                RuleFor(q => q.TagName)
+                    .NotEmpty();
+            }
+        }
         
         /// <inheritdoc />
         public class Handler : IRequestHandler<Query, Result<Tag?>>

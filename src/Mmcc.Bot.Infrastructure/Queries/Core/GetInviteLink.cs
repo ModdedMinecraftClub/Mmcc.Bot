@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
 using Remora.Discord.API.Abstractions.Rest;
@@ -18,6 +19,18 @@ namespace Mmcc.Bot.Infrastructure.Queries.Core
         /// Query to get an invite link to a guild.
         /// </summary>
         public record Query(Snowflake GuildId) : IRequest<Result<string>>;
+
+        /// <summary>
+        /// Validates the <see cref="Query"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Query>
+        {
+            public Validator()
+            {
+                RuleFor(q => q.GuildId)
+                    .NotNull();
+            }
+        }
 
         /// <inheritdoc />
         public class Handler : IRequestHandler<Query, Result<string>>

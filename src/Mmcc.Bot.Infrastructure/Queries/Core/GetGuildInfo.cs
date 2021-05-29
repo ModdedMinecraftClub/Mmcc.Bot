@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
 using Remora.Discord.API;
@@ -22,6 +23,18 @@ namespace Mmcc.Bot.Infrastructure.Queries.Core
         /// Query to get guild info.
         /// </summary>
         public record Query(Snowflake GuildId) : IRequest<Result<QueryResult>>;
+
+        /// <summary>
+        /// Validates the <see cref="Query"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Query>
+        {
+            public Validator()
+            {
+                RuleFor(q => q.GuildId)
+                    .NotNull();
+            }
+        }
 
         /// <summary>
         /// Result of the query to get guild info.

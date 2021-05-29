@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Mmcc.Bot.Core.Errors;
@@ -51,6 +51,31 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
             /// </summary>
             public IList<string> Igns { get; set; } = null!;
         }
+
+        /// <summary>
+        /// Validates the <see cref="Command"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Command>
+        {
+            public Validator()
+            {
+                RuleFor(c => c.Id)
+                    .NotNull();
+
+                RuleFor(c => c.ChannelId)
+                    .NotNull();
+
+                RuleFor(c => c.ServerPrefix)
+                    .NotEmpty()
+                    .MinimumLength(2);
+
+                RuleFor(c => c.Igns)
+                    .NotEmpty();
+
+                RuleForEach(c => c.Igns)
+                    .NotEmpty();
+            }
+        }
         
         /// <inheritdoc />
         public class Handler : IRequestHandler<Command, Result<MemberApplication>>
@@ -75,18 +100,10 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
             /// <inheritdoc />
             public async Task<Result<MemberApplication>> Handle(Command request, CancellationToken cancellationToken)
             {
-                MemberApplication? app;
-                try
-                {
-                    app = await _context.MemberApplications
-                        .FirstOrDefaultAsync(
-                            a => a.MemberApplicationId == request.Id && a.GuildId == request.GuildId.Value,
-                            cancellationToken);
-                }
-                catch (Exception e)
-                {
-                    return e;
-                }
+                var app = await _context.MemberApplications
+                    .FirstOrDefaultAsync(
+                        a => a.MemberApplicationId == request.Id && a.GuildId == request.GuildId.Value,
+                        cancellationToken);
                 
                 if (app is null)
                 {
@@ -148,15 +165,8 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
                     return Result<MemberApplication>.FromError(addRoleResult);
                 }
 
-                try
-                {
-                    app.AppStatus = ApplicationStatus.Approved;
-                    await _context.SaveChangesAsync(cancellationToken);
-                }
-                catch (Exception e)
-                {
-                    return e;
-                }
+                app.AppStatus = ApplicationStatus.Approved;
+                await _context.SaveChangesAsync(cancellationToken);
                 
                 return Result<MemberApplication>.FromSuccess(app);
             }

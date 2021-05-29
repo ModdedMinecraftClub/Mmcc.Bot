@@ -2,6 +2,7 @@
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Remora.Results;
 
@@ -21,6 +22,15 @@ namespace Mmcc.Bot.Infrastructure.Queries.Diagnostics
             /// Address of the network resource to ping.
             /// </summary>
             public string Address { get; set; } = null!;
+        }
+
+        public class Validator : AbstractValidator<Query>
+        {
+            public Validator()
+            {
+                RuleFor(q => q.Address)
+                    .NotEmpty();
+            }
         }
         
         public class QueryResult

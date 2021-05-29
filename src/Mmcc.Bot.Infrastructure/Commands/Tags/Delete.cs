@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Mmcc.Bot.Database;
@@ -19,6 +20,21 @@ namespace Mmcc.Bot.Infrastructure.Commands.Tags
         /// Command to delete a tag.
         /// </summary>
         public record Command(Snowflake GuildId, string TagName) : IRequest<Result<Tag>>;
+
+        /// <summary>
+        /// Validates the <see cref="Command"/>.
+        /// </summary>
+        public class Validator : AbstractValidator<Command>
+        {
+            public Validator()
+            {
+                RuleFor(c => c.GuildId)
+                    .NotNull();
+
+                RuleFor(c => c.TagName)
+                    .NotEmpty();
+            }
+        }
         
         /// <inheritdoc />
         public class Handler : IRequestHandler<Command, Result<Tag>>
