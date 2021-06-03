@@ -140,13 +140,15 @@ namespace Mmcc.Bot.CommandGroups.Core
             {
                 GroupNode g => new Embed
                 {
-                    Title = $":arrow_right: {g.Description} (!{g.Key})",
-                    Description = $"Use `!{g.Key} <command name> <params>`."
+                    // what the fuck??
+                    Title = $":arrow_right: {g.Description} " +
+                            $"[`!{g.Key}`{(g.Aliases.Any() ? " / " + string.Join("/", g.Aliases.Select(a => $"`!{a}`")) : "")}]",
+                    Description = $"Usage: `!{g.Key} <command name> <params>`."
                 },
                 _ => new Embed
                 {
-                    Title = ":arrow_right: General commands (!)",
-                    Description = "Use `!<command name> <params>`."
+                    Title = ":arrow_right: General commands [`!`]",
+                    Description = "Usage: `!<command name> <params>`."
                 }
             };
             embed = embed with
