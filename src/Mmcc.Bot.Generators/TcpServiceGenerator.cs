@@ -15,8 +15,6 @@ namespace Mmcc.Bot.Generators
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (!context.Compilation.AssemblyName!.Equals("Mmcc.Bot.Infrastructure")) return; 
-            
             var messageType = context.Compilation.GetTypeByMetadataName("Google.Protobuf.IMessage");
             var messages = context.Compilation.GlobalNamespace
                 .GetNamespaceMembers()
