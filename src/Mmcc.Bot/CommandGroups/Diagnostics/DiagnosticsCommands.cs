@@ -30,6 +30,13 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
         private readonly ColourPalette _colourPalette;
         private readonly IMediator _mediator;
 
+        private readonly Dictionary<string, string> _resourcesToCheck = new()
+        {
+            ["Discord"] = "discord.com",
+            ["Mojang API"] = "api.mojang.com",
+            ["MMCC"] = "s4.moddedminecraft.club"
+        };
+
         /// <summary>
         /// Instantiates a new instance of <see cref="DiagnosticsCommands"/>.
         /// </summary>
@@ -58,18 +65,12 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
         [Description("Show status of the bot and APIs it uses")]
         public async Task<IResult> BotDiagnostics()
         {
-            var resourcesToPing = new Dictionary<string, string>
-            {
-                {"Discord", "discord.com"},
-                {"Mojang API", "api.mojang.com"},
-                {"MMCC", "s4.moddedminecraft.club"}
-            };
             var fields = new List<EmbedField>
             {
                 new("Bot status", ":green_circle: Operational", false)
             };
 
-            foreach (var (name, address) in resourcesToPing)
+            foreach (var (name, address) in _resourcesToCheck)
             {
                 var pingResult = await _mediator.Send(new PingNetworkResource.Query {Address = address});
                 var fieldVal = !pingResult.IsSuccess || pingResult.Entity.Status != IPStatus.Success
@@ -122,6 +123,7 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
                 fieldValue.AppendLine($"File system: {d.DriveFormat}");
                 fieldValue.AppendLine($"Available space: {spaceEmoji} {d.GigabytesFree:0.00} GB ({d.PercentageUsed:0.00}% used)");
                 fieldValue.AppendLine($"Total size: {d.GigabytesTotalSize:0.00} GB");
+                
                 embedFields.Add(new EmbedField(d.Name, fieldValue.ToString(), false));
             }
 
