@@ -24,6 +24,7 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
     /// Commands for managing MC servers.
     /// </summary>
     [Group("mc")]
+    [Description("Minecraft (Polychat)")]
     [RequireGuild]
     public class MinecraftServersCommands : CommandGroup
     {

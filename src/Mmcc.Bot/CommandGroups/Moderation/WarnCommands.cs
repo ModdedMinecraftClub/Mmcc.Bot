@@ -19,6 +19,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
     /// Commands for issuing warnings.
     /// </summary>
     [Group("warn")]
+    [Description("Moderation (warns)")]
     [RequireGuild]
     [RequireUserGuildPermission(DiscordPermission.BanMembers)]
     public class WarnCommands : CommandGroup

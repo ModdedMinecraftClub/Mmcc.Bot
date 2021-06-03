@@ -20,6 +20,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
     /// Commands for banning users.
     /// </summary>
     [Group("ban")]
+    [Description("Moderation (bans)")]
     [RequireGuild]
     [RequireUserGuildPermission(DiscordPermission.BanMembers)]
     public class BanCommands : CommandGroup

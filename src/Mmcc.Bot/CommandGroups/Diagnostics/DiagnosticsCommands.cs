@@ -23,6 +23,7 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
     /// Diagnostics commands.
     /// </summary>
     [Group("diagnostics")]
+    [Description("Server and bot diagnostics")]
     public class DiagnosticsCommands : CommandGroup
     {
         private readonly MessageContext _context;

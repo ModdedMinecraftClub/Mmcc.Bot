@@ -27,6 +27,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
     /// General moderation commands that do not fit into any specific categories.
     /// </summary>
     [Group("moderation", "mod")]
+    [Description("Moderation (general)")]
     [RequireGuild]
     public class GeneralModerationCommands : CommandGroup
     {

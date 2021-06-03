@@ -20,6 +20,7 @@ namespace Mmcc.Bot.CommandGroups.Tags
     /// Tags commands.
     /// </summary>
     [Group("tags")]
+    [Description("Tags management commands")]
     [RequireGuild]
     [RequireUserGuildPermission(DiscordPermission.BanMembers)]
     public class TagsManagementCommands : CommandGroup
