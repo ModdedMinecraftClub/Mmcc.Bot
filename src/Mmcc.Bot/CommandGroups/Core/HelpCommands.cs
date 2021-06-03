@@ -142,7 +142,7 @@ namespace Mmcc.Bot.CommandGroups.Core
                 {
                     // what the fuck??
                     Title = $":arrow_right: {g.Description} " +
-                            $"[`!{g.Key}`{(g.Aliases.Any() ? " / " + string.Join("/", g.Aliases.Select(a => $"`!{a}`")) : "")}]",
+                            $"[`!{g.Key}`{(g.Aliases.Any() ? "/" + string.Join("/", g.Aliases.Select(a => $"`!{a}`")) : "")}]",
                     Description = $"Usage: `!{g.Key} <command name> <params>`."
                 },
                 _ => new Embed
