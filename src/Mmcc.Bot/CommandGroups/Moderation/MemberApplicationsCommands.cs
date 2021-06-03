@@ -20,6 +20,7 @@ using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
+using Remora.Discord.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.CommandGroups.Moderation
@@ -291,9 +292,11 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     new("Approved by", $"<@{_context.User.ID}>", false)
                 }
             };
-            var sendUserNotificationEmbedResult =
-                await _channelApi.CreateMessageAsync(getMembersChannelResult.Entity.ID,
-                    $"<@{commandResult.Entity.AuthorDiscordId}>", embed: userNotificationEmbed);
+            var sendUserNotificationEmbedResult = await _channelApi.CreateMessageAsync(
+                channelID: getMembersChannelResult.Entity.ID,
+                embed: userNotificationEmbed,
+                messageReference: new MessageReference(new Snowflake(commandResult.Entity.MessageId)));
+            
             if (!sendUserNotificationEmbedResult.IsSuccess)
             {
                 return sendUserNotificationEmbedResult;
@@ -346,9 +349,11 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     new("Rejected by", $"<@{_context.User.ID}>", false)
                 }
             };
-            var sendUserNotificationEmbedResult =
-                await _channelApi.CreateMessageAsync(getMembersChannelResult.Entity.ID,
-                    $"<@{rejectCommandResult.Entity.AuthorDiscordId}>", embed: userNotificationEmbed);
+            var sendUserNotificationEmbedResult = await _channelApi.CreateMessageAsync(
+                channelID: getMembersChannelResult.Entity.ID,
+                embed: userNotificationEmbed,
+                messageReference: new MessageReference(new Snowflake(rejectCommandResult.Entity.MessageId)));
+            
             if (!sendUserNotificationEmbedResult.IsSuccess)
             {
                 return sendUserNotificationEmbedResult;
