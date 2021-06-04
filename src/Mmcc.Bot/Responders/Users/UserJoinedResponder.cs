@@ -54,8 +54,7 @@ namespace Mmcc.Bot.Responders.Users
                 return Result.FromError(getLogsChannelResult.Error);
             }
 
-            if (
-                !ev.User.HasValue
+            if (!ev.User.HasValue
                 || ev.User.Value is null
                 || ev.User.Value.IsBot.HasValue && ev.User.Value.IsBot.Value
                 || ev.User.Value.IsSystem.HasValue && ev.User.Value.IsSystem.Value

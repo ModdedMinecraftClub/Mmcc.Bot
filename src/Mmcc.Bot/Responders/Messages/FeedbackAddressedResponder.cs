@@ -37,9 +37,8 @@ namespace Mmcc.Bot.Responders.Messages
             if (ev.ChannelID.Value != _discordSettings.FeedbackChannelId
                 || !ev.GuildID.HasValue
                 || !ev.Member.HasValue
-                || ev.Member.Value.User.HasValue
-                && ev.Member.Value.User.Value.IsBot.HasValue
-                && ev.Member.Value.User.Value.IsBot.Value
+                || ev.Member.Value.User.HasValue && ev.Member.Value.User.Value.IsBot.HasValue
+                                                 && ev.Member.Value.User.Value.IsBot.Value
                 || !ev.Emoji.Name.HasValue
                 || ev.Emoji.Name.Value is null
                 || !_protectedEmojis.Contains(ev.Emoji.Name.Value)

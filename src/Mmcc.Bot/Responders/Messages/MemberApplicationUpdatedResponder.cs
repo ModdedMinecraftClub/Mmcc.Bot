@@ -45,8 +45,7 @@ namespace Mmcc.Bot.Responders.Messages
         /// <inheritdoc />
         public async Task<Result> RespondAsync(IMessageUpdate ev, CancellationToken ct = default)
         {
-            if (
-                !ev.Attachments.HasValue
+            if (!ev.Attachments.HasValue
                 || ev.Attachments.Value.Count == 0
                 || !ev.ID.HasValue
                 || !ev.Author.HasValue

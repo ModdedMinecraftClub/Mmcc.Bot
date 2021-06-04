@@ -97,7 +97,6 @@ namespace Mmcc.Bot.Infrastructure.Services
             }
             
             await using var responseStream = await response.Content.ReadAsStreamAsync();
-            var responseString = await response.Content.ReadAsStringAsync();
             var res = await JsonSerializer.DeserializeAsync<IEnumerable<PlayerNameInfo>>(responseStream, _serializerOptions);
             return Result<IEnumerable<IPlayerNameInfo>>.FromSuccess(res ?? Enumerable.Empty<IPlayerNameInfo>());
         }

@@ -47,8 +47,7 @@ namespace Mmcc.Bot.Responders.Messages
         public async Task<Result> RespondAsync(IMessageCreate ev, CancellationToken ct = default)
         {
             // return if the message has no screenshot;
-            if (
-                ev.Attachments.Count == 0
+            if (ev.Attachments.Count == 0
                 || ev.Author.IsBot.HasValue && ev.Author.IsBot.Value
                 || ev.Author.IsSystem.HasValue && ev.Author.IsSystem.Value
                 || !ev.GuildID.HasValue

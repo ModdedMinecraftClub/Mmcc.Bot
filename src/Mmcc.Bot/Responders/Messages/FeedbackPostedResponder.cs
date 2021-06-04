@@ -21,8 +21,7 @@ namespace Mmcc.Bot.Responders.Messages
 
         public async Task<Result> RespondAsync(IMessageCreate ev, CancellationToken ct = default)
         {
-            if (
-                ev.Author.IsBot.HasValue && ev.Author.IsBot.Value
+            if (ev.Author.IsBot.HasValue && ev.Author.IsBot.Value
                 || ev.Author.IsSystem.HasValue && ev.Author.IsSystem.Value
                 || !ev.GuildID.HasValue
                 || ev.ChannelID.Value != _discordSettings.FeedbackChannelId
