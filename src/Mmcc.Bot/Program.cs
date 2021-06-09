@@ -123,6 +123,8 @@ namespace Mmcc.Bot
                     });
                     
                     services.AddTailwindColourPalette();
+
+                    services.AddSingleton<IDiscordSanitiserService, DiscordSanitiserService>();
                     
                     services.AddScoped<IExecutionEventService, ErrorNotificationService>();
                     services.AddScoped<IMojangApiService, MojangApiService>();
