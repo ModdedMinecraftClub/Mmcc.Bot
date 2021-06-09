@@ -119,7 +119,6 @@ namespace Mmcc.Bot.Infrastructure.Services
 
                     var matchingChannel = getGuildChannelsRes.Entity
                         .FirstOrDefault(c => c.ID.Value == id);
-
                     var matchingChannelName = matchingChannel switch
                     {
                         {Name: {HasValue: true}} => matchingChannel.Name.Value,
