@@ -171,6 +171,7 @@ namespace Mmcc.Bot
                     services.AddResponder<FeedbackAddressedResponder>();
                     services.AddResponder<MemberApplicationCreatedResponder>();
                     services.AddResponder<MemberApplicationUpdatedResponder>();
+                    services.AddResponder<DiscordChatMessageResponder>();
 
                     services.AddDiscordGateway(provider =>
                     {

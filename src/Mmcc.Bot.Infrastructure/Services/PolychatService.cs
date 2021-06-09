@@ -150,7 +150,7 @@ namespace Mmcc.Bot.Infrastructure.Services
 
             foreach (var (_, onlineServer) in _onlineServers)
             {
-                if (onlineServer.ServerId.Equals(authorId)) break;
+                if (onlineServer.ServerId.Equals(authorId)) continue;
 
                 SendMessage(onlineServer, packedMsgBytes);
             }
