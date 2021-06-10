@@ -77,7 +77,7 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
         [Command("exec", "e", "execute")]
         [Description("Executes a command on a MC server")]
         [RequireUserGuildPermission(DiscordPermission.BanMembers)]
-        public async Task<IResult> Exec(string serverId, string command, [Greedy] IEnumerable<string> args) =>
+        public async Task<IResult> Exec(string serverId, [Greedy] IEnumerable<string> args) =>
             await _mediator.Send(new SendExecCommand.Command(serverId, _context.ChannelID, args));
 
         /// <summary>
