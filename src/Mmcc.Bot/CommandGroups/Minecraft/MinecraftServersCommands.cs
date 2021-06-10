@@ -71,7 +71,6 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
         /// Executes a command on a MC server.
         /// </summary>
         /// <param name="serverId">ID of the server.</param>
-        /// <param name="command">MC command to execute.</param>
         /// <param name="args">Command arguments.</param>
         /// <returns>Result of the operation.</returns>
         [Command("exec", "e", "execute")]
