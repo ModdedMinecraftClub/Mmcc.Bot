@@ -52,7 +52,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.MessageSenders
                     var msg = new GenericCommand
                     {
                         DiscordCommandName = "exec",
-                        DefaultCommand = "$exec",
+                        DefaultCommand = "$args",
                         Args = {request.McCmdArgs},
                         DiscordChannelId = request.ChannelId.ToString()
                     };
