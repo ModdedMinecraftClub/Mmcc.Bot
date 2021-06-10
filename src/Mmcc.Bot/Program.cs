@@ -195,7 +195,7 @@ namespace Mmcc.Bot
                             }
                             catch (Exception e)
                             {
-                                logger.LogError("Error in the central server's TCP byte[] message handler.", e);
+                                logger.LogError($"Error in the central server's TCP byte[] message handler.\n{e.StackTrace}");
                             }
                         },
                         provider.GetRequiredService<PolychatSettings>().MessageQueueLimit,
