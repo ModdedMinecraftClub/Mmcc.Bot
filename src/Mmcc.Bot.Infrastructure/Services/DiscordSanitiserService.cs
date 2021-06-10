@@ -69,6 +69,7 @@ namespace Mmcc.Bot.Infrastructure.Services
             s = await SanitiseRoleMentions(s, message.GuildID);
             s = SanitiseStandardEmoji(s);
             s = SanitiseCustomEmoji(s);
+            s = s.Replace("️", " ");
             
             return s;
         }
