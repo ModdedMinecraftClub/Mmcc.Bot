@@ -71,7 +71,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
                 };
                 var output = msg.CommandOutput
                     .Batch(1024)
-                    .Select(charArr => new string(charArr.ToArray()))
+                    .Select(chars => new string(chars.ToArray()))
                     .ToList();
                 embeds
                     .AddRange(output
