@@ -39,7 +39,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
                     throw new Exception(getChatChannelResult.Error.Message);
                 }
 
-                var messageStr = new PolychatChatMessageString(request.Message.Message, true);
+                var messageStr = new PolychatChatMessageString(request.Message.Message);
                 var sendMessageResult = await _channelApi.CreateMessageAsync(
                         new(_polychatSettings.ChatChannelId),
                         messageStr.ToDiscordFormattedString(),

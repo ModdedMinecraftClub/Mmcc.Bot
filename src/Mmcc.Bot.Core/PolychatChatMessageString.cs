@@ -17,38 +17,34 @@ namespace Mmcc.Bot.Core
         /// Creates a new <see cref="PolychatChatMessageString"/> with the given <paramref name="value"/>.
         /// </summary>
         /// <param name="value">The raw value.</param>
-        /// <param name="sanitise">Whether to sanitise the message. Defaults to <code>false</code>.</param>
-        public PolychatChatMessageString(string? value, bool sanitise = false)
-        {
+        public PolychatChatMessageString(string? value) => 
             Value = value ?? string.Empty;
-            if (sanitise) Sanitise();
-        }
 
         /// <summary>
         /// Creates a new <see cref="PolychatChatMessageString"/> with the given <paramref name="serverId"></paramref> server ID and <paramref name="messageBody"></paramref> message body. 
         /// </summary>
         /// <param name="serverId">Server ID.</param>
         /// <param name="messageBody">Message body.</param>
-        /// <param name="sanitise">Whether to sanitise the message. Defaults to <code>false</code>.</param>
-        public PolychatChatMessageString(string serverId, string? messageBody, bool sanitise = false)
+        public PolychatChatMessageString(string serverId, string? messageBody)
         {
             var msg = messageBody ?? string.Empty;
             Value = $"[{serverId.ToUpperInvariant()}] {msg}";
-            if (sanitise) Sanitise();
         }
         
         /// <summary>
         /// The value.
         /// </summary>
-        public string Value { get; private set; }
+        public string Value { get; }
 
         /// <summary>
         /// Gets whether <see cref="Value"/> has a meaningful value.
         /// </summary>
-        public bool HasValue => !string.IsNullOrEmpty(Value);
+        public bool HasValue => 
+            !string.IsNullOrEmpty(Value);
 
         /// <inheritdoc />
-        public override string ToString() => HasValue ? new string(Value) : string.Empty;
+        public override string ToString() => 
+            HasValue ? new string(Value) : string.Empty;
 
         /// <summary>
         /// To a string that is formatted for Discord.
@@ -56,7 +52,10 @@ namespace Mmcc.Bot.Core
         /// <returns></returns>
         public string ToDiscordFormattedString()
         {
-            var val = HasValue ? Value : " ";
+            var val = HasValue 
+                ? Regex.Replace(Value, "§.", "").Replace('`', '\'')
+                : " ";
+            
             return $"`{val}`";
         }
 
@@ -85,10 +84,5 @@ namespace Mmcc.Bot.Core
         
         public static bool operator !=(PolychatChatMessageString left, PolychatChatMessageString right)
             => !left.Equals(right);
-
-        /// <summary>
-        /// Sanitises the string, that is removes the Minecraft colour formatting.
-        /// </summary>
-        private void Sanitise() => Value = Regex.Replace(Value, "§.", "");
     }
 }
