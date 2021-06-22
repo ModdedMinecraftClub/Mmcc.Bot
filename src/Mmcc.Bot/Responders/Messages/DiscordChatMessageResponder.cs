@@ -1,9 +1,6 @@
-﻿using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Mmcc.Bot.Core;
 using Mmcc.Bot.Core.Models.Settings;
-using Mmcc.Bot.Core.Utilities;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Protos;
 using Remora.Discord.API.Abstractions.Gateway.Events;

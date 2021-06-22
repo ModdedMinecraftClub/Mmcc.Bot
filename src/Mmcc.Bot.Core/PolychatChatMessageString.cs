@@ -9,7 +9,7 @@ namespace Mmcc.Bot.Core
     public struct PolychatChatMessageString : IEquatable<PolychatChatMessageString>
     {
         /// <summary>
-        /// Represents the empty string. This field is read only.
+        /// Represents the empty string. This field is read-only.
         /// </summary>
         public static readonly PolychatChatMessageString Empty = new(string.Empty);
 

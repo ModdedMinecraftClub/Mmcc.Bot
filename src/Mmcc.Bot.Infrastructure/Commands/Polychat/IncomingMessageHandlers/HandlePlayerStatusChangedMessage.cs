@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core;
 using Mmcc.Bot.Core.Models.Settings;
-using Mmcc.Bot.Core.Utilities;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Protos;
 using Remora.Discord.API.Abstractions.Rest;
@@ -30,23 +29,23 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
 
             protected override async Task Handle(TcpRequest<ServerPlayerStatusChangedEvent> request, CancellationToken cancellationToken)
             {
-                var serverId = request.Message.NewPlayersOnline.ServerId.ToUpperInvariant();
-                var unformattedId = PolychatStringUtils.SanitiseMcId(serverId);
-                var server = _polychatService.GetOnlineServerOrDefault(unformattedId);
+                var serverId = new PolychatServerIdString(request.Message.NewPlayersOnline.ServerId);
+                var sanitisedId = serverId.ToSanitisedUppercase();
+                var server = _polychatService.GetOnlineServerOrDefault(sanitisedId);
 
                 if (server is null)
                 {
-                    throw new KeyNotFoundException($"Could not find server {unformattedId} in the list of online servers");
+                    throw new KeyNotFoundException($"Could not find server {sanitisedId} in the list of online servers");
                 }
 
                 server.PlayersOnline = request.Message.NewPlayersOnline.PlayersOnline;
                 server.OnlinePlayerNames = request.Message.NewPlayersOnline.PlayerNames.ToList();
 
-                _polychatService.AddOrUpdateOnlineServer(unformattedId, server);
-                _polychatService.ForwardMessage(unformattedId, request.Message);
+                _polychatService.AddOrUpdateOnlineServer(sanitisedId, server);
+                _polychatService.ForwardMessage(sanitisedId, request.Message);
 
                 var messageStr = new PolychatChatMessageString(
-                    unformattedId,
+                    sanitisedId,
                     $"{request.Message.PlayerUsername} has {request.Message.NewPlayerStatus.ToString().ToLower()} the game.");
                 var getChatChannelResult =
                     await _channelApi.GetChannelAsync(new(_polychatSettings.ChatChannelId), cancellationToken);

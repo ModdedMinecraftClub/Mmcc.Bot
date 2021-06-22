@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using MediatR;
-using Mmcc.Bot.Core.Utilities;
+using Mmcc.Bot.Core;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Protos;
 
@@ -20,19 +20,19 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
 
             protected override void Handle(TcpRequest<ServerPlayersOnline> request)
             {
-                var serverId = request.Message.ServerId.ToUpperInvariant();
-                var unformattedId = PolychatStringUtils.SanitiseMcId(serverId);
-                var server = _polychatService.GetOnlineServerOrDefault(unformattedId);
+                var serverId = new PolychatServerIdString(request.Message.ServerId);
+                var sanitisedId = serverId.ToSanitisedUppercase();
+                var server = _polychatService.GetOnlineServerOrDefault(sanitisedId);
 
                 if (server is null)
                 {
-                    throw new KeyNotFoundException($"Could not find server {unformattedId} in the list of online servers");
+                    throw new KeyNotFoundException($"Could not find server {sanitisedId} in the list of online servers");
                 }
 
                 server.PlayersOnline = request.Message.PlayersOnline;
                 server.OnlinePlayerNames = request.Message.PlayerNames.ToList();
 
-                _polychatService.AddOrUpdateOnlineServer(unformattedId, server);
+                _polychatService.AddOrUpdateOnlineServer(sanitisedId, server);
             }
         }
     }

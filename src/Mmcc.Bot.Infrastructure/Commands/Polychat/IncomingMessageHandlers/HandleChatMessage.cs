@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core;
 using Mmcc.Bot.Core.Models.Settings;
-using Mmcc.Bot.Core.Utilities;
 using Mmcc.Bot.Protos;
 using Mmcc.Bot.Infrastructure.Services;
 using Remora.Discord.API.Abstractions.Rest;
@@ -28,8 +27,9 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
             
             protected override async Task Handle(TcpRequest<ChatMessage> request, CancellationToken cancellationToken)
             {
-                var id = PolychatStringUtils.SanitiseMcId(request.Message.ServerId).ToUpperInvariant();
-                _polychatService.ForwardMessage(id, request.Message);
+                var id = new PolychatServerIdString(request.Message.ServerId);
+                var sanitisedId = id.ToSanitisedUppercase();
+                _polychatService.ForwardMessage(sanitisedId, request.Message);
                 
                 var getChatChannelResult =
                     await _channelApi.GetChannelAsync(new(_polychatSettings.ChatChannelId), cancellationToken);

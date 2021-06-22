@@ -6,7 +6,6 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Core;
 using Mmcc.Bot.Core.Models.Settings;
-using Mmcc.Bot.Core.Utilities;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Protos;
 using Remora.Discord.API.Abstractions.Rest;
@@ -36,20 +35,20 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
             protected override async Task Handle(TcpRequest<ServerStatus> request, CancellationToken cancellationToken)
             {
                 var msg = request.Message;
-                var serverId = msg.ServerId.ToUpperInvariant();
-                var unformattedId = PolychatStringUtils.SanitiseMcId(serverId);
-                var server = _polychatService.GetOnlineServerOrDefault(unformattedId);
+                var serverId = new PolychatServerIdString(msg.ServerId);
+                var sanitisedId = serverId.ToSanitisedUppercase();
+                var server = _polychatService.GetOnlineServerOrDefault(sanitisedId);
 
                 if (server is not null)
                 {
-                    _polychatService.ForwardMessage(unformattedId, msg);
+                    _polychatService.ForwardMessage(sanitisedId, msg);
 
                     if (msg.Status == ServerStatus.Types.ServerStatusEnum.Stopped
                         || msg.Status == ServerStatus.Types.ServerStatusEnum.Crashed
                     )
                     {
-                        _polychatService.RemoveOnlineServer(unformattedId);
-                        _logger.LogInformation("Removed server {id} from the list of online servers.", unformattedId);
+                        _polychatService.RemoveOnlineServer(sanitisedId);
+                        _logger.LogInformation("Removed server {id} from the list of online servers.", sanitisedId);
                     }
 
                     var getChatChannelResult =
@@ -60,7 +59,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
                     }
 
                     var message = $"Server {msg.Status.ToString().ToLowerInvariant()}.";
-                    var chatMessage = new PolychatChatMessageString(unformattedId, message);
+                    var chatMessage = new PolychatChatMessageString(sanitisedId, message);
                     var sendMessageResult =
                         await _channelApi.CreateMessageAsync(new(_polychatSettings.ChatChannelId),
                             chatMessage.ToDiscordFormattedString(), ct: cancellationToken);
@@ -70,7 +69,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
                                             "Could not forward message to Discord.");
                     }
 
-                    _logger.LogInformation("Server {id} changed status to {newStatus}", unformattedId,
+                    _logger.LogInformation("Server {id} changed status to {newStatus}", sanitisedId,
                         msg.Status);
                 }
                 else
@@ -79,11 +78,11 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
                     {
                         _logger.LogWarning(
                             "Server {id} has unexpectedly sent ServerStatus message before sending ServerInfo message.",
-                            unformattedId);
+                            sanitisedId);
                     }
                     else
                     {
-                        throw new KeyNotFoundException($"Could not find server {unformattedId} in the list of online servers");
+                        throw new KeyNotFoundException($"Could not find server {sanitisedId} in the list of online servers");
                     }
                 }
             }
