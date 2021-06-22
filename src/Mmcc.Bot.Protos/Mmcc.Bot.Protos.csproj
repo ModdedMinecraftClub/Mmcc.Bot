@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
@@ -11,10 +11,17 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="MediatR" Version="9.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+        <PackageReference Include="Ssmp" Version="0.0.4" />
     </ItemGroup>
 
     <ItemGroup>
         <Protobuf Include=".\Protos\messages\*.proto" GrpcServices="None" />
     </ItemGroup>
+	
+    <ItemGroup>
+		<ProjectReference Include="..\Mmcc.Bot.Generators\Mmcc.Bot.Generators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+	</ItemGroup>
 
 </Project>

@@ -18,11 +18,12 @@
         <PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0-dev-00909" />
-        <PackageReference Include="Ssmp" Version="0.0.3" />
+        <PackageReference Include="Ssmp" Version="0.0.4" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Mmcc.Bot.Core\Mmcc.Bot.Core.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Infrastructure\Mmcc.Bot.Infrastructure.csproj" />
+      <ProjectReference Include="..\Mmcc.Bot.Protos\Mmcc.Bot.Protos.csproj" />
     </ItemGroup>
 </Project>

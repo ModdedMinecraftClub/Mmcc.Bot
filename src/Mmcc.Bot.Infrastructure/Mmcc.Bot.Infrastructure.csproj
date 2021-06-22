@@ -12,14 +12,13 @@
       <PackageReference Include="MediatR" Version="9.0.0" />
       <PackageReference Include="morelinq" Version="3.3.2" />
       <PackageReference Include="Remora.Discord" Version="3.0.30" />
-      <PackageReference Include="Ssmp" Version="0.0.3" />
+      <PackageReference Include="Ssmp" Version="0.0.4" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Mmcc.Bot.Core\Mmcc.Bot.Core.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Database\Mmcc.Bot.Database.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Protos\Mmcc.Bot.Protos.csproj" />
-	  <ProjectReference Include="..\Mmcc.Bot.Generators\Mmcc.Bot.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>

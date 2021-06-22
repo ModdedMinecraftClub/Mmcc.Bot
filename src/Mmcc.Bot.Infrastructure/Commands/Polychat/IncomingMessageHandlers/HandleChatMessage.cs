@@ -5,9 +5,8 @@ using MediatR;
 using Mmcc.Bot.Core;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Core.Utilities;
-using Mmcc.Bot.Infrastructure.Requests.Generic;
-using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Protos;
+using Mmcc.Bot.Infrastructure.Services;
 using Remora.Discord.API.Abstractions.Rest;
 
 namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers

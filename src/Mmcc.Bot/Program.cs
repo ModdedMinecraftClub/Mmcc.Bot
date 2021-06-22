@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Mmcc.Bot.CommandGroups;
 using Mmcc.Bot.CommandGroups.Core;
 using Mmcc.Bot.CommandGroups.Diagnostics;
 using Mmcc.Bot.CommandGroups.Minecraft;
@@ -24,18 +21,16 @@ using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions;
 using Mmcc.Bot.Infrastructure.HostedServices;
 using Mmcc.Bot.Infrastructure.Parsers;
-using Mmcc.Bot.Infrastructure.Queries;
 using Mmcc.Bot.Infrastructure.Queries.Core;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Responders.Guilds;
 using Mmcc.Bot.Responders.Messages;
 using Mmcc.Bot.Responders.Users;
 using Mmcc.Bot.Setup;
+using Mmcc.Bot.Protos;
 using Remora.Commands.Extensions;
 using Remora.Discord.API.Abstractions.Gateway.Commands;
-using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.Caching.Extensions;
-using Remora.Discord.Caching.Services;
 using Remora.Discord.Commands.Extensions;
 using Remora.Discord.Commands.Services;
 using Remora.Discord.Gateway;
@@ -99,7 +94,8 @@ namespace Mmcc.Bot
                     services.AddSingleton(provider => provider.GetRequiredService<IOptions<DiscordSettings>>().Value);
                     services.Configure<PolychatSettings>(hostContext.Configuration.GetSection("Polychat"));
                     services.AddSingleton(provider => provider.GetRequiredService<IOptions<PolychatSettings>>().Value);
-                    
+
+                    services.Configure<SsmpOptions>(hostContext.Configuration.GetSection("Ssmp"));
                     services.Configure<DiscordGatewayClientOptions>(options =>
                     {
                         options.Intents =
@@ -129,7 +125,6 @@ namespace Mmcc.Bot
                     services.AddScoped<IExecutionEventService, ErrorNotificationService>();
                     services.AddScoped<IMojangApiService, MojangApiService>();
                     services.AddScoped<IModerationService, ModerationService>();
-                    services.AddScoped<ITcpMessageProcessingService, TcpMessageProcessingService>();
 
                     services.AddValidatorsFromAssemblyContaining<GetGuildInfo>();
                     services.AddMediatR(typeof(CreateFromDiscordMessage));
@@ -181,28 +176,13 @@ namespace Mmcc.Bot
                         return discordConfig.Token;
                     });
                     
-                    // set up polychat central server;
-                    services.AddSingleton<IPolychatService, PolychatService>();
-                    services.AddSingleton(provider => new CentralServerService(
-                        async (client, message) =>
-                        {
-                            using var scope = provider.CreateScope();
-                            var handlingService = scope.ServiceProvider.GetRequiredService<ITcpMessageProcessingService>();
-                            var logger = scope.ServiceProvider.GetRequiredService<ILogger<CentralServerService>>();
-                            try
-                            {
-                                await handlingService.Handle(client, message);
-                            }
-                            catch (Exception e)
-                            {
-                                logger.LogError($"Error in the central server's TCP byte[] message handler.\n{e.StackTrace}");
-                            }
-                        },
-                        provider.GetRequiredService<PolychatSettings>().MessageQueueLimit,
-                        IPAddress.Loopback,
-                        provider.GetRequiredService<PolychatSettings>().Port
-                        ));
+                    // set up Ssmp central server;
+                    services.AddSingleton<ISsmpHandler, SsmpHandler>();
+                    services.AddSingleton<CentralServerService>();
                     services.AddHostedService<CentralServerBackgroundService>();
+                    
+                    // set up Polychat2;
+                    services.AddSingleton<IPolychatService, PolychatService>();
                     services.AddHostedService<BroadcastsHostedService>();
                     
                     services.AddHostedService<DiscordService>();

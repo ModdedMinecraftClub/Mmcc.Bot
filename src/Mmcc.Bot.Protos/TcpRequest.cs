@@ -2,7 +2,7 @@
 using MediatR;
 using Ssmp;
 
-namespace Mmcc.Bot.Infrastructure.Requests.Generic
+namespace Mmcc.Bot.Protos
 {
     /// <summary>
     /// Represents a request coming from a TCP client.

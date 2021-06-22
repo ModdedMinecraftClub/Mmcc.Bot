@@ -2,7 +2,6 @@
 using System.Linq;
 using MediatR;
 using Mmcc.Bot.Core.Utilities;
-using Mmcc.Bot.Infrastructure.Requests.Generic;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Protos;
 

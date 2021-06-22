@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Core.Models;
-using Mmcc.Bot.Infrastructure.Requests.Generic;
 using Mmcc.Bot.Protos;
 using MoreLinq;
 using Remora.Discord.API.Abstractions.Rest;

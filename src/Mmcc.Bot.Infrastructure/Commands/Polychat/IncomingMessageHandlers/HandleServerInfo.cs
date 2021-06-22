@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Core;
 using Mmcc.Bot.Core.Utilities;
-using Mmcc.Bot.Infrastructure.Requests.Generic;
 using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Protos;
 
