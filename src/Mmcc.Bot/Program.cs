@@ -50,6 +50,9 @@ namespace Mmcc.Bot
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+#if !DEBUG
+                .MinimumLevel.Override("System.Net.Http.HttpClient", LogEventLevel.Warning)
+#endif
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .WriteTo.File(Path.Combine("logs", "log.txt"), rollingInterval: RollingInterval.Day,
