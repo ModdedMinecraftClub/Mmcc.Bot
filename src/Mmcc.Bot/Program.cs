@@ -39,6 +39,7 @@ using Remora.Discord.Hosting.Services;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
+using Serilog.Formatting.Compact;
 using Ssmp;
 
 namespace Mmcc.Bot
@@ -57,9 +58,10 @@ namespace Mmcc.Bot
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .WriteTo.File(
-                    Path.Combine("logs", "log.txt"),
-                    rollingInterval: RollingInterval.Day,
-                    retainedFileCountLimit: 3,
+                    new CompactJsonFormatter(),
+                    Path.Combine("logs", "log.clef"),
+                    rollingInterval: RollingInterval.Month,
+                    retainedFileCountLimit: 2,
                     levelSwitch: new LoggingLevelSwitch(LogEventLevel.Warning)
                 )
                 .CreateLogger();
