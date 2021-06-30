@@ -65,7 +65,8 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
 
         private async Task RunIterationAsync(CancellationToken ct)
         {
-            _logger.LogInformation("Running an iteration...");
+            _logger.LogInformation("Running an iteration of the {service} timed background service...",
+                nameof(ModerationBackgroundService));
             
             using var scope = _sp.CreateScope();
             var provider = scope.ServiceProvider;
@@ -77,7 +78,11 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
 
             if (!getAllPendingResult.IsSuccess)
             {
-                _logger.LogError($"Error in the iteration loop.\n{getAllPendingResult.Error}");
+                _logger.LogError(
+                    "An error has occurred while running an iteration of the {service} timed background service:\n{error}",
+                    nameof(ModerationBackgroundService),
+                    getAllPendingResult.Error
+                );
                 return;
             }
 
@@ -85,13 +90,15 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
 
             foreach (var ma in actionsToDeactivate)
             {
-                if (ma is null) break;
-                
                 var getLogsChannel = await guildApi.FindGuildChannelByName(new Snowflake(ma.GuildId),
                     _discordSettings.ChannelNames.ModerationLogs);
                 if (!getLogsChannel.IsSuccess)
                 {
-                    _logger.LogError($"Error in {nameof(ModerationBackgroundService)}" + "\n" + getLogsChannel.Error);
+                    _logger.LogError(
+                        "An error has occurred while running an iteration of the {service} timed background service:\n{error}",
+                        nameof(ModerationBackgroundService),
+                        getLogsChannel.Error
+                    );
                     break;
                 }
 
@@ -99,13 +106,16 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
 
                 if (!deactivateResult.IsSuccess)
                 {
-                    _logger.LogError($"Error in the iteration loop.\n{deactivateResult.Error}");
+                    _logger.LogError(
+                        "An error has occurred while running an iteration of the {service} timed background service:\n{error}",
+                        nameof(ModerationBackgroundService),
+                        deactivateResult.Error
+                    );
                     break;
                 }
 
                 var warningMsg =
-                    $"Successfully deactivated expired moderation action with ID: {ma.ModerationActionId} but failed to send a notification to the logs channel." +
-                    " It may be because the bot doesn't have permissions in that channel or has since been removed from the guild. This warning can in most cases be ignored.";
+                    $"";
 
                 var typeString = ma.ModerationActionType.ToStringWithEmoji();
                 var userSb = new StringBuilder();
@@ -136,15 +146,22 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
                     embed: notificationEmbed, ct: ct);
                 if (!sendNotificationResult.IsSuccess)
                 {
-                    _logger.LogWarning(warningMsg + "\n" + sendNotificationResult.Error);
+                    _logger.LogWarning(
+                        "Successfully deactivated expired moderation action with ID: {id} but failed to send a notification to the logs channel." +
+                        "It may be because the bot doesn't have permissions in that channel or has since been removed from the guild. This warning can in most cases be ignored." +
+                        "The error was:\n{error}",
+                        ma.ModerationActionId,
+                        sendNotificationResult.Error
+                    );
                     break;
                 }
 
                 _logger.LogInformation(
-                    $"Successfully deactivated expired moderation action with ID: {ma.ModerationActionId}");
+                    "Successfully deactivated expired moderation action with ID: {id}.", ma.ModerationActionId);
             }
 
-            _logger.LogInformation("Completed an iteration.");
+            _logger.LogInformation("Completed an iteration of the {service} timed background service.",
+                nameof(ModerationBackgroundService));
         }
     }
 }
