@@ -113,13 +113,13 @@ namespace Mmcc.Bot
                     
                     services.AddDbContext<BotContext>((provider, options) =>
                     {
-                        var config = provider.GetRequiredService<MySqlSettings>();
-                        var connString =
-                            $"Server={config.ServerIp};Port={config.Port};Database={config.DatabaseName};Uid={config.Username};Pwd={config.Password};Allow User Variables=True";
-                        var serverVersion = ServerVersion.Parse("10.4.11-mariadb");
+                        var dbConfig = provider.GetRequiredService<MySqlSettings>();
+                        var connString = dbConfig.ConnectionString;
+                        var serverVersion = ServerVersion.Parse(dbConfig.MySqlVersionString);
+                        var retryAmount = dbConfig.RetryAmount;
 
                         options.UseMySql(connString, serverVersion,
-                            contextOptions => contextOptions.EnableRetryOnFailure(3));
+                            contextOptions => contextOptions.EnableRetryOnFailure(retryAmount));
                     });
                     
                     services.AddTailwindColourPalette();
