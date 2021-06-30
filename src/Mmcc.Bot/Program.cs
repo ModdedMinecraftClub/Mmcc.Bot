@@ -60,8 +60,8 @@ namespace Mmcc.Bot
                 .WriteTo.File(
                     new CompactJsonFormatter(),
                     Path.Combine("logs", "log.clef"),
-                    rollingInterval: RollingInterval.Month,
-                    retainedFileCountLimit: 2,
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 14,
                     levelSwitch: new LoggingLevelSwitch(LogEventLevel.Warning)
                 )
                 .CreateLogger();
