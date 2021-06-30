@@ -40,6 +40,8 @@ using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
+using Serilog.Formatting.Display;
+using Serilog.Sinks.SystemConsole.Themes;
 using Ssmp;
 
 namespace Mmcc.Bot
@@ -56,7 +58,14 @@ namespace Mmcc.Bot
                 .MinimumLevel.Override("System.Net.Http.HttpClient", LogEventLevel.Warning)
 #endif
                 .Enrich.FromLogContext()
-                .WriteTo.Console()
+                .WriteTo.Console(
+                    outputTemplate: "[{Timestamp:dd/MM/yyyy HH:mm:ss:fff} {Level:u3}] {Message:lj}{NewLine}{Exception}",
+#if DEBUG
+                    theme: null
+#else
+                    theme: AnsiConsoleTheme.Literate
+#endif
+                )
                 .WriteTo.File(
                     new CompactJsonFormatter(),
                     Path.Combine("logs", "log.clef"),
