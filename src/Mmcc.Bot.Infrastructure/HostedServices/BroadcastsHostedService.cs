@@ -46,8 +46,10 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
                 || _prefix is null
             )
             {
-                _logger.LogWarning("Broadcasts configuration is invalid or not set. Stopping the service...");
+                _logger.LogWarning("Broadcasts configuration is invalid or not set. Stopping the {service}...",
+                    nameof(BroadcastsHostedService));
                 _logger.LogInformation("Stopped {service}...", nameof(BroadcastsHostedService));
+                
                 return Task.CompletedTask;
             }
 
@@ -66,7 +68,7 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
             }
             catch (Exception e)
             {
-                _logger.LogError("Broadcast error.", e);
+                _logger.LogError(e, "Error has occurred while broadcasting.");
             }
             
             _broadcastMessagesIndex = (_broadcastMessagesIndex + 1) % _broadcastMessages!.Count;
