@@ -50,6 +50,7 @@ namespace Mmcc.Bot
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
 #if !DEBUG
                 .MinimumLevel.Override("System.Net.Http.HttpClient", LogEventLevel.Warning)
 #endif
