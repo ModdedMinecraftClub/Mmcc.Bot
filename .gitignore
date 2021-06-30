@@ -1,5 +1,8 @@
+# Ignore output
+out/
+
 # Ignore logs
-logs
+logs/
 
 # Don't include secrets
 appsettings.json
@@ -10,7 +13,7 @@ appsettings.Development.json
 .vscode/
 
 # Ignore Rider files
-.idea
+.idea/
 
 # User-specific files
 *.rsuser
