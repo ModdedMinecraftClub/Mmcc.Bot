@@ -56,8 +56,12 @@ namespace Mmcc.Bot
 #endif
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
-                .WriteTo.File(Path.Combine("logs", "log.txt"), rollingInterval: RollingInterval.Day,
-                    retainedFileCountLimit: 3, levelSwitch: new LoggingLevelSwitch(LogEventLevel.Warning))
+                .WriteTo.File(
+                    Path.Combine("logs", "log.txt"),
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 3,
+                    levelSwitch: new LoggingLevelSwitch(LogEventLevel.Warning)
+                )
                 .CreateLogger();
 
             try
