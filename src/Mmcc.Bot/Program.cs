@@ -50,21 +50,19 @@ namespace Mmcc.Bot
     {
         public static void Main(string[] args)
         {
+            var isDevelopment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")?.Equals("Development") ??
+                                false;
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-#if !DEBUG
-                .MinimumLevel.Override("System.Net.Http.HttpClient", LogEventLevel.Warning)
-#endif
+                .MinimumLevel.Override("System.Net.Http.HttpClient",
+                    isDevelopment ? LogEventLevel.Information : LogEventLevel.Warning)
                 .Enrich.FromLogContext()
                 .WriteTo.Console(
                     outputTemplate: "[{Timestamp:dd/MM/yyyy HH:mm:ss:fff} {Level:u3}] {Message:lj}{NewLine}{Exception}",
-#if DEBUG
-                    theme: null
-#else
-                    theme: AnsiConsoleTheme.Literate
-#endif
+                    theme: isDevelopment ? null : AnsiConsoleTheme.Literate
                 )
                 .WriteTo.File(
                     new CompactJsonFormatter(),
