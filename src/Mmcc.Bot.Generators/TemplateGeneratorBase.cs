@@ -8,10 +8,14 @@ namespace Mmcc.Bot.Generators
     /// </summary>
     public abstract class TemplateGeneratorBase
     {
-        /// <summary>
-        /// Whitespace representing one indentation level.
-        /// </summary>
         private const string Indentation = "    ";
+        
+        /// <summary>
+        /// Generates the source code from the template.
+        /// </summary>
+        /// <returns>Generated source code.</returns>
+        public string Generate() =>
+            FillInStub(GenerateFiller());
         
         /// <summary>
         /// Annotates a type with <code>global::</code>.
@@ -37,13 +41,6 @@ namespace Mmcc.Bot.Generators
         /// </returns>
         protected string Indent(string s, int indentLevel) =>
             $"{string.Concat(Enumerable.Repeat(Indentation, indentLevel))}{s}";
-
-        /// <summary>
-        /// Generates the source code from the template.
-        /// </summary>
-        /// <returns>Generated source code.</returns>
-        public string Generate() =>
-            FillInStub(GenerateFiller());
 
         /// <summary>
         /// Fills in the stub with the generated filler.
