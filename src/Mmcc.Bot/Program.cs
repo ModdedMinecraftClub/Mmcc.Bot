@@ -192,6 +192,7 @@ namespace Mmcc.Bot
                         var discordConfig = provider.GetRequiredService<DiscordSettings>();
                         return discordConfig.Token;
                     });
+                    services.AddDiscordCaching();
                     
                     // set up Ssmp central server;
                     services.AddSingleton<ISsmpHandler, SsmpHandler>();
@@ -204,8 +205,6 @@ namespace Mmcc.Bot
                     
                     services.AddHostedService<DiscordService>();
                     services.AddHostedService<ModerationBackgroundService>();
-
-                    services.AddDiscordCaching();
                 })
                 .UseSerilog();
     }
