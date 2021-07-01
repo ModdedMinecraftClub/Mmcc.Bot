@@ -40,7 +40,6 @@ using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
-using Serilog.Formatting.Display;
 using Serilog.Sinks.SystemConsole.Themes;
 using Ssmp;
 
@@ -96,11 +95,6 @@ namespace Mmcc.Bot
                     {
                         builder.AddDebug();
                     }
-
-                    builder.AddSystemdConsole(options =>
-                    {
-                        options.TimestampFormat = "[dd/MM/yyyy HH:mm:ss] ";
-                    });
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
