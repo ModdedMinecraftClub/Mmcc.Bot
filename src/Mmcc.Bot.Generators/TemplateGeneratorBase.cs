@@ -22,14 +22,16 @@ namespace Mmcc.Bot.Generators
         /// </summary>
         /// <param name="type">Type to be annotated.</param>
         /// <returns>The type annotated with <code>global::</code></returns>
-        protected string AnnotateTypeWithGlobal(string type) => $"global::{type}";
+        protected string AnnotateTypeWithGlobal(string type) =>
+            $"global::{type}";
 
         /// <summary>
         /// Annotates a type with <code>global::</code>.
         /// </summary>
         /// <param name="type">Type to be annotated.</param>
         /// <returns>The type annotated with <code>global::</code></returns>
-        protected string AnnotateTypeWithGlobal(INamedTypeSymbol type) => $"global::{type}";
+        protected string AnnotateTypeWithGlobal(INamedTypeSymbol type) =>
+            $"global::{type}";
         
         /// <summary>
         /// Indents a <see cref="string"/>.
