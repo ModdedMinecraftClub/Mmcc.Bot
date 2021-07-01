@@ -1,4 +1,6 @@
-﻿namespace Mmcc.Bot.Core.Models.Settings
+﻿using FluentValidation;
+
+namespace Mmcc.Bot.Core.Models.Settings
 {
     /// <summary>
     /// Settings for communication with Polychat2.
@@ -14,5 +16,14 @@
         /// Settings for broadcasts.
         /// </summary>
         public BroadcastsSettings? BroadcastsSettings { get; set; }
+    }
+
+    public class PolychatSettingsValidator : AbstractValidator<PolychatSettings>
+    {
+        public PolychatSettingsValidator()
+        {
+            RuleFor(s => s.ChatChannelId)
+                .NotEmpty();
+        }
     }
 }

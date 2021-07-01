@@ -1,4 +1,6 @@
-﻿namespace Mmcc.Bot.Core.Models.Settings
+﻿using FluentValidation;
+
+namespace Mmcc.Bot.Core.Models.Settings
 {
     /// <summary>
     /// Discord API settings.
@@ -34,5 +36,41 @@
         /// Url to the appeals page.
         /// </summary>
         public string AppealsUrl { get; set; } = null!;
+    }
+
+    public class DiscordSettingsValidator : AbstractValidator<DiscordSettings>
+    {
+        public DiscordSettingsValidator()
+        {
+            RuleFor(s => s.Prefix)
+                .NotEmpty();
+
+            RuleFor(s => s.Token)
+                .NotEmpty();
+            
+            RuleFor(s => s.ChannelNames)
+                .NotNull();
+
+            RuleFor(s => s.ChannelNames.LogsSpam)
+                .NotEmpty();
+
+            RuleFor(s => s.ChannelNames.MemberApps)
+                .NotEmpty();
+
+            RuleFor(s => s.ChannelNames.ModerationLogs)
+                .NotEmpty();
+
+            RuleFor(s => s.RoleNames)
+                .NotNull();
+
+            RuleFor(s => s.RoleNames.Staff)
+                .NotEmpty();
+
+            RuleFor(s => s.FeedbackChannelId)
+                .NotEmpty();
+
+            RuleFor(s => s.AppealsUrl)
+                .NotEmpty();
+        }
     }
 }

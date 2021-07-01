@@ -6,12 +6,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Mmcc.Bot.CommandGroups.Core;
 using Mmcc.Bot.CommandGroups.Diagnostics;
 using Mmcc.Bot.CommandGroups.Minecraft;
 using Mmcc.Bot.CommandGroups.Moderation;
 using Mmcc.Bot.CommandGroups.Tags;
+using Mmcc.Bot.Core.Extensions.Database;
+using Mmcc.Bot.Core.Extensions.Microsoft.Extensions.DependencyInjection;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Database;
@@ -99,12 +100,12 @@ namespace Mmcc.Bot
                 .ConfigureServices((hostContext, services) =>
                 {
                     // add config;
-                    services.Configure<MySqlSettings>(hostContext.Configuration.GetSection("MySql"));
-                    services.AddSingleton(provider => provider.GetRequiredService<IOptions<MySqlSettings>>().Value);
-                    services.Configure<DiscordSettings>(hostContext.Configuration.GetSection("Discord"));
-                    services.AddSingleton(provider => provider.GetRequiredService<IOptions<DiscordSettings>>().Value);
-                    services.Configure<PolychatSettings>(hostContext.Configuration.GetSection("Polychat"));
-                    services.AddSingleton(provider => provider.GetRequiredService<IOptions<PolychatSettings>>().Value);
+                    services.AddConfigWithValidation<MySqlSettings, MySqlSettingsValidator>(
+                        hostContext.Configuration.GetSection("MySql"));
+                    services.AddConfigWithValidation<DiscordSettings, DiscordSettingsValidator>(
+                        hostContext.Configuration.GetSection("Discord"));
+                    services.AddConfigWithValidation<PolychatSettings, PolychatSettingsValidator>(
+                        hostContext.Configuration.GetSection("Polychat"));
 
                     services.Configure<SsmpOptions>(hostContext.Configuration.GetSection("Ssmp"));
                     services.Configure<DiscordGatewayClientOptions>(options =>
