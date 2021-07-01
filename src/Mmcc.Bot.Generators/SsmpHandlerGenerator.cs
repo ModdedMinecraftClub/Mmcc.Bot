@@ -61,9 +61,8 @@ namespace Mmcc.Bot.Generators
             }
         }
 
-        private class TemplateGenerator
+        private class TemplateGenerator : TemplateGeneratorBase
         {
-            private const string Indentation = "    ";
             private const string ValueTask = "global::System.Threading.Tasks.ValueTask";
             private const string GeneratedNamespace = "Mmcc.Bot.Protos";
 
@@ -93,19 +92,10 @@ namespace Mmcc.Bot.Generators
 
             private string AnnotatedLogger =>
                 $"{AnnotateTypeWithGlobal(_loggerSymbol)}<{AnnotateTypeWithGlobal(_generatedType)}>";
-
-            public string Generate() => FillInStub(GenerateFiller());
-
-            private string AnnotateTypeWithGlobal(string type) => $"global::{type}";
-
-            private string AnnotateTypeWithGlobal(INamedTypeSymbol type) => $"global::{type}";
-
+            
             private string AnnotateMsgType(string type) => $"global::Mmcc.Bot.Protos.{type}";
 
-            private string Indent(string s, int indentLevel) =>
-                $"{string.Concat(Enumerable.Repeat(Indentation, indentLevel))}{s}";
-
-            private string FillInStub(string generatedFiller) =>
+            protected override string FillInStub(string generatedFiller) =>
                 $@"
 using global::Microsoft.Extensions.Logging;
 
@@ -131,7 +121,7 @@ namespace {GeneratedNamespace}
 }}
 ";
 
-            private string GenerateFiller()
+            protected override string GenerateFiller()
             {
                 if (!_classes.Any())
                 {
