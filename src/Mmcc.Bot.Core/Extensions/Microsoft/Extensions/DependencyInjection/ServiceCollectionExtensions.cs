@@ -19,9 +19,10 @@ namespace Mmcc.Bot.Core.Extensions.Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TValidator">The validator which the <paramref name="configurationSection"/> will be validated against.</typeparam>
         /// <returns>The service collection with the config singleton registered as <typeparamref name="TConfig"/>.</returns>
         ///
+        /// <exception cref="ValidationException">Thrown in the event the validation fails.</exception>
+        ///
         /// <remarks>
         /// This method will add the config as <typeparamref name="TConfig"/> singleton.
-        ///
         /// It will not register it as <see cref="IOptions{TOptions}"/>.
         /// </remarks>
         public static IServiceCollection AddConfigWithValidation<TConfig, TValidator>(
