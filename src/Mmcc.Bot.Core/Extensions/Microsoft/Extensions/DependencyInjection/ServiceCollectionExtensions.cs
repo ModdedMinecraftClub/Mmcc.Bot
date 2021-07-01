@@ -15,8 +15,8 @@ namespace Mmcc.Bot.Core.Extensions.Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The service collection.</param>
         /// <param name="configurationSection">The configuration section containing the config to be bound to the specified <typeparamref name="TConfig"/>.</param>
-        /// <typeparam name="TConfig"></typeparam>
-        /// <typeparam name="TValidator"></typeparam>
+        /// <typeparam name="TConfig">Type to which the <paramref name="configurationSection"/> will be bound.</typeparam>
+        /// <typeparam name="TValidator">The validator which the <paramref name="configurationSection"/> will be validated against.</typeparam>
         /// <returns>The service collection with the config singleton registered as <typeparamref name="TConfig"/>.</returns>
         ///
         /// <remarks>
