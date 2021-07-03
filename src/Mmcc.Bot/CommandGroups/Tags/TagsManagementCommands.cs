@@ -160,8 +160,7 @@ namespace Mmcc.Bot.CommandGroups.Tags
                                 Fields = tags
                                     .Select(t =>
                                         new EmbedField($"!t {t.TagName}", t.TagDescription ?? "No description")
-                                    )
-                                    .ToList(),
+                                    ).ToList(),
                                 Thumbnail = EmbedProperties.MmccLogoThumbnail,
                                 Colour = _colourPalette.Blue
                             }).ToList()
