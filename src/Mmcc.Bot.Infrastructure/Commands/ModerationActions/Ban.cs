@@ -161,7 +161,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                     {
                         return Result<ModerationAction>.FromError(guildResult.Error);
                     }
-                    
+
                     var banResult = await _guildApi.CreateGuildBanAsync(
                         request.GuildId,
                         request.UserDiscordId.Value,
@@ -188,7 +188,8 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                                 "Expires at",
                                 request.ExpiryDate is null
                                     ? "Permanent"
-                                    : $"{DateTimeOffset.FromUnixTimeMilliseconds(request.ExpiryDate.Value).UtcDateTime} UTC",
+                                    : $"{DateTimeOffset.FromUnixTimeMilliseconds(request.ExpiryDate.Value).UtcDateTime} UTC"
+                                ,
                                 false
                             ),
                             new(
@@ -207,7 +208,8 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                     }
                     else
                     {
-                        var sendDmResult = await _channelApi.CreateMessageAsync(createDmResult.Entity.ID, embed: embed,
+                        var sendDmResult = await _channelApi.CreateMessageAsync(createDmResult.Entity.ID,
+                            embeds: new[] { embed },
                             ct: cancellationToken);
                         if (!sendDmResult.IsSuccess)
                         {

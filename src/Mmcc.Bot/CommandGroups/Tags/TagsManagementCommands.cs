@@ -57,22 +57,25 @@ namespace Mmcc.Bot.CommandGroups.Tags
             return await _mediator.Send(new Create.Command(_context.GuildID.Value, _context.User.ID,
                     tagName, description, content)) switch
                 {
-                    {IsSuccess: true, Entity: { } e} =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: new Embed
+                    { IsSuccess: true, Entity: { } e } =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
                         {
-                            Title = "Tag created.",
-                            Description = "The tag has been successfully created.",
-                            Fields = new List<EmbedField>
+                            new Embed
                             {
-                                new("Tag name", e.Content, false),
-                                new("Tag description", e.TagDescription ?? "None", false),
-                                new("Created by", $"<@{e.CreatedByDiscordId}>")
-                            },
-                            Colour = _colourPalette.Green,
-                            Timestamp = DateTimeOffset.UtcNow
+                                Title = "Tag created.",
+                                Description = "The tag has been successfully created.",
+                                Fields = new List<EmbedField>
+                                {
+                                    new("Tag name", e.Content, false),
+                                    new("Tag description", e.TagDescription ?? "None", false),
+                                    new("Created by", $"<@{e.CreatedByDiscordId}>")
+                                },
+                                Colour = _colourPalette.Green,
+                                Timestamp = DateTimeOffset.UtcNow
+                            }
                         }),
 
-                    {IsSuccess: false} res => res
+                    { IsSuccess: false } res => res
                 };
         }
 
@@ -88,22 +91,25 @@ namespace Mmcc.Bot.CommandGroups.Tags
             return await _mediator.Send(new Update.Command(_context.GuildID.Value, _context.User.ID,
                     tagName, description, content)) switch
                 {
-                    {IsSuccess: true, Entity: { } e} =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: new Embed
+                    { IsSuccess: true, Entity: { } e } =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
                         {
-                            Title = "Tag updated.",
-                            Description = "The tag has been successfully updated.",
-                            Fields = new List<EmbedField>
+                            new Embed
                             {
-                                new("Tag name", e.Content, false),
-                                new("Tag description", e.TagDescription ?? "None", false),
-                                new("Updated by", $"<@{e.LastModifiedByDiscordId}>")
-                            },
-                            Colour = _colourPalette.Green,
-                            Timestamp = DateTimeOffset.UtcNow
+                                Title = "Tag updated.",
+                                Description = "The tag has been successfully updated.",
+                                Fields = new List<EmbedField>
+                                {
+                                    new("Tag name", e.Content, false),
+                                    new("Tag description", e.TagDescription ?? "None", false),
+                                    new("Updated by", $"<@{e.LastModifiedByDiscordId}>")
+                                },
+                                Colour = _colourPalette.Green,
+                                Timestamp = DateTimeOffset.UtcNow
+                            }
                         }),
 
-                    {IsSuccess: false} res => res
+                    { IsSuccess: false } res => res
                 };
         }
 
@@ -112,20 +118,23 @@ namespace Mmcc.Bot.CommandGroups.Tags
         public async Task<IResult> DeleteTag(string tagName) =>
             await _mediator.Send(new Delete.Command(_context.GuildID.Value, tagName)) switch
             {
-                {IsSuccess: true, Entity: { }} =>
-                    await _channelApi.CreateMessageAsync(_context.ChannelID, embed: new Embed
+                { IsSuccess: true, Entity: { } } =>
+                    await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
                     {
-                        Title = "Tag deleted.",
-                        Description = "The tag has been successfully deleted.",
-                        Fields = new List<EmbedField>
+                        new Embed
                         {
-                            new("Tag name", tagName, false)
-                        },
-                        Colour = _colourPalette.Green,
-                        Timestamp = DateTimeOffset.UtcNow
+                            Title = "Tag deleted.",
+                            Description = "The tag has been successfully deleted.",
+                            Fields = new List<EmbedField>
+                            {
+                                new("Tag name", tagName, false)
+                            },
+                            Colour = _colourPalette.Green,
+                            Timestamp = DateTimeOffset.UtcNow
+                        }
                     }),
 
-                {IsSuccess: false} res => res
+                { IsSuccess: false } res => res
             };
     }
 }

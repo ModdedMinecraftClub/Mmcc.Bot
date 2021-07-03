@@ -131,7 +131,7 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
                 Thumbnail = EmbedProperties.MmccLogoThumbnail,
                 Fields = fields
             };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed);
+            return await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new List<Embed>{ embed });
         }
     }
 }

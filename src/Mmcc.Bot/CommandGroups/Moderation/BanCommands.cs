@@ -48,7 +48,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 Colour = colourPalette.Green
             };
         }
-        
+
         /// <summary>
         /// Bans a Discord user.
         /// </summary>
@@ -71,14 +71,17 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     UserIgn = null
                 }) switch
                 {
-                    {IsSuccess: true} => 
-                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: _embedBase with
+                    { IsSuccess: true } =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
                         {
-                            Title = ":white_check_mark: User banned successfully (Discord only).",
-                            Timestamp = DateTimeOffset.UtcNow
+                            _embedBase with
+                            {
+                                Title = ":white_check_mark: User banned successfully (Discord only).",
+                                Timestamp = DateTimeOffset.UtcNow
+                            }
                         }),
-                    
-                    {IsSuccess: false} res => res
+
+                    { IsSuccess: false } res => res
                 };
 
         /// <summary>
@@ -103,14 +106,18 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     UserDiscordId = null
                 }) switch
                 {
-                    {IsSuccess: true} =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: _embedBase with
+                    { IsSuccess: true } =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
                         {
-                            Title = ":white_check_mark: User banned successfully from all MC servers (in-game only).",
-                            Timestamp = DateTimeOffset.UtcNow
+                            _embedBase with
+                            {
+                                Title =
+                                ":white_check_mark: User banned successfully from all MC servers (in-game only).",
+                                Timestamp = DateTimeOffset.UtcNow
+                            }
                         }),
 
-                    {IsSuccess: false} res => res
+                    { IsSuccess: false } res => res
                 };
 
         /// <summary>
@@ -123,7 +130,8 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <returns>Result of the operation.</returns>
         [Command("all", "a")]
         [Description("Bans the user from both MC servers and Discord")]
-        public async Task<IResult> BanAll(IUser discordUser, string ign, ExpiryDate expiryDate, [Greedy] string reason) =>
+        public async Task<IResult> BanAll(IUser discordUser, string ign, ExpiryDate expiryDate,
+            [Greedy] string reason) =>
             await _mediator.Send(new BanModerationAction.Command
                 {
                     GuildId = _context.Message.GuildID.Value,
@@ -134,14 +142,17 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     UserDiscordId = discordUser.ID
                 }) switch
                 {
-                    {IsSuccess: true} =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: _embedBase with
+                    { IsSuccess: true } =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
                         {
-                            Title = ":white_check_mark: User banned successfully from all MC servers and Discord.",
-                            Timestamp = DateTimeOffset.UtcNow
+                            _embedBase with
+                            {
+                                Title = ":white_check_mark: User banned successfully from all MC servers and Discord.",
+                                Timestamp = DateTimeOffset.UtcNow
+                            }
                         }),
 
-                    {IsSuccess: false} res => res
+                    { IsSuccess: false } res => res
                 };
     }
 }

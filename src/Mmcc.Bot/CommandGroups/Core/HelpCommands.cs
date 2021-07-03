@@ -68,17 +68,14 @@ namespace Mmcc.Bot.CommandGroups.Core
                 return createDmResult;
             }
 
-            foreach (var embed in embeds)
+            var sendEmbedResult = await _channelApi.CreateMessageAsync(createDmResult.Entity.ID, embeds: embeds);
+            if (!sendEmbedResult.IsSuccess)
             {
-                var sendEmbedResult = await _channelApi.CreateMessageAsync(createDmResult.Entity.ID, embed: embed);
-                if (!sendEmbedResult.IsSuccess)
-                {
-                    return sendEmbedResult;
-                }
+                return sendEmbedResult;
             }
 
             return await _channelApi.CreateMessageAsync(_context.ChannelID, "Help has been sent to your DMs :smile:.",
-                messageReference: new MessageReference(_context.MessageID, FailIfNotExists: true));
+                messageReference: new MessageReference(_context.MessageID, FailIfNotExists: false));
         }
         
         /// <summary>

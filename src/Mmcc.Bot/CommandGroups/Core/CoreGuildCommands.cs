@@ -53,29 +53,32 @@ namespace Mmcc.Bot.CommandGroups.Core
         public async Task<IResult> GuildInfo() =>
             await _mediator.Send(new GetGuildInfo.Query(_context.GuildID.Value)) switch
             {
-                {IsSuccess: true, Entity: { } e} =>
-                    await _channelApi.CreateMessageAsync(_context.ChannelID, embed: new Embed
+                { IsSuccess: true, Entity: { } e } =>
+                    await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
                     {
-                        Title = "Guild info",
-                        Description = "Information about the current guild.",
-                        Fields = new List<EmbedField>
+                        new Embed
                         {
-                            new("Name", e.GuildName, false),
-                            new("Owner", $"<@{e.GuildOwnerId}>"),
-                            new("Max members", e.GuildMaxMembers.ToString() ?? "Unavailable", false),
-                            new("Available roles", string.Join(", ", e.GuildRoles.Select(r => $"<@&{r.ID}>")))
-                        },
-                        Timestamp = DateTimeOffset.UtcNow,
-                        Colour = _colourPalette.Blue,
-                        Thumbnail = e.GuildIconUrl is null
-                            ? new()
-                            : new EmbedThumbnail(e.GuildIconUrl.ToString())
+                            Title = "Guild info",
+                            Description = "Information about the current guild.",
+                            Fields = new List<EmbedField>
+                            {
+                                new("Name", e.GuildName, false),
+                                new("Owner", $"<@{e.GuildOwnerId}>"),
+                                new("Max members", e.GuildMaxMembers.ToString() ?? "Unavailable", false),
+                                new("Available roles", string.Join(", ", e.GuildRoles.Select(r => $"<@&{r.ID}>")))
+                            },
+                            Timestamp = DateTimeOffset.UtcNow,
+                            Colour = _colourPalette.Blue,
+                            Thumbnail = e.GuildIconUrl is null
+                                ? new()
+                                : new EmbedThumbnail(e.GuildIconUrl.ToString())
+                        }
                     }),
 
-                {IsSuccess: true} =>
+                { IsSuccess: true } =>
                     Result.FromError(new NotFoundError($"Guild with ID: {_context.GuildID.Value} not found")),
 
-                {IsSuccess: false} res => res,
+                { IsSuccess: false } res => res,
             };
 
         [Command("invite")]

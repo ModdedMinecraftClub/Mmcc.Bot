@@ -142,7 +142,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                     {
                         return Result<ModerationAction>.FromError(guildResult.Error);
                     }
-                    
+
                     var guildName = guildResult.Entity.Name;
                     var embed = new Embed
                     {
@@ -155,7 +155,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                             new("Reason", request.Reason, false)
                         }
                     };
-                    
+
                     var createDmResult = await _userApi.CreateDMAsync(request.UserDiscordId.Value, cancellationToken);
                     const string errMsg =
                         "Failed to send a DM notification to the user. It may be because they have blocked the bot. This error can in most cases be ignored.";
@@ -165,7 +165,8 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                     }
                     else
                     {
-                        var sendDmResult = await _channelApi.CreateMessageAsync(createDmResult.Entity.ID, embed: embed,
+                        var sendDmResult = await _channelApi.CreateMessageAsync(createDmResult.Entity.ID,
+                            embeds: new[] { embed },
                             ct: cancellationToken);
                         if (!sendDmResult.IsSuccess)
                         {
@@ -173,7 +174,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                         }
                     }
                 }
-                
+
                 try
                 {
                     await _context.AddAsync(warnModerationAction, cancellationToken);

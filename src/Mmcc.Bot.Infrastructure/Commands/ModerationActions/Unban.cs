@@ -116,7 +116,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                     };
                     _ps.BroadcastMessage(proto);
                 }
-                
+
                 if (request.ModerationAction.UserDiscordId is not null)
                 {
                     var userDiscordIdSnowflake = new Snowflake(request.ModerationAction.UserDiscordId.Value);
@@ -147,7 +147,8 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                     }
                     else
                     {
-                        var sendDmResult = await _channelApi.CreateMessageAsync(createDmResult.Entity.ID, embed: embed,
+                        var sendDmResult = await _channelApi.CreateMessageAsync(createDmResult.Entity.ID,
+                            embeds: new[] { embed },
                             ct: cancellationToken);
                         if (!sendDmResult.IsSuccess)
                         {

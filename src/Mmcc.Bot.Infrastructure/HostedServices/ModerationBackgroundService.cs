@@ -143,7 +143,7 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
                     Timestamp = DateTimeOffset.UtcNow
                 };
                 var sendNotificationResult = await channelApi.CreateMessageAsync(getLogsChannel.Entity.ID,
-                    embed: notificationEmbed, ct: ct);
+                    embeds: new[] { notificationEmbed }, ct: ct);
                 if (!sendNotificationResult.IsSuccess)
                 {
                     _logger.LogWarning(

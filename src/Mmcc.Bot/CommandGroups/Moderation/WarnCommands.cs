@@ -60,14 +60,17 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     UserIgn = null
                 }) switch
                 {
-                    {IsSuccess: true} =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: _embedBase with
+                    { IsSuccess: true } =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
                         {
-                            Title = ":white_check_mark: Discord user has been successfully warned (Discord only).",
-                            Timestamp = DateTimeOffset.UtcNow
+                            _embedBase with
+                            {
+                                Title = ":white_check_mark: Discord user has been successfully warned (Discord only).",
+                                Timestamp = DateTimeOffset.UtcNow
+                            }
                         }),
 
-                    {IsSuccess: false} res => res
+                    { IsSuccess: false } res => res
                 };
 
         [Command("ig")]
@@ -81,14 +84,17 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     UserDiscordId = null
                 }) switch
                 {
-                    {IsSuccess: true} =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: _embedBase with
+                    { IsSuccess: true } =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
                         {
-                            Title = ":white_check_mark: In-game user has been successfully warned (In-game only).",
-                            Timestamp = DateTimeOffset.UtcNow
+                            _embedBase with
+                            {
+                                Title = ":white_check_mark: In-game user has been successfully warned (In-game only).",
+                                Timestamp = DateTimeOffset.UtcNow
+                            }
                         }),
 
-                    {IsSuccess: false} res => res
+                    { IsSuccess: false } res => res
                 };
 
         [Command("all", "a")]
@@ -106,14 +112,18 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     }
                 ) switch
                 {
-                    {IsSuccess: true} =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID, embed: _embedBase with
+                    { IsSuccess: true } =>
+                        await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
                         {
-                            Title = ":white_check_mark: User has been successfully warned both in-game and on Discord.",
-                            Timestamp = DateTimeOffset.UtcNow
+                            _embedBase with
+                            {
+                                Title =
+                                ":white_check_mark: User has been successfully warned both in-game and on Discord.",
+                                Timestamp = DateTimeOffset.UtcNow
+                            }
                         }),
 
-                    {IsSuccess: false} res => res
+                    { IsSuccess: false } res => res
                 };
         }
     }

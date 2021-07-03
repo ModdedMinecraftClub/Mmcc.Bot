@@ -82,7 +82,7 @@ namespace Mmcc.Bot.Responders.Users
                 Timestamp = DateTimeOffset.UtcNow
             };
             var sendMessageResult =
-                await _channelApi.CreateMessageAsync(getLogsChannelResult.Entity.ID, embed: embed, ct: ct);
+                await _channelApi.CreateMessageAsync(getLogsChannelResult.Entity.ID, embeds: new[] { embed }, ct: ct);
             return !sendMessageResult.IsSuccess
                 ? Result.FromError(sendMessageResult)
                 : Result.FromSuccess();

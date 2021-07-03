@@ -12,8 +12,9 @@
         <PackageReference Include="MediatR" Version="9.0.0" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-        <PackageReference Include="Remora.Discord" Version="3.0.30" />
-        <PackageReference Include="Remora.Discord.Caching" Version="4.0.0" />
+        <PackageReference Include="Remora.Discord" Version="3.0.33" />
+        <PackageReference Include="Remora.Discord.Caching" Version="7.0.0" />
+        <PackageReference Include="Remora.Discord.Commands" Version="3.10.11" />
         <PackageReference Include="Serilog" Version="2.10.1-dev-01308" />
         <PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
         <PackageReference Include="Serilog.Formatting.Compact" Version="1.1.0" />

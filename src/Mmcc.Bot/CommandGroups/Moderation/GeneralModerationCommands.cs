@@ -65,35 +65,38 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         public async Task<IResult> View(int id) =>
             await _mediator.Send(new GetById.Query(id, _context.GuildID.Value, false)) switch
             {
-                {IsSuccess: true, Entity: { } e} =>
-                    await _channelApi.CreateMessageAsync(_context.ChannelID, embed: new Embed
+                { IsSuccess: true, Entity: { } e } =>
+                    await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
                     {
-                        Title = "Moderation action information",
-                        Fields = new List<EmbedField>
+                        new Embed
                         {
-                            new("ID", e.ModerationActionId.ToString(), false),
-                            new("Type", e.ModerationActionType.ToStringWithEmoji(), false),
-                            new("User's IGN", e.UserIgn ?? "None", false),
-                            new("User's Discord",
-                                e.UserDiscordId is not null
-                                    ? $"<@{e.UserDiscordId}>"
-                                    : "None", false)
-                        },
-                        Colour = e.ModerationActionType switch
-                        {
-                            ModerationActionType.Ban => _colourPalette.Red,
-                            ModerationActionType.Mute => _colourPalette.Pink,
-                            ModerationActionType.Warn => _colourPalette.Yellow,
-                            _ => new()
-                        },
-                        Thumbnail = EmbedProperties.MmccLogoThumbnail,
-                        Timestamp = DateTimeOffset.UtcNow
+                            Title = "Moderation action information",
+                            Fields = new List<EmbedField>
+                            {
+                                new("ID", e.ModerationActionId.ToString(), false),
+                                new("Type", e.ModerationActionType.ToStringWithEmoji(), false),
+                                new("User's IGN", e.UserIgn ?? "None", false),
+                                new("User's Discord",
+                                    e.UserDiscordId is not null
+                                        ? $"<@{e.UserDiscordId}>"
+                                        : "None", false)
+                            },
+                            Colour = e.ModerationActionType switch
+                            {
+                                ModerationActionType.Ban => _colourPalette.Red,
+                                ModerationActionType.Mute => _colourPalette.Pink,
+                                ModerationActionType.Warn => _colourPalette.Yellow,
+                                _ => new()
+                            },
+                            Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                            Timestamp = DateTimeOffset.UtcNow
+                        }
                     }),
 
-                {IsSuccess: true} =>
+                { IsSuccess: true } =>
                     Result.FromError(new NotFoundError($"Could not find a moderation action with ID: {id}")),
 
-                {IsSuccess: false} res => res
+                { IsSuccess: false } res => res
             };
 
         /// <summary>
@@ -136,7 +139,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 Thumbnail = EmbedProperties.MmccLogoThumbnail,
                 Timestamp = DateTimeOffset.UtcNow
             };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embed: embed); 
+            return await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[] { embed });
         }
     }
 }

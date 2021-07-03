@@ -93,7 +93,8 @@ namespace Mmcc.Bot.Infrastructure.Services
                 }
             };
 
-            var sendEmbedResult = await _channelApi.CreateMessageAsync(context.ChannelID, embed: errorEmbed, ct: ct);
+            var sendEmbedResult =
+                await _channelApi.CreateMessageAsync(context.ChannelID, embeds: new[] { errorEmbed }, ct: ct);
             return !sendEmbedResult.IsSuccess
                 ? Result.FromError(sendEmbedResult)
                 : Result.FromSuccess();

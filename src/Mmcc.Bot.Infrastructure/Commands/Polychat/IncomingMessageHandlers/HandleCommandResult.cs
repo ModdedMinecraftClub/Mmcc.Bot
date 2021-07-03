@@ -90,7 +90,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
                 {
                     var sendMessageResult = await _channelApi.CreateMessageAsync(
                         channelSnowflake,
-                        embed: embed,
+                        embeds: new[] { embed },
                         ct: cancellationToken);
 
                     if (!sendMessageResult.IsSuccess)
