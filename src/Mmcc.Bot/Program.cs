@@ -42,7 +42,7 @@ using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
 using Serilog.Sinks.SystemConsole.Themes;
-using Ssmp;
+using Ssmp.Extensions;
 
 namespace Mmcc.Bot
 {
@@ -106,8 +106,7 @@ namespace Mmcc.Bot
                         hostContext.Configuration.GetSection("Discord"));
                     services.AddConfigWithValidation<PolychatSettings, PolychatSettingsValidator>(
                         hostContext.Configuration.GetSection("Polychat"));
-
-                    services.Configure<SsmpOptions>(hostContext.Configuration.GetSection("Ssmp"));
+                    
                     services.Configure<DiscordGatewayClientOptions>(options =>
                     {
                         options.Intents =
@@ -190,10 +189,9 @@ namespace Mmcc.Bot
                     services.AddDiscordCaching();
                     
                     // set up Ssmp central server;
-                    services.AddSingleton<ISsmpHandler, SsmpHandler>();
-                    services.AddSingleton<CentralServerService>();
-                    services.AddHostedService<CentralServerBackgroundService>();
-                    
+                    var ssmpConfig = hostContext.Configuration.GetSection("Ssmp");
+                    services.AddSsmp<SsmpHandler>(ssmpConfig);
+
                     // set up Polychat2;
                     services.AddSingleton<IPolychatService, PolychatService>();
                     services.AddHostedService<BroadcastsHostedService>();
