@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Models;
+using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.Infrastructure.Commands.Tags;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
+using Mmcc.Bot.Infrastructure.Queries.Tags;
+using MoreLinq;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
@@ -22,7 +27,6 @@ namespace Mmcc.Bot.CommandGroups.Tags
     [Group("tags")]
     [Description("Tags management commands")]
     [RequireGuild]
-    [RequireUserGuildPermission(DiscordPermission.BanMembers)]
     public class TagsManagementCommands : CommandGroup
     {
         private readonly MessageContext _context;
@@ -47,6 +51,7 @@ namespace Mmcc.Bot.CommandGroups.Tags
 
         [Command("create")]
         [Description("Creates a new tag for the current guild.")]
+        [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> CreateNewTag(string tagName, string? description, [Greedy] string content)
         {
             if (string.IsNullOrWhiteSpace(description))
@@ -81,6 +86,7 @@ namespace Mmcc.Bot.CommandGroups.Tags
 
         [Command("update")]
         [Description("Updates a tag belonging to the current guild.")]
+        [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> UpdateTag(string tagName, string? description, [Greedy] string content)
         {
             if (string.IsNullOrWhiteSpace(description))
@@ -115,6 +121,7 @@ namespace Mmcc.Bot.CommandGroups.Tags
 
         [Command("delete", "del")]
         [Description("Deletes a tag belonging to the current guild.")]
+        [RequireUserGuildPermission(DiscordPermission.BanMembers)]
         public async Task<IResult> DeleteTag(string tagName) =>
             await _mediator.Send(new Delete.Command(_context.GuildID.Value, tagName)) switch
             {
@@ -133,6 +140,36 @@ namespace Mmcc.Bot.CommandGroups.Tags
                             Timestamp = DateTimeOffset.UtcNow
                         }
                     }),
+
+                { IsSuccess: false } res => res
+            };
+
+        [Command("list", "l")]
+        [Description("Lists all tags belonging to the current guild.")]
+        public async Task<IResult> ListTags() =>
+            await _mediator.Send(new GetAll.Query(_context.GuildID.Value)) switch
+            {
+                { IsSuccess: true, Entity: { } e } when e.Any() =>
+                    await _channelApi.CreateMessageAsync(
+                        _context.ChannelID,
+                        embeds: e
+                            .Batch(20)
+                            .Select(tags => new Embed
+                            {
+                                Title = "Tags",
+                                Fields = tags
+                                    .Select(t =>
+                                        new EmbedField($"!t {t.TagName}", t.TagDescription ?? "No description")
+                                    )
+                                    .ToList(),
+                                Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                                Colour = _colourPalette.Blue
+                            })
+                            .ToList()
+                    ),
+
+                { IsSuccess: true, Entity: { } } =>
+                    Result.FromError(new NotFoundError("No tags found.")),
 
                 { IsSuccess: false } res => res
             };

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,34 +14,28 @@ using Remora.Results;
 namespace Mmcc.Bot.Infrastructure.Queries.Tags
 {
     /// <summary>
-    /// Gets one tag belonging to a guild.
+    /// Gets all tags belonging to a guild.
     /// </summary>
-    public class GetOne
+    public class GetAll
     {
         /// <summary>
-        /// Query to get one tag belonging to a guild by name.
+        /// Query to get all tags belonging to a guild.
         /// </summary>
         /// <param name="GuildId">The guild ID.</param>
-        /// <param name="TagName">The tag name.</param>
-        public record Query(Snowflake GuildId, string TagName) : IRequest<Result<Tag?>>;
+        public record Query(Snowflake GuildId) : IRequest<Result<IList<Tag>>>;
 
         /// <summary>
         /// Validates the <see cref="Query"/>.
         /// </summary>
         public class Validator : AbstractValidator<Query>
         {
-            public Validator()
-            {
+            public Validator() =>
                 RuleFor(q => q.GuildId)
                     .NotNull();
-
-                RuleFor(q => q.TagName)
-                    .NotEmpty();
-            }
         }
-        
+
         /// <inheritdoc />
-        public class Handler : IRequestHandler<Query, Result<Tag?>>
+        public class Handler : IRequestHandler<Query, Result<IList<Tag>>>
         {
             private readonly BotContext _context;
 
@@ -53,15 +48,13 @@ namespace Mmcc.Bot.Infrastructure.Queries.Tags
                 _context = context;
             }
 
-            /// <inheritdoc />
-            public async Task<Result<Tag?>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<IList<Tag>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 try
                 {
                     return await _context.Tags
-                        .FirstOrDefaultAsync(
-                            t => t.GuildId == request.GuildId.Value && t.TagName.Equals(request.TagName),
-                            cancellationToken);
+                        .Where(t => t.GuildId == request.GuildId.Value)
+                        .ToListAsync(cancellationToken);
                 }
                 catch (Exception e)
                 {
