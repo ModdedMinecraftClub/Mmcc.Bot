@@ -164,8 +164,7 @@ namespace Mmcc.Bot.CommandGroups.Tags
                                     .ToList(),
                                 Thumbnail = EmbedProperties.MmccLogoThumbnail,
                                 Colour = _colourPalette.Blue
-                            })
-                            .ToList()
+                            }).ToList()
                     ),
 
                 { IsSuccess: true, Entity: { } } =>
