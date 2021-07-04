@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Windows.Input;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Settings;
+using Mmcc.Bot.Infrastructure.Abstractions;
 using Mmcc.Bot.Infrastructure.Behaviours;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions;
@@ -132,10 +134,12 @@ namespace Mmcc.Bot
                     services.AddTailwindColourPalette();
 
                     services.AddSingleton<IDiscordSanitiserService, DiscordSanitiserService>();
+                    services.AddSingleton<IHelpService, HelpService>();
                     
                     services.AddScoped<IExecutionEventService, ErrorNotificationService>();
                     services.AddScoped<IMojangApiService, MojangApiService>();
                     services.AddScoped<IModerationService, ModerationService>();
+                    services.AddScoped<ICommandResponder, CommandResponder>();
 
                     services.AddValidatorsFromAssemblyContaining<GetGuildInfo>();
                     services.AddMediatR(typeof(CreateFromDiscordMessage));

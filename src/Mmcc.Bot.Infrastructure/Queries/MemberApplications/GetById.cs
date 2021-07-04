@@ -48,7 +48,7 @@ namespace Mmcc.Bot.Infrastructure.Queries.MemberApplications
         }
         
         /// <inheritdoc />
-        private class Handler : IRequestHandler<Query, Result<MemberApplication?>>
+        public class Handler : IRequestHandler<Query, Result<MemberApplication?>>
         {
             private readonly BotContext _context;
             
