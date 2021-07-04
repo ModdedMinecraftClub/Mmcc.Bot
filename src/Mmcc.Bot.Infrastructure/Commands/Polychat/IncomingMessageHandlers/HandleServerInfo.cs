@@ -28,6 +28,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
                 var id = new PolychatServerIdString(request.Message.ServerId);
                 var sanitisedId = id.ToSanitisedUppercase();
                 
+                _logger.LogInformation("Adding server {id} to the list of online servers...", sanitisedId);
                 _polychatService.AddOrUpdateOnlineServer(sanitisedId, onlineServer);
                 _logger.LogInformation("Added server {id} to the list of online servers.", sanitisedId);
             }
