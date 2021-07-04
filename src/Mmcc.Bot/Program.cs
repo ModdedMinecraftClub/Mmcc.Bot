@@ -135,6 +135,7 @@ namespace Mmcc.Bot
 
                     services.AddSingleton<IDiscordSanitiserService, DiscordSanitiserService>();
                     services.AddSingleton<IHelpService, HelpService>();
+                    services.AddSingleton<IDmSender, DmSender>();
                     
                     services.AddScoped<IExecutionEventService, ErrorNotificationService>();
                     services.AddScoped<IMojangApiService, MojangApiService>();
