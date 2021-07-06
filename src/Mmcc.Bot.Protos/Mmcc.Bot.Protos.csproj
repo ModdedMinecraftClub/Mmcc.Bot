@@ -13,7 +13,7 @@
         </PackageReference>
         <PackageReference Include="MediatR" Version="9.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
-        <PackageReference Include="Ssmp" Version="0.0.5" />
+        <PackageReference Include="BetterSsmp" Version="0.0.1" />
     </ItemGroup>
 
     <ItemGroup>
