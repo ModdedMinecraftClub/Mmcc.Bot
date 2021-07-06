@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Mmcc.Bot.Core.Models
+﻿namespace Mmcc.Bot.Core.Models
 {
     /// <summary>
     /// Represents an expiry date.

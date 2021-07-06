@@ -1,6 +1,4 @@
-﻿using Remora.Discord.Core;
-
-namespace Mmcc.Bot.Core.Models.MojangApi
+﻿namespace Mmcc.Bot.Core.Models.MojangApi
 {
     /// <summary>
     /// Represents player name info.

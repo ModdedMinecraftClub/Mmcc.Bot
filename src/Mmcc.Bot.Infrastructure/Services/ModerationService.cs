@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Database.Entities;
 using Mmcc.Bot.Infrastructure.Commands.ModerationActions;

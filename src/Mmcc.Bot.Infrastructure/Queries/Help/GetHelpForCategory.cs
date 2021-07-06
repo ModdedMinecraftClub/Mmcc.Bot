@@ -2,7 +2,6 @@
 using System.Linq;
 using FluentValidation;
 using MediatR;
-using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Infrastructure.Services;
 using Remora.Commands.Trees;
 using Remora.Commands.Trees.Nodes;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -7,7 +6,6 @@ using MediatR;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Entities;
 using Remora.Discord.API.Abstractions.Gateway.Events;
-using Remora.Discord.API.Abstractions.Objects;
 using Remora.Results;
 
 namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications

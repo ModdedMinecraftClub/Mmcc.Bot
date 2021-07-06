@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +11,6 @@ using Mmcc.Bot.Core.Extensions.Database.Entities;
 using Mmcc.Bot.Core.Extensions.Remora.Discord.API.Abstractions.Rest;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
-using Mmcc.Bot.Database.Entities;
 using Mmcc.Bot.Infrastructure.Queries.ModerationActions;
 using Mmcc.Bot.Infrastructure.Services;
 using Remora.Discord.API.Abstractions.Rest;

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
-using Mmcc.Bot.Infrastructure.Conditions.Attributes;
 using Mmcc.Bot.Infrastructure.Queries.Tags;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;

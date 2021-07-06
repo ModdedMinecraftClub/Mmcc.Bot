@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
@@ -18,7 +17,6 @@ using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
-using Remora.Discord.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.CommandGroups.Moderation

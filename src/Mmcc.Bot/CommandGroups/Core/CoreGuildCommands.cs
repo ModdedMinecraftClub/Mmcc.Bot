@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Models;
+using Mmcc.Bot.Infrastructure.Abstractions;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
 using Mmcc.Bot.Infrastructure.Queries.Core;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
-using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
@@ -24,28 +24,28 @@ namespace Mmcc.Bot.CommandGroups.Core
     public class CoreGuildCommands : CommandGroup
     {
         private readonly MessageContext _context;
-        private readonly IDiscordRestChannelAPI _channelApi;
         private readonly ColourPalette _colourPalette;
         private readonly IMediator _mediator;
+        private readonly ICommandResponder _responder;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="CoreGuildCommands"/> class.
         /// </summary>
         /// <param name="context">The message context.</param>
-        /// <param name="channelApi">The channel API.</param>
         /// <param name="colourPalette">The colour palette.</param>
         /// <param name="mediator">The mediator.</param>
+        /// <param name="responder">The command responder.</param>
         public CoreGuildCommands(
             MessageContext context,
-            IDiscordRestChannelAPI channelApi,
             ColourPalette colourPalette,
-            IMediator mediator
+            IMediator mediator,
+            ICommandResponder responder
         )
         {
             _context = context;
-            _channelApi = channelApi;
             _colourPalette = colourPalette;
             _mediator = mediator;
+            _responder = responder;
         }
 
         [Command("guild")]
@@ -54,25 +54,22 @@ namespace Mmcc.Bot.CommandGroups.Core
             await _mediator.Send(new GetGuildInfo.Query(_context.GuildID.Value)) switch
             {
                 { IsSuccess: true, Entity: { } e } =>
-                    await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
+                    await _responder.Respond(new Embed
                     {
-                        new Embed
+                        Title = "Guild info",
+                        Description = "Information about the current guild.",
+                        Fields = new List<EmbedField>
                         {
-                            Title = "Guild info",
-                            Description = "Information about the current guild.",
-                            Fields = new List<EmbedField>
-                            {
-                                new("Name", e.GuildName, false),
-                                new("Owner", $"<@{e.GuildOwnerId}>"),
-                                new("Max members", e.GuildMaxMembers.ToString() ?? "Unavailable", false),
-                                new("Available roles", string.Join(", ", e.GuildRoles.Select(r => $"<@&{r.ID}>")))
-                            },
-                            Timestamp = DateTimeOffset.UtcNow,
-                            Colour = _colourPalette.Blue,
-                            Thumbnail = e.GuildIconUrl is null
-                                ? new()
-                                : new EmbedThumbnail(e.GuildIconUrl.ToString())
-                        }
+                            new("Name", e.GuildName, false),
+                            new("Owner", $"<@{e.GuildOwnerId}>"),
+                            new("Max members", e.GuildMaxMembers.ToString() ?? "Unavailable", false),
+                            new("Available roles", string.Join(", ", e.GuildRoles.Select(r => $"<@&{r.ID}>")))
+                        },
+                        Timestamp = DateTimeOffset.UtcNow,
+                        Colour = _colourPalette.Blue,
+                        Thumbnail = e.GuildIconUrl is null
+                            ? new()
+                            : new EmbedThumbnail(e.GuildIconUrl.ToString())
                     }),
 
                 { IsSuccess: true } =>
@@ -87,7 +84,7 @@ namespace Mmcc.Bot.CommandGroups.Core
             await _mediator.Send(new GetInviteLink.Query(_context.GuildID.Value)) switch
             {
                 {IsSuccess: true, Entity: { } e} =>
-                    await _channelApi.CreateMessageAsync(_context.ChannelID, $"https://discord.gg/{e}"),
+                    await _responder.Respond($"https://discord.gg/{e}"),
 
                 {IsSuccess: true} => Result.FromError(new NotFoundError("Could not find invite link for this guild.")),
 

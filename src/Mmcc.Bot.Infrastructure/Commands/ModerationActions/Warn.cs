@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.Database;
