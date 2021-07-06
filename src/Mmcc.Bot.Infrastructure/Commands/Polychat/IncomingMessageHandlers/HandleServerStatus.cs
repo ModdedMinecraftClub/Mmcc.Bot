@@ -43,8 +43,9 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
                 {
                     await _polychatService.ForwardMessage(sanitisedId, msg);
 
-                    if (msg.Status == ServerStatus.Types.ServerStatusEnum.Stopped
-                        || msg.Status == ServerStatus.Types.ServerStatusEnum.Crashed
+                    if (
+                        msg.Status is
+                            ServerStatus.Types.ServerStatusEnum.Stopped or ServerStatus.Types.ServerStatusEnum.Crashed
                     )
                     {
                         _polychatService.RemoveOnlineServer(sanitisedId);
