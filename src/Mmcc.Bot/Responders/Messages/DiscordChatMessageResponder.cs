@@ -50,7 +50,7 @@ namespace Mmcc.Bot.Responders.Messages
                 MessageOffset = protoMsgContent.IndexOf(':')
             };
 
-            _polychatService.BroadcastMessage(protoMsg);
+            await _polychatService.BroadcastMessage(protoMsg);
             return Result.FromSuccess();
         }
     }
