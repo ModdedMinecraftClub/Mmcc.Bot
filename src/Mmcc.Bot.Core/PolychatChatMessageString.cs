@@ -59,6 +59,11 @@ namespace Mmcc.Bot.Core
             return $"`{val}`";
         }
 
+        public string ToSanitisedString() =>
+            HasValue
+                ? Regex.Replace(Value, "§.", "").Replace('`', '\'')
+                : " ";
+
         /// <inheritdoc />
         public override bool Equals(object? obj) =>
             obj switch

@@ -27,9 +27,10 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
             
             protected override async Task Handle(TcpRequest<ChatMessage> request, CancellationToken cancellationToken)
             {
-                var id = new PolychatServerIdString(request.Message.ServerId);
+                var protoMessage = request.Message;
+                var id = new PolychatServerIdString(protoMessage.ServerId);
                 var sanitisedId = id.ToSanitisedUppercase();
-                await _polychatService.ForwardMessage(sanitisedId, request.Message);
+                await _polychatService.ForwardMessage(sanitisedId, protoMessage);
                 
                 var getChatChannelResult =
                     await _channelApi.GetChannelAsync(new(_polychatSettings.ChatChannelId), cancellationToken);
@@ -39,11 +40,15 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
                     throw new Exception(getChatChannelResult.Error.Message);
                 }
 
-                var messageStr = new PolychatChatMessageString(request.Message.Message);
+                var messageTextContent = protoMessage.Message;
+                var sanitisedString = new PolychatChatMessageString(messageTextContent).ToSanitisedString();
+                var discordMessageInfo = sanitisedString[..protoMessage.MessageOffset];
+                var discordMessageContent = sanitisedString[protoMessage.MessageOffset..];
+                var fullDiscordMessageStr = $"`{discordMessageInfo}` {discordMessageContent}";
                 var sendMessageResult = await _channelApi.CreateMessageAsync(
-                        new(_polychatSettings.ChatChannelId),
-                        messageStr.ToDiscordFormattedString(),
-                        ct: cancellationToken);
+                    new(_polychatSettings.ChatChannelId),
+                    fullDiscordMessageStr,
+                    ct: cancellationToken);
                     
                 if (!sendMessageResult.IsSuccess)
                 {
