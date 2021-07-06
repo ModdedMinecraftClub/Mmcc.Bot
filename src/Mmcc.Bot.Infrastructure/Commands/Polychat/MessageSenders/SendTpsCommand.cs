@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
@@ -32,7 +34,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.MessageSenders
             }
         }
 
-        public class Handler : RequestHandler<Command, Result>
+        public class Handler : IRequestHandler<Command, Result>
         {
             private readonly IPolychatService _polychatService;
 
@@ -40,8 +42,8 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.MessageSenders
             {
                 _polychatService = polychatService;
             }
-            
-            protected override Result Handle(Command request)
+
+            public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
             {
                 try
                 {
@@ -60,7 +62,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.MessageSenders
                         DiscordChannelId = request.ChannelId.ToString()
                     };
 
-                    _polychatService.SendMessage(server, msg);
+                    await _polychatService.SendMessage(server, msg);
                     return Result.FromSuccess();
                 }
                 catch (Exception e)
