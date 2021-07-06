@@ -60,11 +60,11 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
             return Task.CompletedTask;
         }
 
-        private void RunIteration(object? state)
+        private async void RunIteration(object? state)
         {
             try
             {
-                Broadcast();
+                await Broadcast();
             }
             catch (Exception e)
             {
@@ -74,7 +74,7 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
             _broadcastMessagesIndex = (_broadcastMessagesIndex + 1) % _broadcastMessages!.Count;
         }
 
-        private void Broadcast()
+        private async ValueTask Broadcast()
         {
             var msg = _broadcastMessages![_broadcastMessagesIndex]!;
             var proto = new ChatMessage
@@ -83,7 +83,8 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
                 Message = $"{_prefix} {msg}",
                 MessageOffset = _prefix!.Length - 1
             };
-            _ps.BroadcastMessage(proto);
+            
+            await _ps.BroadcastMessage(proto);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
