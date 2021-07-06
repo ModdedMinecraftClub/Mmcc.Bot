@@ -112,9 +112,6 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
                     break;
                 }
 
-                var warningMsg =
-                    $"";
-
                 var typeString = ma.ModerationActionType.ToStringWithEmoji();
                 var userSb = new StringBuilder();
 
