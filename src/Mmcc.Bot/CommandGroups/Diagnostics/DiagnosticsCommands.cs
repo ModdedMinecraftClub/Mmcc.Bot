@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
+using Mmcc.Bot.Infrastructure.Abstractions;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
 using Mmcc.Bot.Infrastructure.Queries.Diagnostics;
 using Remora.Commands.Attributes;
@@ -26,10 +27,9 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
     [Description("Server and bot diagnostics")]
     public class DiagnosticsCommands : CommandGroup
     {
-        private readonly MessageContext _context;
-        private readonly IDiscordRestChannelAPI _channelApi;
         private readonly ColourPalette _colourPalette;
         private readonly IMediator _mediator;
+        private readonly ICommandResponder _responder;
 
         private readonly Dictionary<string, string> _resourcesToCheck = new()
         {
@@ -41,23 +41,20 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
         /// <summary>
         /// Instantiates a new instance of <see cref="DiagnosticsCommands"/>.
         /// </summary>
-        /// <param name="context">The message context.</param>
-        /// <param name="channelApi">The channel API.</param>
         /// <param name="colourPalette">The colour palette.</param>
         /// <param name="mediator">The mediator.</param>
+        /// <param name="responder">The command responder.</param>
         public DiagnosticsCommands(
-            MessageContext context,
-            IDiscordRestChannelAPI channelApi,
             ColourPalette colourPalette,
-            IMediator mediator
+            IMediator mediator,
+            ICommandResponder responder
         )
         {
-            _context = context;
-            _channelApi = channelApi;
             _colourPalette = colourPalette;
             _mediator = mediator;
+            _responder = responder;
         }
-        
+
         /// <summary>
         /// Show status of the bot and APIs it uses.
         /// </summary>
@@ -94,7 +91,7 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
                 Timestamp = DateTimeOffset.UtcNow,
                 Colour = _colourPalette.Green
             };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[] { embed });
+            return await _responder.Respond(embed);
         }
 
         /// <summary>
@@ -137,7 +134,7 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
                 Timestamp = DateTimeOffset.UtcNow,
                 Fields = embedFields
             };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[] { embed });
+            return await _responder.Respond(embed);
         }
     }
 }

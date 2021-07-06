@@ -8,13 +8,13 @@ using Mmcc.Bot.Core.Extensions.Database.Entities;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.Database.Entities;
+using Mmcc.Bot.Infrastructure.Abstractions;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
 using Mmcc.Bot.Infrastructure.Queries.ModerationActions;
 using Mmcc.Bot.Infrastructure.Services;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
-using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
@@ -30,32 +30,32 @@ namespace Mmcc.Bot.CommandGroups.Moderation
     public class GeneralModerationCommands : CommandGroup
     {
         private readonly MessageContext _context;
-        private readonly IDiscordRestChannelAPI _channelApi;
         private readonly IMediator _mediator;
         private readonly ColourPalette _colourPalette;
         private readonly IModerationService _moderationService;
+        private readonly ICommandResponder _responder;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="GeneralModerationCommands"/> class.
         /// </summary>
         /// <param name="context">The message context.</param>
-        /// <param name="channelApi">The channel API.</param>
         /// <param name="mediator">The mediator.</param>
         /// <param name="colourPalette">The colour palette.</param>
         /// <param name="moderationService">The moderation service.</param>
+        /// <param name="responder">The command responder.</param>
         public GeneralModerationCommands(
             MessageContext context,
-            IDiscordRestChannelAPI channelApi,
             IMediator mediator,
             ColourPalette colourPalette,
-            IModerationService moderationService
+            IModerationService moderationService,
+            ICommandResponder responder
         )
         {
             _context = context;
-            _channelApi = channelApi;
             _mediator = mediator;
             _colourPalette = colourPalette;
             _moderationService = moderationService;
+            _responder = responder;
         }
 
         [Command("view", "v")]
@@ -64,31 +64,28 @@ namespace Mmcc.Bot.CommandGroups.Moderation
             await _mediator.Send(new GetById.Query(id, _context.GuildID.Value, false)) switch
             {
                 { IsSuccess: true, Entity: { } e } =>
-                    await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
+                    await _responder.Respond(new Embed
                     {
-                        new Embed
+                        Title = "Moderation action information",
+                        Fields = new List<EmbedField>
                         {
-                            Title = "Moderation action information",
-                            Fields = new List<EmbedField>
-                            {
-                                new("ID", e.ModerationActionId.ToString(), false),
-                                new("Type", e.ModerationActionType.ToStringWithEmoji(), false),
-                                new("User's IGN", e.UserIgn ?? "None", false),
-                                new("User's Discord",
-                                    e.UserDiscordId is not null
-                                        ? $"<@{e.UserDiscordId}>"
-                                        : "None", false)
-                            },
-                            Colour = e.ModerationActionType switch
-                            {
-                                ModerationActionType.Ban => _colourPalette.Red,
-                                ModerationActionType.Mute => _colourPalette.Pink,
-                                ModerationActionType.Warn => _colourPalette.Yellow,
-                                _ => new()
-                            },
-                            Thumbnail = EmbedProperties.MmccLogoThumbnail,
-                            Timestamp = DateTimeOffset.UtcNow
-                        }
+                            new("ID", e.ModerationActionId.ToString(), false),
+                            new("Type", e.ModerationActionType.ToStringWithEmoji(), false),
+                            new("User's IGN", e.UserIgn ?? "None", false),
+                            new("User's Discord",
+                                e.UserDiscordId is not null
+                                    ? $"<@{e.UserDiscordId}>"
+                                    : "None", false)
+                        },
+                        Colour = e.ModerationActionType switch
+                        {
+                            ModerationActionType.Ban => _colourPalette.Red,
+                            ModerationActionType.Mute => _colourPalette.Pink,
+                            ModerationActionType.Warn => _colourPalette.Yellow,
+                            _ => new()
+                        },
+                        Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                        Timestamp = DateTimeOffset.UtcNow
                     }),
 
                 { IsSuccess: true } =>
@@ -137,7 +134,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 Thumbnail = EmbedProperties.MmccLogoThumbnail,
                 Timestamp = DateTimeOffset.UtcNow
             };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[] { embed });
+            return await _responder.Respond(embed);
         }
     }
 }

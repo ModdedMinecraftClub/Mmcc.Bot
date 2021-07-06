@@ -11,6 +11,7 @@ using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.Database.Entities;
+using Mmcc.Bot.Infrastructure.Abstractions;
 using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
 using Mmcc.Bot.Infrastructure.Queries.MemberApplications;
@@ -39,6 +40,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         private readonly ColourPalette _colourPalette;
         private readonly DiscordSettings _discordSettings;
         private readonly IDiscordRestGuildAPI _guildApi;
+        private readonly ICommandResponder _responder;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="MemberApplicationsCommands"/>.
@@ -49,13 +51,15 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         /// <param name="colourPalette">The colour palette.</param>
         /// <param name="discordSettings">The Discord settings.</param>
         /// <param name="guildApi">The guild API.</param>
+        /// <param name="responder">The command responder.</param>
         public MemberApplicationsCommands(
             MessageContext context,
             IDiscordRestChannelAPI channelApi,
             IMediator mediator,
             ColourPalette colourPalette,
             DiscordSettings discordSettings,
-            IDiscordRestGuildAPI guildApi
+            IDiscordRestGuildAPI guildApi,
+            ICommandResponder responder
         )
         {
             _context = context;
@@ -64,6 +68,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
             _colourPalette = colourPalette;
             _discordSettings = discordSettings;
             _guildApi = guildApi;
+            _responder = responder;
         }
 
         [Command("info")]
@@ -72,33 +77,31 @@ namespace Mmcc.Bot.CommandGroups.Moderation
             await _mediator.Send(new GetInfoData.Query(_context.GuildID.Value)) switch
             {
                 { IsSuccess: true, Entity: var (memberAppsChannelId, staffRoleId) } =>
-                    await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
+                    await _responder.Respond(new Embed
                     {
-                        new Embed
+                        Title = "How to obtain the Member role",
+                        Description =
+                            "When first joining the server, players are given the Guest rank. Member is a rank that can be accessed for free by all players. To apply for the rank, complete the following steps:",
+                        Fields = new List<EmbedField>
                         {
-                            Title = "How to obtain the Member role",
-                            Description =
-                                "When first joining the server, players are given the Guest rank. Member is a rank that can be accessed for free by all players. To apply for the rank, complete the following steps:",
-                            Fields = new List<EmbedField>
-                            {
-                                new(":one: Read the requirements",
-                                    "Requirements for the Member role are available on our **[wiki](https://wiki.moddedminecraft.club/index.php?title=How_to_earn_the_Member_rank)**.",
-                                    false),
-                                new(":two: Read the application format",
-                                    "When applying, to ensure that your application is processed swiftly, please follow the following application message format:\n" +
-                                    "```IGN: john01dav\nServer: Enigmatica 2: Expert```\n" +
-                                    "In addition to the above, please include a screenshot of the required setup with your message. The screenshot should be sent directly via Discord. Do not link a screenshot uploaded to a 3rd party service like gyazo or imgur. Both the information (in the required format), as well as the screenshot should be sent as a single Discord message, not as two separate messages.",
-                                    false),
-                                new(":three: Apply",
-                                    $"After you've familiarized yourself with the requirements and are reasonably sure you meet them, head over to <#{memberAppsChannelId}> and apply! Remember about the correct format :wink:."),
-                                new(":four: Wait for reply",
-                                    $"As soon as you post your application, the bot will let you know that it has been submitted (if it doesn't then most likely you didn't adhere to the application format). Now all you have to do is wait for a <@&{staffRoleId}> member to process your application. You will be pinged by the bot once it has been processed. You can track your application via this bot's commands. To obtain the ID do `!apps pending`. You can then view its status at any time by doing `!apps view <applicationId>`. You can see other available commands by doing `!help`.\n\n" +
-                                    $"*We try to process applications as quickly as possible. If you feel like your application has been missed (defined as pending for over 48h), please ping a <@&{staffRoleId}> member.*", false),
-                            },
-                            Thumbnail = EmbedProperties.MmccLogoThumbnail,
-                            Timestamp = DateTimeOffset.UtcNow,
-                            Colour = _colourPalette.Blue
-                        }
+                            new(":one: Read the requirements",
+                                "Requirements for the Member role are available on our **[wiki](https://wiki.moddedminecraft.club/index.php?title=How_to_earn_the_Member_rank)**.",
+                                false),
+                            new(":two: Read the application format",
+                                "When applying, to ensure that your application is processed swiftly, please follow the following application message format:\n" +
+                                "```IGN: john01dav\nServer: Enigmatica 2: Expert```\n" +
+                                "In addition to the above, please include a screenshot of the required setup with your message. The screenshot should be sent directly via Discord. Do not link a screenshot uploaded to a 3rd party service like gyazo or imgur. Both the information (in the required format), as well as the screenshot should be sent as a single Discord message, not as two separate messages.",
+                                false),
+                            new(":three: Apply",
+                                $"After you've familiarized yourself with the requirements and are reasonably sure you meet them, head over to <#{memberAppsChannelId}> and apply! Remember about the correct format :wink:."),
+                            new(":four: Wait for reply",
+                                $"As soon as you post your application, the bot will let you know that it has been submitted (if it doesn't then most likely you didn't adhere to the application format). Now all you have to do is wait for a <@&{staffRoleId}> member to process your application. You will be pinged by the bot once it has been processed. You can track your application via this bot's commands. To obtain the ID do `!apps pending`. You can then view its status at any time by doing `!apps view <applicationId>`. You can see other available commands by doing `!help`.\n\n" +
+                                $"*We try to process applications as quickly as possible. If you feel like your application has been missed (defined as pending for over 48h), please ping a <@&{staffRoleId}> member.*",
+                                false)
+                        },
+                        Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                        Timestamp = DateTimeOffset.UtcNow,
+                        Colour = _colourPalette.Blue
                     }),
 
                 { IsSuccess: false } res => res
@@ -119,8 +122,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 }) switch
                 {
                     { IsSuccess: true, Entity: { } e } =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID,
-                            embeds: new[] { e.GetEmbed(_colourPalette) }),
+                        await _responder.Respond(e.GetEmbed(_colourPalette)),
 
                     { IsSuccess: true } =>
                         Result.FromError(new NotFoundError($"Application with ID `{id}` could not be found.")),
@@ -138,19 +140,15 @@ namespace Mmcc.Bot.CommandGroups.Moderation
             await _mediator.Send(new GetNextPending.Query { GuildId = _context.Message.GuildID.Value }) switch
             {
                 { IsSuccess: true, Entity: { } e } =>
-                    await _channelApi.CreateMessageAsync(_context.ChannelID,
-                        embeds: new[] { e.GetEmbed(_colourPalette) }),
+                    await _responder.Respond(e.GetEmbed(_colourPalette)),
 
                 { IsSuccess: true } =>
-                    await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
+                    await _responder.Respond(new Embed
                     {
-                        new Embed
-                        {
-                            Title = "No pending applications",
-                            Description = "There are no pending applications at the moment",
-                            Thumbnail = EmbedProperties.MmccLogoThumbnail,
-                            Colour = _colourPalette.Blue
-                        }
+                        Title = "No pending applications",
+                        Description = "There are no pending applications at the moment",
+                        Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                        Colour = _colourPalette.Blue
                     }),
 
                 { IsSuccess: false } res => res
@@ -180,13 +178,11 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 }) switch
                 {
                     { IsSuccess: true, Entity: { } e } =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID,
-                            embeds: new[]
-                            {
-                                !e.Any()
-                                    ? embedBase with { Description = "There are no pending applications at the moment." }
-                                    : embedBase with { Fields = e.GetEmbedFields().ToList() }
-                            }),
+                        await _responder.Respond(
+                            !e.Any()
+                                ? embedBase with { Description = "There are no pending applications at the moment." }
+                                : embedBase with { Fields = e.GetEmbedFields().ToList() }
+                        ),
 
                     { IsSuccess: false } res => res
                 };
@@ -216,13 +212,11 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 }) switch
                 {
                     { IsSuccess: true, Entity: { } e } =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID,
-                            embeds: new[]
-                            {
-                                !e.Any()
-                                    ? embedBase with { Description = "You have not approved any applications yet." }
-                                    : embedBase with { Fields = e.GetEmbedFields().ToList() }
-                            }),
+                        await _responder.Respond(
+                            !e.Any()
+                                ? embedBase with { Description = "You have not approved any applications yet." }
+                                : embedBase with { Fields = e.GetEmbedFields().ToList() }
+                        ),
 
                     { IsSuccess: false } res => res
                 };
@@ -252,12 +246,11 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 }) switch
                 {
                     { IsSuccess: true, Entity: { } e } =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
-                        {
+                        await _responder.Respond(
                             !e.Any()
                                 ? embedBase with { Description = "You have not rejected any applications yet." }
                                 : embedBase with { Fields = e.GetEmbedFields().ToList() }
-                        }),
+                        ),
 
                     { IsSuccess: false } res => res
                 };
@@ -323,7 +316,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 Thumbnail = EmbedProperties.MmccLogoThumbnail,
                 Colour = _colourPalette.Green
             };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[] { embed });
+            return await _responder.Respond(embed);
         }
         
         /// <summary>
@@ -380,7 +373,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 Thumbnail = EmbedProperties.MmccLogoThumbnail,
                 Colour = _colourPalette.Green
             };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[] { staffNotificationEmbed });
+            return await _responder.Respond(staffNotificationEmbed);
         }
     }
 }

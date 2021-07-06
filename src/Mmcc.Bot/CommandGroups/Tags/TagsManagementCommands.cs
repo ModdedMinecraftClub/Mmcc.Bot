@@ -7,6 +7,7 @@ using MediatR;
 using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
+using Mmcc.Bot.Infrastructure.Abstractions;
 using Mmcc.Bot.Infrastructure.Commands.Tags;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
 using Mmcc.Bot.Infrastructure.Queries.Tags;
@@ -14,7 +15,6 @@ using MoreLinq;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
-using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
@@ -30,23 +30,28 @@ namespace Mmcc.Bot.CommandGroups.Tags
     public class TagsManagementCommands : CommandGroup
     {
         private readonly MessageContext _context;
-        private readonly IDiscordRestChannelAPI _channelApi;
         private readonly IMediator _mediator;
         private readonly ColourPalette _colourPalette;
+        private readonly ICommandResponder _responder;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="TagsManagementCommands"/> class.
         /// </summary>
         /// <param name="context">The message context.</param>
-        /// <param name="channelApi">The channel API.</param>
         /// <param name="mediator">The mediator.</param>
         /// <param name="colourPalette">The colour palette.</param>
-        public TagsManagementCommands(MessageContext context, IDiscordRestChannelAPI channelApi, IMediator mediator, ColourPalette colourPalette)
+        /// <param name="responder">The command responder.</param>
+        public TagsManagementCommands(
+            MessageContext context,
+            IMediator mediator,
+            ColourPalette colourPalette,
+            ICommandResponder responder
+        )
         {
             _context = context;
-            _channelApi = channelApi;
             _mediator = mediator;
             _colourPalette = colourPalette;
+            _responder = responder;
         }
 
         [Command("create")]
@@ -63,21 +68,18 @@ namespace Mmcc.Bot.CommandGroups.Tags
                     tagName, description, content)) switch
                 {
                     { IsSuccess: true, Entity: { } e } =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
+                        await _responder.Respond(new Embed
                         {
-                            new Embed
+                            Title = "Tag created.",
+                            Description = "The tag has been successfully created.",
+                            Fields = new List<EmbedField>
                             {
-                                Title = "Tag created.",
-                                Description = "The tag has been successfully created.",
-                                Fields = new List<EmbedField>
-                                {
-                                    new("Tag name", e.Content, false),
-                                    new("Tag description", e.TagDescription ?? "None", false),
-                                    new("Created by", $"<@{e.CreatedByDiscordId}>")
-                                },
-                                Colour = _colourPalette.Green,
-                                Timestamp = DateTimeOffset.UtcNow
-                            }
+                                new("Tag name", e.Content, false),
+                                new("Tag description", e.TagDescription ?? "None", false),
+                                new("Created by", $"<@{e.CreatedByDiscordId}>")
+                            },
+                            Colour = _colourPalette.Green,
+                            Timestamp = DateTimeOffset.UtcNow
                         }),
 
                     { IsSuccess: false } res => res
@@ -98,21 +100,18 @@ namespace Mmcc.Bot.CommandGroups.Tags
                     tagName, description, content)) switch
                 {
                     { IsSuccess: true, Entity: { } e } =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
+                        await _responder.Respond(new Embed
                         {
-                            new Embed
+                            Title = "Tag updated.",
+                            Description = "The tag has been successfully updated.",
+                            Fields = new List<EmbedField>
                             {
-                                Title = "Tag updated.",
-                                Description = "The tag has been successfully updated.",
-                                Fields = new List<EmbedField>
-                                {
-                                    new("Tag name", e.Content, false),
-                                    new("Tag description", e.TagDescription ?? "None", false),
-                                    new("Updated by", $"<@{e.LastModifiedByDiscordId}>")
-                                },
-                                Colour = _colourPalette.Green,
-                                Timestamp = DateTimeOffset.UtcNow
-                            }
+                                new("Tag name", e.Content, false),
+                                new("Tag description", e.TagDescription ?? "None", false),
+                                new("Updated by", $"<@{e.LastModifiedByDiscordId}>")
+                            },
+                            Colour = _colourPalette.Green,
+                            Timestamp = DateTimeOffset.UtcNow
                         }),
 
                     { IsSuccess: false } res => res
@@ -126,19 +125,16 @@ namespace Mmcc.Bot.CommandGroups.Tags
             await _mediator.Send(new Delete.Command(_context.GuildID.Value, tagName)) switch
             {
                 { IsSuccess: true, Entity: { } } =>
-                    await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
+                    await _responder.Respond(new Embed
                     {
-                        new Embed
+                        Title = "Tag deleted.",
+                        Description = "The tag has been successfully deleted.",
+                        Fields = new List<EmbedField>
                         {
-                            Title = "Tag deleted.",
-                            Description = "The tag has been successfully deleted.",
-                            Fields = new List<EmbedField>
-                            {
-                                new("Tag name", tagName, false)
-                            },
-                            Colour = _colourPalette.Green,
-                            Timestamp = DateTimeOffset.UtcNow
-                        }
+                            new("Tag name", tagName, false)
+                        },
+                        Colour = _colourPalette.Green,
+                        Timestamp = DateTimeOffset.UtcNow
                     }),
 
                 { IsSuccess: false } res => res
@@ -150,9 +146,8 @@ namespace Mmcc.Bot.CommandGroups.Tags
             await _mediator.Send(new GetAll.Query(_context.GuildID.Value)) switch
             {
                 { IsSuccess: true, Entity: { } e } when e.Any() =>
-                    await _channelApi.CreateMessageAsync(
-                        _context.ChannelID,
-                        embeds: e
+                    await _responder.Respond(
+                        e
                             .Batch(20)
                             .Select(tags => new Embed
                             {

@@ -9,6 +9,7 @@ using Mmcc.Bot.Core.Extensions.Models;
 using Mmcc.Bot.Core.Extensions.Remora.Discord.API.Abstractions.Objects;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
+using Mmcc.Bot.Infrastructure.Abstractions;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
 using Mmcc.Bot.Infrastructure.Queries.ModerationActions;
 using Mmcc.Bot.Infrastructure.Services;
@@ -33,38 +34,38 @@ namespace Mmcc.Bot.CommandGroups.Moderation
     public class PlayerInfoCommands : CommandGroup
     {
         private readonly MessageContext _context;
-        private readonly IDiscordRestChannelAPI _channelApi;
         private readonly IMediator _mediator;
         private readonly ColourPalette _colourPalette;
         private readonly IMojangApiService _mojangApi;
         private readonly IDiscordRestGuildAPI _guildApi;
+        private readonly ICommandResponder _responder;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="PlayerInfoCommands"/>.
         /// </summary>
         /// <param name="context">The message context.</param>
-        /// <param name="channelApi">The channel API.</param>
         /// <param name="mediator">The mediator.</param>
         /// <param name="colourPalette">The colour palette.</param>
         /// <param name="mojangApi">The Mojang API.</param>
         /// <param name="guildApi">The guild API.</param>
+        /// <param name="responder">The command responder.</param>
         public PlayerInfoCommands(
             MessageContext context,
-            IDiscordRestChannelAPI channelApi,
             IMediator mediator,
             ColourPalette colourPalette,
             IMojangApiService mojangApi,
-            IDiscordRestGuildAPI guildApi
+            IDiscordRestGuildAPI guildApi,
+            ICommandResponder responder
         )
         {
             _context = context;
-            _channelApi = channelApi;
             _mediator = mediator;
             _colourPalette = colourPalette;
             _mojangApi = mojangApi;
             _guildApi = guildApi;
+            _responder = responder;
         }
-        
+
         /// <summary>
         /// Views info about a Discord user..
         /// </summary>
@@ -131,7 +132,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 Fields = fields,
                 Timestamp = DateTimeOffset.Now
             };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[] { embed });
+            return await _responder.Respond(embed);
         }
 
         /// <summary>
@@ -179,12 +180,11 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                     $":x: Error: {queryResult.Error.Message}", false));
             }
 
-            embed = embed with
+            return await _responder.Respond(embed with
             {
                 Fields = fields,
                 Timestamp = DateTimeOffset.Now
-            };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[] { embed });
+            });
         }
     }
 }

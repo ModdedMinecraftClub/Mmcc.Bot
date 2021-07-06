@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
+using Mmcc.Bot.Infrastructure.Abstractions;
 using Mmcc.Bot.Infrastructure.Commands.Polychat.MessageSenders;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
 using Mmcc.Bot.Infrastructure.Services;
@@ -29,34 +30,34 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
     public class MinecraftServersCommands : CommandGroup
     {
         private readonly MessageContext _context;
-        private readonly IDiscordRestChannelAPI _channelApi;
         private readonly IMediator _mediator;
         private readonly ColourPalette _colourPalette;
         private readonly IPolychatService _polychatService;
+        private readonly ICommandResponder _responder;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="MinecraftServersCommands"/> class.
         /// </summary>
         /// <param name="context">The message context.</param>
-        /// <param name="channelApi">The channel API.</param>
         /// <param name="mediator">The mediator.</param>
         /// <param name="colourPalette">The colour palette.</param>
         /// <param name="polychatService">The polychat service.</param>
+        /// <param name="responder">The command responder.</param>
         public MinecraftServersCommands(
             MessageContext context,
-            IDiscordRestChannelAPI channelApi,
             IMediator mediator,
             ColourPalette colourPalette,
-            IPolychatService polychatService
+            IPolychatService polychatService,
+            ICommandResponder responder
         )
         {
             _context = context;
-            _channelApi = channelApi;
             _mediator = mediator;
             _colourPalette = colourPalette;
             _polychatService = polychatService;
+            _responder = responder;
         }
-        
+
         /// <summary>
         /// Shows current TPS of a MC server.
         /// </summary>
@@ -131,7 +132,7 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
                 Thumbnail = EmbedProperties.MmccLogoThumbnail,
                 Fields = fields
             };
-            return await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new List<Embed>{ embed });
+            return await _responder.Respond(embed);
         }
     }
 }

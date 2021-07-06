@@ -3,11 +3,11 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Models;
+using Mmcc.Bot.Infrastructure.Abstractions;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
-using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
@@ -26,22 +26,27 @@ namespace Mmcc.Bot.CommandGroups.Moderation
     public class BanCommands : CommandGroup
     {
         private readonly MessageContext _context;
-        private readonly IDiscordRestChannelAPI _channelApi;
         private readonly IMediator _mediator;
         private readonly Embed _embedBase;
+        private readonly ICommandResponder _responder;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="BanCommands"/> class.
         /// </summary>
         /// <param name="context">The message context.</param>
-        /// <param name="channelApi">The channel API.</param>
         /// <param name="mediator">The mediator.</param>
         /// <param name="colourPalette">The colour palette.</param>
-        public BanCommands(MessageContext context, IDiscordRestChannelAPI channelApi, IMediator mediator, ColourPalette colourPalette)
+        /// <param name="responder">The command responder.</param>
+        public BanCommands(
+            MessageContext context,
+            IMediator mediator,
+            ColourPalette colourPalette,
+            ICommandResponder responder
+        )
         {
             _context = context;
-            _channelApi = channelApi;
             _mediator = mediator;
+            _responder = responder;
             _embedBase = new Embed
             {
                 Description = "User has been banned successfully.",
@@ -72,13 +77,10 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 }) switch
                 {
                     { IsSuccess: true } =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
+                        await _responder.Respond(_embedBase with
                         {
-                            _embedBase with
-                            {
-                                Title = ":white_check_mark: User banned successfully (Discord only).",
-                                Timestamp = DateTimeOffset.UtcNow
-                            }
+                            Title = ":white_check_mark: User banned successfully (Discord only).",
+                            Timestamp = DateTimeOffset.UtcNow
                         }),
 
                     { IsSuccess: false } res => res
@@ -107,14 +109,11 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 }) switch
                 {
                     { IsSuccess: true } =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
+                        await _responder.Respond(_embedBase with
                         {
-                            _embedBase with
-                            {
-                                Title =
-                                ":white_check_mark: User banned successfully from all MC servers (in-game only).",
-                                Timestamp = DateTimeOffset.UtcNow
-                            }
+                            Title =
+                            ":white_check_mark: User banned successfully from all MC servers (in-game only).",
+                            Timestamp = DateTimeOffset.UtcNow
                         }),
 
                     { IsSuccess: false } res => res
@@ -143,13 +142,10 @@ namespace Mmcc.Bot.CommandGroups.Moderation
                 }) switch
                 {
                     { IsSuccess: true } =>
-                        await _channelApi.CreateMessageAsync(_context.ChannelID, embeds: new[]
+                        await _responder.Respond(_embedBase with
                         {
-                            _embedBase with
-                            {
-                                Title = ":white_check_mark: User banned successfully from all MC servers and Discord.",
-                                Timestamp = DateTimeOffset.UtcNow
-                            }
+                            Title = ":white_check_mark: User banned successfully from all MC servers and Discord.",
+                            Timestamp = DateTimeOffset.UtcNow
                         }),
 
                     { IsSuccess: false } res => res

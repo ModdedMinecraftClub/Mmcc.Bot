@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
+using Mmcc.Bot.Infrastructure.Abstractions;
 using Mmcc.Bot.Infrastructure.Queries.Tags;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
@@ -18,19 +19,23 @@ namespace Mmcc.Bot.CommandGroups.Tags
     {
         private readonly MessageContext _context;
         private readonly IMediator _mediator;
-        private readonly IDiscordRestChannelAPI _channelApi;
+        private readonly ICommandResponder _responder;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="TagsUsageCommands"/>.
         /// </summary>
         /// <param name="context">The message context.</param>
         /// <param name="mediator">The mediator.</param>
-        /// <param name="channelApi">The channel API.</param>
-        public TagsUsageCommands(MessageContext context, IMediator mediator, IDiscordRestChannelAPI channelApi)
+        /// <param name="responder">The command responder.</param>
+        public TagsUsageCommands(
+            MessageContext context,
+            IMediator mediator,
+            ICommandResponder responder
+        )
         {
             _context = context;
             _mediator = mediator;
-            _channelApi = channelApi;
+            _responder = responder;
         }
 
         [Command("tag", "t")]
@@ -40,7 +45,7 @@ namespace Mmcc.Bot.CommandGroups.Tags
             return await _mediator.Send(new GetOne.Query(_context.GuildID.Value, tagName)) switch
             {
                 {IsSuccess: true, Entity: { } e} =>
-                    await _channelApi.CreateMessageAsync(_context.ChannelID, e.Content),
+                    await _responder.Respond(e.Content),
 
                 {IsSuccess: true} =>
                     Result.FromError(
