@@ -50,6 +50,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
                     {
                         _polychatService.RemoveOnlineServer(sanitisedId);
                         _logger.LogInformation("Removed server {id} from the list of online servers.", sanitisedId);
+                        request.ConnectedClient.StopListening();
                     }
 
                     var getChatChannelResult =
