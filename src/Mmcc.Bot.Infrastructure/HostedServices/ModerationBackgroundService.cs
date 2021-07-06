@@ -63,7 +63,7 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
 
         private async Task RunIterationAsync(CancellationToken ct)
         {
-            _logger.LogInformation("Running an iteration of the {service} timed background service...",
+            _logger.LogDebug("Running an iteration of the {service} timed background service...",
                 nameof(ModerationBackgroundService));
             
             using var scope = _sp.CreateScope();
@@ -155,7 +155,7 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
                     "Successfully deactivated expired moderation action with ID: {id}.", ma.ModerationActionId);
             }
 
-            _logger.LogInformation("Completed an iteration of the {service} timed background service.",
+            _logger.LogDebug("Completed an iteration of the {service} timed background service.",
                 nameof(ModerationBackgroundService));
         }
     }
