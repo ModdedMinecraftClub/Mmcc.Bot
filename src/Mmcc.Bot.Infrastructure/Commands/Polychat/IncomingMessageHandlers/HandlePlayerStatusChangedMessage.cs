@@ -42,7 +42,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
                 server.OnlinePlayerNames = request.Message.NewPlayersOnline.PlayerNames.ToList();
 
                 _polychatService.AddOrUpdateOnlineServer(sanitisedId, server);
-                _polychatService.ForwardMessage(sanitisedId, request.Message);
+                await _polychatService.ForwardMessage(sanitisedId, request.Message);
 
                 var messageStr = new PolychatChatMessageString(
                     sanitisedId,

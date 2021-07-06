@@ -114,7 +114,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                         DiscordChannelId = request.ChannelId.ToString(),
                         Args = {request.ModerationAction.UserIgn}
                     };
-                    _ps.BroadcastMessage(proto);
+                    await _ps.BroadcastMessage(proto);
                 }
 
                 if (request.ModerationAction.UserDiscordId is not null)

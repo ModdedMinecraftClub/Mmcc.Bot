@@ -155,7 +155,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.MemberApplications
                             new NotFoundError($"Could not find server with ID {id}"));
                     }
 
-                    _ps.SendMessage(server, proto);
+                    await _ps.SendMessage(server, proto);
                 }
                 
                 var addRoleResult =

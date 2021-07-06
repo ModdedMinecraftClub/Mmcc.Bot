@@ -41,7 +41,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
 
                 if (server is not null)
                 {
-                    _polychatService.ForwardMessage(sanitisedId, msg);
+                    await _polychatService.ForwardMessage(sanitisedId, msg);
 
                     if (msg.Status == ServerStatus.Types.ServerStatusEnum.Stopped
                         || msg.Status == ServerStatus.Types.ServerStatusEnum.Crashed

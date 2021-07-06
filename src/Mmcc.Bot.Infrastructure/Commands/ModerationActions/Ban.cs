@@ -150,7 +150,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                         DiscordChannelId = request.ChannelId.Value.ToString(),
                         Args = {request.UserIgn}
                     };
-                    _ps.BroadcastMessage(proto);
+                    await _ps.BroadcastMessage(proto);
                 }
 
                 if (request.UserDiscordId is not null)

@@ -29,7 +29,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
             {
                 var id = new PolychatServerIdString(request.Message.ServerId);
                 var sanitisedId = id.ToSanitisedUppercase();
-                _polychatService.ForwardMessage(sanitisedId, request.Message);
+                await _polychatService.ForwardMessage(sanitisedId, request.Message);
                 
                 var getChatChannelResult =
                     await _channelApi.GetChannelAsync(new(_polychatSettings.ChatChannelId), cancellationToken);

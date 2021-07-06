@@ -131,7 +131,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                         Message = $"You have been warned, @{request.UserIgn}. Reason: {request.Reason}",
                         MessageOffset = 5
                     };
-                    _ps.BroadcastMessage(protobufMessage);
+                    await _ps.BroadcastMessage(protobufMessage);
                 }
 
                 if (request.UserDiscordId is not null)

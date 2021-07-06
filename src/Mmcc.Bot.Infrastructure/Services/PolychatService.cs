@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
@@ -40,14 +41,14 @@ namespace Mmcc.Bot.Infrastructure.Services
         /// </summary>
         /// <param name="destinationServer">Destination server.</param>
         /// <param name="packedMsgBytes">Protobuf message packed as <see cref="Any"/> in a <see cref="byte"/> <see cref="Array"/> form to be sent.</param>
-        void SendMessage(OnlineServer destinationServer, byte[] packedMsgBytes);
+        ValueTask SendMessage(OnlineServer destinationServer, byte[] packedMsgBytes);
         
         /// <summary>
         /// Sends a protobuf message to a server.
         /// </summary>
         /// <param name="destinationServer">Destination server.</param>
         /// <param name="message">Protobuf message packed as <see cref="Any"/> to be sent.</param>
-        void SendMessage(OnlineServer destinationServer, Any message);
+        ValueTask SendMessage(OnlineServer destinationServer, Any message);
         
         /// <summary>
         /// Sends a protobuf message to a server.
@@ -55,7 +56,7 @@ namespace Mmcc.Bot.Infrastructure.Services
         /// <param name="destinationServer">Destination server.</param>
         /// <param name="message">Protobuf message to be sent.</param>
         /// <typeparam name="T">Message type. Must be a Protobuf message, meaning it must implement <see cref="IMessage{T}"/>.</typeparam>
-        void SendMessage<T>(OnlineServer destinationServer, T message) where T : IMessage<T>;
+        ValueTask SendMessage<T>(OnlineServer destinationServer, T message) where T : IMessage<T>;
         
         /// <summary>
         /// Forwards a protobuf message.
@@ -64,7 +65,7 @@ namespace Mmcc.Bot.Infrastructure.Services
         /// <param name="message">Protobuf message to be sent.</param>
         /// <typeparam name="T">Message type. Must be a Protobuf message, meaning it must implement <see cref="IMessage{T}"/>.</typeparam>
         /// <remarks>To forward a message means to send a message to all the online servers apart from the server the message has originated from.</remarks>
-        void ForwardMessage<T>(string authorId, T message) where T : IMessage<T>;
+        ValueTask ForwardMessage<T>(string authorId, T message) where T : IMessage<T>;
         
         /// <summary>
         /// Broadcasts a protobuf message.
@@ -72,7 +73,7 @@ namespace Mmcc.Bot.Infrastructure.Services
         /// <param name="message">Protobuf message to be sent.</param>
         /// <typeparam name="T">Message type. Must be a Protobuf message, meaning it must implement <see cref="IMessage{T}"/>.</typeparam>
         /// <remarks>To broadcast a message means to send a message to all the online servers.</remarks>
-        void BroadcastMessage<T>(T message) where T : IMessage<T>;
+        ValueTask BroadcastMessage<T>(T message) where T : IMessage<T>;
 
         /// <summary>
         /// Gets information about online servers.
@@ -120,14 +121,14 @@ namespace Mmcc.Bot.Infrastructure.Services
         }
 
         /// <inheritdoc />
-        public void SendMessage(OnlineServer destinationServer, byte[] packedMsgBytes)
+        public async ValueTask SendMessage(OnlineServer destinationServer, byte[] packedMsgBytes)
         {
             try
             {
                 // if this bit of code ever goes tits up with a NullReferenceException, please send an email to
                 // john01dav@gmail.com as he has personally assured me that ConnectedClient
                 // can't be null (Discord message ID: 818759362839183360);
-                destinationServer.ConnectedClient!.SendMessage(packedMsgBytes);
+                await destinationServer.ConnectedClient!.SendMessage(packedMsgBytes);
             }
             catch (Exception e)
             {
@@ -136,15 +137,15 @@ namespace Mmcc.Bot.Infrastructure.Services
         }
 
         /// <inheritdoc />
-        public void SendMessage(OnlineServer destinationServer, Any message) =>
-            SendMessage(destinationServer, message.ToByteArray());
+        public async ValueTask SendMessage(OnlineServer destinationServer, Any message) =>
+            await SendMessage(destinationServer, message.ToByteArray());
 
         /// <inheritdoc />
-        public void SendMessage<T>(OnlineServer destinationServer, T message) where T : IMessage<T> =>
-            SendMessage(destinationServer, Any.Pack(message).ToByteArray());
+        public async ValueTask SendMessage<T>(OnlineServer destinationServer, T message) where T : IMessage<T> =>
+            await SendMessage(destinationServer, Any.Pack(message).ToByteArray());
 
         /// <inheritdoc />
-        public void ForwardMessage<T>(string authorId, T message) where T : IMessage<T>
+        public async ValueTask ForwardMessage<T>(string authorId, T message) where T : IMessage<T>
         {
             var packedMsgBytes = Any.Pack(message).ToByteArray();
 
@@ -152,18 +153,18 @@ namespace Mmcc.Bot.Infrastructure.Services
             {
                 if (onlineServer.ServerId.Equals(authorId)) continue;
 
-                SendMessage(onlineServer, packedMsgBytes);
+                await SendMessage(onlineServer, packedMsgBytes);
             }
         }
 
         /// <inheritdoc />
-        public void BroadcastMessage<T>(T message) where T : IMessage<T>
+        public async ValueTask BroadcastMessage<T>(T message) where T : IMessage<T>
         {
             var packedMsgBytes = Any.Pack(message).ToByteArray();
 
             foreach (var (_, onlineServer) in _onlineServers)
             {
-                SendMessage(onlineServer, packedMsgBytes);
+                await SendMessage(onlineServer, packedMsgBytes);
             }
         }
 
