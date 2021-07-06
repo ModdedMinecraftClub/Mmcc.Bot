@@ -7,28 +7,11 @@ namespace Mmcc.Bot.Protos
     /// <summary>
     /// Represents a request coming from a TCP client.
     /// </summary>
+    /// <param name="ConnectedClient">Request's author.</param>
+    /// <param name="Message">Request's body.</param>
     /// <typeparam name="T">Request message type.</typeparam>
-    public class TcpRequest<T> : IRequest where T : IMessage<T>
-    {
-        /// <summary>
-        /// Request's author.
-        /// </summary>
-        public ConnectedClient ConnectedClient { get; }
-        
-        /// <summary>
-        /// Request's message (body).
-        /// </summary>
-        public T Message { get; }
-
-        /// <summary>
-        /// Instantiates a new instance of <see cref="TcpRequest{T}"/>.
-        /// </summary>
-        /// <param name="connectedClient">Request's author.</param>
-        /// <param name="message">Request's message (body).</param>
-        public TcpRequest(ConnectedClient connectedClient, T message)
-        {
-            ConnectedClient = connectedClient;
-            Message = message;
-        }
-    }
+    public record TcpRequest<T>(
+        ConnectedClient ConnectedClient,
+        T Message
+    ) : IRequest where T : IMessage<T>;
 }
