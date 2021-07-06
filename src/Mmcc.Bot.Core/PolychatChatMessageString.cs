@@ -47,18 +47,16 @@ namespace Mmcc.Bot.Core
             HasValue ? new string(Value) : string.Empty;
 
         /// <summary>
-        /// To a string that is formatted for Discord.
+        /// To a string that is sanitised and formatted for Discord.
         /// </summary>
-        /// <returns></returns>
-        public string ToDiscordFormattedString()
-        {
-            var val = HasValue 
-                ? Regex.Replace(Value, "§.", "").Replace('`', '\'')
-                : " ";
-            
-            return $"`{val}`";
-        }
+        /// <returns>A string that is sanitised and formatted for Discord.</returns>
+        public string ToDiscordFormattedString() =>
+            $"`{ToSanitisedString()}`";
 
+        /// <summary>
+        /// To a string that is sanitised.
+        /// </summary>
+        /// <returns>A sanitised string.</returns>
         public string ToSanitisedString() =>
             HasValue
                 ? Regex.Replace(Value, "§.", "").Replace('`', '\'')
