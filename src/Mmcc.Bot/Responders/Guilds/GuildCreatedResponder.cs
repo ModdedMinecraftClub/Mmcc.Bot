@@ -74,10 +74,7 @@ namespace Mmcc.Bot.Responders.Guilds
                 foreach (var requiredChannel in requiredChannels)
                 {
                     // ReSharper disable once InvertIf
-                    if (
-                        channels.Value.FirstOrDefault(c =>
-                            c.Name.Value is not null && c.Name.Value.Equals(requiredChannel)) is null
-                    )
+                    if (channels.Value.FirstOrDefault(c => c.Name.Value.Equals(requiredChannel)) is null)
                     {
                         var createChannelResult = await _guildApi.CreateGuildChannelAsync(ev.ID, requiredChannel, ChannelType.GuildText, ct :ct);
 
