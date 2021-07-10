@@ -24,13 +24,13 @@ namespace Mmcc.Bot.Infrastructure.Services
     /// <inheritdoc />
     public class HelpService : IHelpService
     {
-        private readonly ColourPalette _colourPalette;
+        private readonly IColourPalette _colourPalette;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="HelpService"/>.
         /// </summary>
         /// <param name="colourPalette">The colour palette.</param>
-        public HelpService(ColourPalette colourPalette)
+        public HelpService(IColourPalette colourPalette)
         {
             _colourPalette = colourPalette;
         }

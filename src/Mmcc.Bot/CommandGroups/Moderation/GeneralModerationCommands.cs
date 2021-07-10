@@ -31,7 +31,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
     {
         private readonly MessageContext _context;
         private readonly IMediator _mediator;
-        private readonly ColourPalette _colourPalette;
+        private readonly IColourPalette _colourPalette;
         private readonly IModerationService _moderationService;
         private readonly ICommandResponder _responder;
 
@@ -46,7 +46,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         public GeneralModerationCommands(
             MessageContext context,
             IMediator mediator,
-            ColourPalette colourPalette,
+            IColourPalette colourPalette,
             IModerationService moderationService,
             ICommandResponder responder
         )

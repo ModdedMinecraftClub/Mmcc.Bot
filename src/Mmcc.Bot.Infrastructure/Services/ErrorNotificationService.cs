@@ -22,7 +22,7 @@ namespace Mmcc.Bot.Infrastructure.Services
     {
         private readonly ILogger<ErrorNotificationService> _logger;
         private readonly IDiscordRestChannelAPI _channelApi;
-        private readonly ColourPalette _colourPalette;
+        private readonly IColourPalette _colourPalette;
 
         /// <summary>
         /// Instantiates a new instance of <see cref="ErrorNotificationService"/>.
@@ -33,7 +33,7 @@ namespace Mmcc.Bot.Infrastructure.Services
         public ErrorNotificationService(
             ILogger<ErrorNotificationService> logger,
             IDiscordRestChannelAPI channelApi,
-            ColourPalette colourPalette
+            IColourPalette colourPalette
         )
         {
             _logger = logger;

@@ -37,7 +37,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         private readonly MessageContext _context;
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly IMediator _mediator;
-        private readonly ColourPalette _colourPalette;
+        private readonly IColourPalette _colourPalette;
         private readonly DiscordSettings _discordSettings;
         private readonly IDiscordRestGuildAPI _guildApi;
         private readonly ICommandResponder _responder;
@@ -56,7 +56,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
             MessageContext context,
             IDiscordRestChannelAPI channelApi,
             IMediator mediator,
-            ColourPalette colourPalette,
+            IColourPalette colourPalette,
             DiscordSettings discordSettings,
             IDiscordRestGuildAPI guildApi,
             ICommandResponder responder

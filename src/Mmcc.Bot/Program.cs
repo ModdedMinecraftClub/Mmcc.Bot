@@ -11,6 +11,7 @@ using Mmcc.Bot.CommandGroups.Diagnostics;
 using Mmcc.Bot.CommandGroups.Minecraft;
 using Mmcc.Bot.CommandGroups.Moderation;
 using Mmcc.Bot.CommandGroups.Tags;
+using Mmcc.Bot.Core;
 using Mmcc.Bot.Core.Extensions.Database;
 using Mmcc.Bot.Core.Extensions.Microsoft.Extensions.DependencyInjection;
 using Mmcc.Bot.Core.Models;
@@ -28,7 +29,6 @@ using Mmcc.Bot.Infrastructure.Services;
 using Mmcc.Bot.Responders.Guilds;
 using Mmcc.Bot.Responders.Messages;
 using Mmcc.Bot.Responders.Users;
-using Mmcc.Bot.Setup;
 using Mmcc.Bot.Protos;
 using Remora.Commands.Extensions;
 using Remora.Discord.API.Abstractions.Gateway.Commands;
@@ -129,9 +129,8 @@ namespace Mmcc.Bot
                         options.UseMySql(connString, serverVersion,
                             contextOptions => contextOptions.EnableRetryOnFailure(retryAmount));
                     });
-                    
-                    services.AddTailwindColourPalette();
 
+                    services.AddSingleton<IColourPalette, TailwindColourPalette>();
                     services.AddSingleton<IDiscordSanitiserService, DiscordSanitiserService>();
                     services.AddSingleton<IHelpService, HelpService>();
                     services.AddSingleton<IDmSender, DmSender>();

@@ -35,7 +35,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
     {
         private readonly MessageContext _context;
         private readonly IMediator _mediator;
-        private readonly ColourPalette _colourPalette;
+        private readonly IColourPalette _colourPalette;
         private readonly IMojangApiService _mojangApi;
         private readonly IDiscordRestGuildAPI _guildApi;
         private readonly ICommandResponder _responder;
@@ -52,7 +52,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         public PlayerInfoCommands(
             MessageContext context,
             IMediator mediator,
-            ColourPalette colourPalette,
+            IColourPalette colourPalette,
             IMojangApiService mojangApi,
             IDiscordRestGuildAPI guildApi,
             ICommandResponder responder

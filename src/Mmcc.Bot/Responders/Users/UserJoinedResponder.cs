@@ -21,7 +21,7 @@ namespace Mmcc.Bot.Responders.Users
     {
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly DiscordSettings _discordSettings;
-        private readonly ColourPalette _colourPalette;
+        private readonly IColourPalette _colourPalette;
         private readonly IDiscordRestGuildAPI _guildApi;
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Mmcc.Bot.Responders.Users
         public UserJoinedResponder(
             IDiscordRestChannelAPI channelApi,
             DiscordSettings discordSettings,
-            ColourPalette colourPalette,
+            IColourPalette colourPalette,
             IDiscordRestGuildAPI guildApi
         )
         {

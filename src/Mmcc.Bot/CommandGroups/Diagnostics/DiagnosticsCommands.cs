@@ -27,7 +27,7 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
     [Description("Server and bot diagnostics")]
     public class DiagnosticsCommands : CommandGroup
     {
-        private readonly ColourPalette _colourPalette;
+        private readonly IColourPalette _colourPalette;
         private readonly IMediator _mediator;
         private readonly ICommandResponder _responder;
 
@@ -45,7 +45,7 @@ namespace Mmcc.Bot.CommandGroups.Diagnostics
         /// <param name="mediator">The mediator.</param>
         /// <param name="responder">The command responder.</param>
         public DiagnosticsCommands(
-            ColourPalette colourPalette,
+            IColourPalette colourPalette,
             IMediator mediator,
             ICommandResponder responder
         )

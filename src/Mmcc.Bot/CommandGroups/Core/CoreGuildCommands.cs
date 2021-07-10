@@ -24,7 +24,7 @@ namespace Mmcc.Bot.CommandGroups.Core
     public class CoreGuildCommands : CommandGroup
     {
         private readonly MessageContext _context;
-        private readonly ColourPalette _colourPalette;
+        private readonly IColourPalette _colourPalette;
         private readonly IMediator _mediator;
         private readonly ICommandResponder _responder;
 
@@ -37,7 +37,7 @@ namespace Mmcc.Bot.CommandGroups.Core
         /// <param name="responder">The command responder.</param>
         public CoreGuildCommands(
             MessageContext context,
-            ColourPalette colourPalette,
+            IColourPalette colourPalette,
             IMediator mediator,
             ICommandResponder responder
         )

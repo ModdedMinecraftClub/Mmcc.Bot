@@ -23,10 +23,10 @@ namespace Mmcc.Bot.Infrastructure.Queries.Help
         public class Handler : RequestHandler<Query, Result<IList<Embed>>>
         {
             private readonly CommandTree _commandTree;
-            private readonly ColourPalette _colourPalette;
+            private readonly IColourPalette _colourPalette;
             private readonly IHelpService _helpService;
 
-            public Handler(CommandTree commandTree, ColourPalette colourPalette, IHelpService helpService)
+            public Handler(CommandTree commandTree, IColourPalette colourPalette, IHelpService helpService)
             {
                 _commandTree = commandTree;
                 _colourPalette = colourPalette;

@@ -39,7 +39,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         public WarnCommands(
             MessageContext context,
             IMediator mediator,
-            ColourPalette colourPalette,
+            IColourPalette colourPalette,
             ICommandResponder responder
         )
         {

@@ -26,7 +26,7 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
     {
         private readonly IServiceProvider _sp;
         private readonly ILogger<ModerationBackgroundService> _logger;
-        private readonly ColourPalette _colourPalette;
+        private readonly IColourPalette _colourPalette;
         private readonly DiscordSettings _discordSettings;
 
         private const int TimeBetweenIterationsInMillis = 2 * 60 * 1000;
@@ -38,7 +38,7 @@ namespace Mmcc.Bot.Infrastructure.HostedServices
         /// <param name="logger">The logger.</param>
         /// <param name="colourPalette">The colour palette.</param>
         /// <param name="discordSettings">The Discord settings.</param>
-        public ModerationBackgroundService(IServiceProvider sp, ILogger<ModerationBackgroundService> logger, ColourPalette colourPalette, DiscordSettings discordSettings)
+        public ModerationBackgroundService(IServiceProvider sp, ILogger<ModerationBackgroundService> logger, IColourPalette colourPalette, DiscordSettings discordSettings)
         {
             _sp = sp;
             _logger = logger;

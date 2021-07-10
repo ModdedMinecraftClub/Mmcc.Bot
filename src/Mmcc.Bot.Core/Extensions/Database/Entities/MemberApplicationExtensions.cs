@@ -18,7 +18,7 @@ namespace Mmcc.Bot.Core.Extensions.Database.Entities
         /// <param name="memberApplication">Member application.</param>
         /// <param name="colourPalette">Colour palette for the embed to use.</param>
         /// <returns>Embed representing the member application.</returns>
-        public static Embed GetEmbed(this MemberApplication memberApplication, ColourPalette colourPalette)
+        public static Embed GetEmbed(this MemberApplication memberApplication, IColourPalette colourPalette)
         {
             var statusStr = memberApplication.AppStatus.ToString();
             var embedConditionalAttributes = memberApplication.AppStatus switch

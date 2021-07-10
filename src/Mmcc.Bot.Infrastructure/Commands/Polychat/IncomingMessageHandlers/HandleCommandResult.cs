@@ -21,9 +21,9 @@ namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
         {
             private readonly IDiscordRestChannelAPI _channelApi;
             private readonly ILogger<HandleCommandResult> _logger;
-            private readonly ColourPalette _colourPalette;
+            private readonly IColourPalette _colourPalette;
 
-            public Handler(IDiscordRestChannelAPI channelApi, ILogger<HandleCommandResult> logger, ColourPalette colourPalette)
+            public Handler(IDiscordRestChannelAPI channelApi, ILogger<HandleCommandResult> logger, IColourPalette colourPalette)
             {
                 _channelApi = channelApi;
                 _logger = logger;

@@ -31,7 +31,7 @@ namespace Mmcc.Bot.CommandGroups.Tags
     {
         private readonly MessageContext _context;
         private readonly IMediator _mediator;
-        private readonly ColourPalette _colourPalette;
+        private readonly IColourPalette _colourPalette;
         private readonly ICommandResponder _responder;
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Mmcc.Bot.CommandGroups.Tags
         public TagsManagementCommands(
             MessageContext context,
             IMediator mediator,
-            ColourPalette colourPalette,
+            IColourPalette colourPalette,
             ICommandResponder responder
         )
         {

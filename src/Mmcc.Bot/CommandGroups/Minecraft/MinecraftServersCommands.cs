@@ -31,7 +31,7 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
     {
         private readonly MessageContext _context;
         private readonly IMediator _mediator;
-        private readonly ColourPalette _colourPalette;
+        private readonly IColourPalette _colourPalette;
         private readonly IPolychatService _polychatService;
         private readonly ICommandResponder _responder;
 
@@ -46,7 +46,7 @@ namespace Mmcc.Bot.CommandGroups.Minecraft
         public MinecraftServersCommands(
             MessageContext context,
             IMediator mediator,
-            ColourPalette colourPalette,
+            IColourPalette colourPalette,
             IPolychatService polychatService,
             ICommandResponder responder
         )

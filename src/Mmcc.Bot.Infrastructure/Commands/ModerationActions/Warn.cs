@@ -74,7 +74,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
             private readonly IDiscordRestGuildAPI _guildApi;
             private readonly IPolychatService _ps;
             private readonly IDiscordRestUserAPI _userApi;
-            private readonly ColourPalette _colourPalette;
+            private readonly IColourPalette _colourPalette;
             private readonly ILogger<Handler> _logger;
             private readonly IDiscordRestChannelAPI _channelApi;
             
@@ -93,7 +93,7 @@ namespace Mmcc.Bot.Infrastructure.Commands.ModerationActions
                 IDiscordRestGuildAPI guildApi,
                 IPolychatService ps,
                 IDiscordRestUserAPI userApi,
-                ColourPalette colourPalette,
+                IColourPalette colourPalette,
                 ILogger<Handler> logger,
                 IDiscordRestChannelAPI channelApi
             )

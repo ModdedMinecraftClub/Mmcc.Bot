@@ -40,7 +40,7 @@ namespace Mmcc.Bot.CommandGroups.Moderation
         public BanCommands(
             MessageContext context,
             IMediator mediator,
-            ColourPalette colourPalette,
+            IColourPalette colourPalette,
             ICommandResponder responder
         )
         {
