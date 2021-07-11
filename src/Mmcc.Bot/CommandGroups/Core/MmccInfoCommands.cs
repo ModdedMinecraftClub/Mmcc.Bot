@@ -30,9 +30,9 @@ namespace Mmcc.Bot.CommandGroups.Core
                 new ActionRowComponent(new List<ButtonComponent>
                 {
                     new(ButtonComponentStyle.Link, "Website", new PartialEmoji(new Snowflake(863798570602856469)), URL: MmccUrls.Website),
-                    new(ButtonComponentStyle.Link, "Donate", new PartialEmoji(Name: "\u2764"), URL: MmccUrls.Donations),
-                    new(ButtonComponentStyle.Link, "Wiki", new PartialEmoji(Name: "\uD83D\uDCD6"), URL: MmccUrls.Wiki),
-                    new(ButtonComponentStyle.Link, "Forum", new PartialEmoji(Name: "\uD83D\uDDE3"), URL: MmccUrls.Forum),
+                    new(ButtonComponentStyle.Link, "Donate", new PartialEmoji(Name: "❤️"), URL: MmccUrls.Donations),
+                    new(ButtonComponentStyle.Link, "Wiki", new PartialEmoji(Name: "📖"), URL: MmccUrls.Wiki),
+                    new(ButtonComponentStyle.Link, "Forum", new PartialEmoji(Name: "🗣️"), URL: MmccUrls.Forum),
                     new(ButtonComponentStyle.Link, "GitHub", new PartialEmoji(new Snowflake(453413238638641163)), URL: MmccUrls.GitHub)
                 })
             };
