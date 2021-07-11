@@ -84,18 +84,13 @@ namespace Mmcc.Bot.Infrastructure.Abstractions
             );
 
         /// <inheritdoc />
-        public async Task<IResult> RespondWithComponents(IReadOnlyList<IMessageComponent> components, Optional<string> content = new(), params Embed[] embeds)
-        {
-            var embedsOptional = !embeds.Any()
-                ? new Optional<IReadOnlyList<Embed>>()
-                : new Optional<IReadOnlyList<Embed>>(embeds);
-            return await _channelApi.CreateMessageAsync(
+        public async Task<IResult> RespondWithComponents(IReadOnlyList<IMessageComponent> components, Optional<string> content = new(), params Embed[] embeds) =>
+            await _channelApi.CreateMessageAsync(
                 channelID: _context.ChannelID,
                 content: content,
                 embeds: embeds,
                 components: new(components),
                 messageReference: new MessageReference(_context.MessageID, FailIfNotExists: false)
             );
-        }
     }
 }
