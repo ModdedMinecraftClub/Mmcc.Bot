@@ -155,6 +155,7 @@ namespace Mmcc.Bot
                     // core commands;
                     services.AddCommandGroup<HelpCommands>();
                     services.AddCommandGroup<CoreGuildCommands>();
+                    services.AddCommandGroup<MmccInfoCommands>();
                     
                     // tags;
                     services.AddCommandGroup<TagsManagementCommands>();

@@ -4,6 +4,6 @@ namespace Mmcc.Bot.Core.Statics
 {
     public class EmbedProperties
     {
-        public static EmbedThumbnail MmccLogoThumbnail => new(Urls.MmccLogoUrl);
+        public static EmbedThumbnail MmccLogoThumbnail => new(MmccUrls.PngLogo);
     }
 }
