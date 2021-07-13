@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace Mmcc.Bot.Core
+namespace Mmcc.Bot.Polychat.Abstractions
 {
     /// <summary>
     /// Represents a polychat server ID.

@@ -4,13 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Mmcc.Bot.Core;
-using Mmcc.Bot.Core.Models.Settings;
-using Mmcc.Bot.Infrastructure.Services;
-using Mmcc.Bot.Protos;
+using Mmcc.Bot.Polychat.Abstractions;
+using Mmcc.Bot.Polychat.Models.Settings;
 using Remora.Discord.API.Abstractions.Rest;
 
-namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
+namespace Mmcc.Bot.Polychat.IncomingMessageHandlers
 {
     public class HandlePlayerStatusChangedMessage
     {

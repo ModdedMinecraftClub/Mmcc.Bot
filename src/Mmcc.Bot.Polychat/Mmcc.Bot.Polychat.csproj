@@ -1,11 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-    
+
     <ItemGroup>
+        <PackageReference Include="FluentValidation" Version="10.1.0" />
         <PackageReference Include="Google.Protobuf" Version="3.17.0" />
         <PackageReference Include="Grpc.Tools" Version="2.37.1">
             <PrivateAssets>all</PrivateAssets>
@@ -14,14 +15,18 @@
         <PackageReference Include="MediatR" Version="9.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
         <PackageReference Include="BetterSsmp" Version="0.0.3" />
+        <PackageReference Include="morelinq" Version="3.3.2" />
+        <PackageReference Include="Remora.Discord" Version="3.0.33" />
+        <PackageReference Include="Remora.Discord.Commands" Version="3.10.11" />
     </ItemGroup>
 
     <ItemGroup>
         <Protobuf Include=".\Protos\messages\*.proto" GrpcServices="None" />
     </ItemGroup>
-	
+
     <ItemGroup>
-		<ProjectReference Include="..\Mmcc.Bot.Generators\Mmcc.Bot.Generators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
-	</ItemGroup>
+        <ProjectReference Include="..\Mmcc.Bot.Core\Mmcc.Bot.Core.csproj" />
+        <ProjectReference Include="..\Mmcc.Bot.Generators\Mmcc.Bot.Generators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+    </ItemGroup>
 
 </Project>

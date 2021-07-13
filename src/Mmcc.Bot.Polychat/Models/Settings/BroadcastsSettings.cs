@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Mmcc.Bot.Core.Models.Settings
+namespace Mmcc.Bot.Polychat.Models.Settings
 {
     public class BroadcastsSettings
     {

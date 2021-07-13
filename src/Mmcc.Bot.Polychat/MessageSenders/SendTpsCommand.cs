@@ -4,12 +4,10 @@ using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
 using Mmcc.Bot.Core.Errors;
-using Mmcc.Bot.Infrastructure.Services;
-using Mmcc.Bot.Protos;
 using Remora.Discord.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Infrastructure.Commands.Polychat.MessageSenders
+namespace Mmcc.Bot.Polychat.MessageSenders
 {
     /// <summary>
     /// Sends a TPS command to a server.

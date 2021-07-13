@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Mmcc.Bot.Core
+namespace Mmcc.Bot.Polychat.Models
 {
     /// <summary>
     /// Represents information about an online MC server.

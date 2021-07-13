@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Mmcc.Bot.Protos;
 using Ssmp;
 
-namespace Mmcc.Bot.Core
+namespace Mmcc.Bot.Polychat.Models
 {
     /// <summary>
     /// Represents an online MC server.
@@ -59,5 +58,8 @@ namespace Mmcc.Bot.Core
             OnlinePlayerNames = new();
             ConnectedClient = connectedClient;
         }
+
+        public OnlineServerInformation ExtractServerInformation() =>
+            new(ServerId, ServerName, ServerAddress, MaxPlayers, PlayersOnline, OnlinePlayerNames);
     }
 }

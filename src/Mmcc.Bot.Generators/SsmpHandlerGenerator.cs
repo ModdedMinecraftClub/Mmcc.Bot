@@ -66,7 +66,7 @@ namespace Mmcc.Bot.Generators
         private class TemplateGenerator : TemplateGeneratorBase
         {
             private const string ValueTask = "global::System.Threading.Tasks.ValueTask";
-            private const string GeneratedNamespace = "Mmcc.Bot.Protos";
+            private const string GeneratedNamespace = "Mmcc.Bot.Polychat";
 
             private readonly INamedTypeSymbol _ssmpInterfaceSymbol;
             private readonly INamedTypeSymbol _mediatRInterfaceSymbol;
@@ -98,7 +98,7 @@ namespace Mmcc.Bot.Generators
             private string AnnotatedLogger =>
                 $"{AnnotateTypeWithGlobal(_loggerSymbol)}<{AnnotateTypeWithGlobal(_generatedType)}>";
             
-            private string AnnotateMsgType(string type) => $"global::Mmcc.Bot.Protos.{type}";
+            private string AnnotateMsgType(string type) => $"global::{GeneratedNamespace}.{type}";
 
             protected override string FillInStub(string generatedFiller) =>
                 $@"
@@ -149,7 +149,7 @@ namespace {GeneratedNamespace}
                 sb.AppendLine("{");
                 sb.AppendLine(Indent($"var msg = any.Unpack<{firstMessage}>();", 1));
                 sb.AppendLine(Indent(
-                    $"var req = new global::Mmcc.Bot.Protos.TcpRequest<{firstMessage}>(connectedClient, msg);", 1));
+                    $"var req = new global::{GeneratedNamespace}.TcpRequest<{firstMessage}>(connectedClient, msg);", 1));
                 sb.AppendLine(Indent("await mediator.Send(req);", 1));
                 sb.AppendLine("}");
 
@@ -159,7 +159,7 @@ namespace {GeneratedNamespace}
                     sb.AppendLine("{");
                     sb.AppendLine(Indent($"var msg = any.Unpack<{messages[i]}>();", 1));
                     sb.AppendLine(Indent(
-                        $"var req = new global::Mmcc.Bot.Protos.TcpRequest<{messages[i]}>(connectedClient, msg);", 1));
+                        $"var req = new global::{GeneratedNamespace}.TcpRequest<{messages[i]}>(connectedClient, msg);", 1));
                     sb.AppendLine(Indent("await mediator.Send(req);", 1));
                     sb.AppendLine("}");
                 }

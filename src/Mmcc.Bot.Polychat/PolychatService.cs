@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
-using Mmcc.Bot.Core;
-using Mmcc.Bot.Core.Extensions;
+using Mmcc.Bot.Polychat.Models;
 
-namespace Mmcc.Bot.Infrastructure.Services
+namespace Mmcc.Bot.Polychat
 {
     /// <summary>
     /// Polychat service.

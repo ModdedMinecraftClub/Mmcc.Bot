@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Core.Models;
-using Mmcc.Bot.Protos;
-using MoreLinq;
+using MoreLinq.Extensions;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Core;
 
-namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
+namespace Mmcc.Bot.Polychat.IncomingMessageHandlers
 {
     public class HandleCommandResult
     {

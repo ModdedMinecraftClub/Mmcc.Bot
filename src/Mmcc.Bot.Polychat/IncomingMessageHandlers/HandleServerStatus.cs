@@ -4,13 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Mmcc.Bot.Core;
-using Mmcc.Bot.Core.Models.Settings;
-using Mmcc.Bot.Infrastructure.Services;
-using Mmcc.Bot.Protos;
+using Mmcc.Bot.Polychat.Abstractions;
+using Mmcc.Bot.Polychat.Models.Settings;
 using Remora.Discord.API.Abstractions.Rest;
 
-namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
+namespace Mmcc.Bot.Polychat.IncomingMessageHandlers
 {
     /// <summary>
     /// Handles an incoming <see cref="ServerStatus"/> message.

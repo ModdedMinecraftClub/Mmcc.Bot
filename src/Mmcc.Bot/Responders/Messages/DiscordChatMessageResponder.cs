@@ -2,7 +2,8 @@
 using System.Threading.Tasks;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Infrastructure.Services;
-using Mmcc.Bot.Protos;
+using Mmcc.Bot.Polychat;
+using Mmcc.Bot.Polychat.Models.Settings;
 using Remora.Discord.API.Abstractions.Gateway.Events;
 using Remora.Discord.Gateway.Responders;
 using Remora.Results;

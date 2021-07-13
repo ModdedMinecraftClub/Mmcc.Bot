@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Mmcc.Bot.Core.Models.Settings
+namespace Mmcc.Bot.Polychat.Models.Settings
 {
     /// <summary>
     /// Settings for communication with Polychat2.

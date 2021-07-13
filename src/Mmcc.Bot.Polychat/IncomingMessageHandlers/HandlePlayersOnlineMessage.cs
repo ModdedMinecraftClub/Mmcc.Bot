@@ -3,7 +3,7 @@ using System.Linq;
 using MediatR;
 using Mmcc.Bot.Core;
 using Mmcc.Bot.Infrastructure.Services;
-using Mmcc.Bot.Protos;
+using Mmcc.Bot.Polychat;
 
 namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
 {

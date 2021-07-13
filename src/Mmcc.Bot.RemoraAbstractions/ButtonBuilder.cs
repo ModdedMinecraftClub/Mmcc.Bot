@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mmcc.Bot.Caching.Entities;
 using Remora.Discord.API.Abstractions.Gateway.Events;

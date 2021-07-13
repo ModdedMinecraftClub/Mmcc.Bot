@@ -11,13 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mmcc.Bot.Core", "Mmcc.Bot.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mmcc.Bot.Infrastructure", "Mmcc.Bot.Infrastructure\Mmcc.Bot.Infrastructure.csproj", "{61968451-8729-46B3-9F58-E636E7E4699C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mmcc.Bot.Protos", "Mmcc.Bot.Protos\Mmcc.Bot.Protos.csproj", "{B66743F5-7491-47D8-821D-4280A10A9D0D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Generators", "Mmcc.Bot.Generators\Mmcc.Bot.Generators.csproj", "{7E9B771E-2800-45F2-B201-DE51B33647B1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Caching", "Mmcc.Bot.Caching\Mmcc.Bot.Caching.csproj", "{4680CB41-16E1-436B-9C4D-F83991B06AC6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.RemoraAbstractions", "Mmcc.Bot.RemoraAbstractions\Mmcc.Bot.RemoraAbstractions.csproj", "{A5862FD7-B26A-4219-B31F-25256BEF4D75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Polychat", "Mmcc.Bot.Polychat\Mmcc.Bot.Polychat.csproj", "{AD6B79E6-93AA-4F69-81FE-3228A29B680B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +41,6 @@ Global
 		{61968451-8729-46B3-9F58-E636E7E4699C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61968451-8729-46B3-9F58-E636E7E4699C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61968451-8729-46B3-9F58-E636E7E4699C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B66743F5-7491-47D8-821D-4280A10A9D0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B66743F5-7491-47D8-821D-4280A10A9D0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B66743F5-7491-47D8-821D-4280A10A9D0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B66743F5-7491-47D8-821D-4280A10A9D0D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7E9B771E-2800-45F2-B201-DE51B33647B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7E9B771E-2800-45F2-B201-DE51B33647B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E9B771E-2800-45F2-B201-DE51B33647B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,6 +53,10 @@ Global
 		{A5862FD7-B26A-4219-B31F-25256BEF4D75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5862FD7-B26A-4219-B31F-25256BEF4D75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5862FD7-B26A-4219-B31F-25256BEF4D75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD6B79E6-93AA-4F69-81FE-3228A29B680B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD6B79E6-93AA-4F69-81FE-3228A29B680B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD6B79E6-93AA-4F69-81FE-3228A29B680B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD6B79E6-93AA-4F69-81FE-3228A29B680B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,7 +10,7 @@ using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Entities;
 using Mmcc.Bot.Infrastructure.Services;
-using Mmcc.Bot.Protos;
+using Mmcc.Bot.Polychat;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Core;

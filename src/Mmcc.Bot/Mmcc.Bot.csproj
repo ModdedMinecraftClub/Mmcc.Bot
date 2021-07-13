@@ -27,7 +27,7 @@
       <ProjectReference Include="..\Mmcc.Bot.Caching\Mmcc.Bot.Caching.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Core\Mmcc.Bot.Core.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Infrastructure\Mmcc.Bot.Infrastructure.csproj" />
-      <ProjectReference Include="..\Mmcc.Bot.Protos\Mmcc.Bot.Protos.csproj" />
+      <ProjectReference Include="..\Mmcc.Bot.Polychat\Mmcc.Bot.Polychat.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.RemoraAbstractions\Mmcc.Bot.RemoraAbstractions.csproj" />
     </ItemGroup>
 </Project>

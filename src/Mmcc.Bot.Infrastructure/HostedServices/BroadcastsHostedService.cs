@@ -6,7 +6,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Core.Models.Settings;
 using Mmcc.Bot.Infrastructure.Services;
-using Mmcc.Bot.Protos;
+using Mmcc.Bot.Polychat;
+using Mmcc.Bot.Polychat.Models.Settings;
 
 namespace Mmcc.Bot.Infrastructure.HostedServices
 {
