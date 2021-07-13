@@ -22,4 +22,8 @@
       <ProjectReference Include="..\Mmcc.Bot.Protos\Mmcc.Bot.Protos.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Abstractions" />
+    </ItemGroup>
+
 </Project>

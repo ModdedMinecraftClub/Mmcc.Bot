@@ -8,7 +8,7 @@ using Remora.Discord.Commands.Contexts;
 using Remora.Discord.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Infrastructure.Abstractions
+namespace Mmcc.Bot.RemoraAbstractions
 {
     /// <summary>
     /// Responds to the message the command was invoked by.

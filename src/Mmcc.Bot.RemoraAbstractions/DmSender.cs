@@ -7,7 +7,7 @@ using Remora.Discord.API.Objects;
 using Remora.Discord.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Infrastructure.Abstractions
+namespace Mmcc.Bot.RemoraAbstractions
 {
     /// <summary>
     /// Sends DMs.
