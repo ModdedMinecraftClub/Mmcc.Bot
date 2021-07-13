@@ -4,7 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
-using Mmcc.Bot.Core.Errors;
+using Mmcc.Bot.Common.Errors;
+using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.Core;
 using Remora.Results;
 

@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using MediatR;
-using Mmcc.Bot.Core;
-using Mmcc.Bot.Infrastructure.Services;
-using Mmcc.Bot.Polychat;
+using Mmcc.Bot.Polychat.Abstractions;
+using Mmcc.Bot.Polychat.Services;
 
-namespace Mmcc.Bot.Infrastructure.Commands.Polychat.IncomingMessageHandlers
+namespace Mmcc.Bot.Polychat.IncomingMessageHandlers
 {
     public class HandlePlayersOnlineMessage
     {

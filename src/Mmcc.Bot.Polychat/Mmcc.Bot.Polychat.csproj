@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="EmojiOne.NETStandard" Version="4.0.1" />
         <PackageReference Include="FluentValidation" Version="10.1.0" />
         <PackageReference Include="Google.Protobuf" Version="3.17.0" />
         <PackageReference Include="Grpc.Tools" Version="2.37.1">
@@ -25,7 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Mmcc.Bot.Core\Mmcc.Bot.Core.csproj" />
+        <ProjectReference Include="..\Mmcc.Bot.Common\Mmcc.Bot.Common.csproj" />
         <ProjectReference Include="..\Mmcc.Bot.Generators\Mmcc.Bot.Generators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
     </ItemGroup>
 

@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Mmcc.Bot.Core.Models;
+using Mmcc.Bot.Common.Models.Colours;
 using MoreLinq.Extensions;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
