@@ -12,6 +12,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Mmcc.Bot.Caching\Mmcc.Bot.Caching.csproj" />
-      <ProjectReference Include="..\Mmcc.Bot.Core\Mmcc.Bot.Core.csproj" />
+      <ProjectReference Include="..\Mmcc.Bot.Common\Mmcc.Bot.Common.csproj" />
     </ItemGroup>
 </Project>

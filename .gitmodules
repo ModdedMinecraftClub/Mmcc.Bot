@@ -1,3 +1,6 @@
-[submodule "src/Mmcc.Bot.Protos/Protos"]
-	path = src/Mmcc.Bot.Protos/Protos
+[submodule "./src/Mmcc.Bot.Polychat/Protos"]
+	path = ./src/Mmcc.Bot.Polychat/Protos
+	url = https://github.com/ModdedMinecraftClub/protos/
+[submodule "src/Mmcc.Bot.Polychat/Protos"]
+	path = src/Mmcc.Bot.Polychat/Protos
 	url = https://github.com/ModdedMinecraftClub/protos

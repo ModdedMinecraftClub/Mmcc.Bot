@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Mmcc.Bot.Caching\Mmcc.Bot.Caching.csproj" />
+      <ProjectReference Include="..\Mmcc.Bot.Common\Mmcc.Bot.Common.csproj" />
+      <ProjectReference Include="..\Mmcc.Bot.Database\Mmcc.Bot.Database.csproj" />
+      <ProjectReference Include="..\Mmcc.Bot.Mojang\Mmcc.Bot.Mojang.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="10.1.0" />
+      <PackageReference Include="Remora.Discord" Version="3.0.33" />
+      <PackageReference Include="Remora.Discord.API" Version="21.0.0" />
+    </ItemGroup>
+
+</Project>

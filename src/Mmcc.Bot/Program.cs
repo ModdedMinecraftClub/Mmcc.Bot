@@ -6,32 +6,41 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Mmcc.Bot.Behaviours;
 using Mmcc.Bot.Caching;
-using Mmcc.Bot.CommandGroups.Core;
-using Mmcc.Bot.CommandGroups.Diagnostics;
-using Mmcc.Bot.CommandGroups.Minecraft;
-using Mmcc.Bot.CommandGroups.Moderation;
-using Mmcc.Bot.CommandGroups.Tags;
-using Mmcc.Bot.Core;
-using Mmcc.Bot.Core.Extensions.Database;
-using Mmcc.Bot.Core.Extensions.Microsoft.Extensions.DependencyInjection;
-using Mmcc.Bot.Core.Models;
-using Mmcc.Bot.Core.Models.Settings;
+using Mmcc.Bot.Commands.Core;
+using Mmcc.Bot.Commands.Core.Help;
+using Mmcc.Bot.Commands.Diagnostics;
+using Mmcc.Bot.Commands.Guilds;
+using Mmcc.Bot.Commands.Minecraft;
+using Mmcc.Bot.Commands.Moderation;
+using Mmcc.Bot.Commands.Moderation.Bans;
+using Mmcc.Bot.Commands.Moderation.MemberApplications;
+using Mmcc.Bot.Commands.Moderation.PlayerInfo;
+using Mmcc.Bot.Commands.Moderation.Warns;
+using Mmcc.Bot.Commands.Tags.Management;
+using Mmcc.Bot.Commands.Tags.Usage;
+using Mmcc.Bot.Common.Extensions.Microsoft.Extensions.DependencyInjection;
+using Mmcc.Bot.Common.Models;
+using Mmcc.Bot.Common.Models.Colours;
+using Mmcc.Bot.Common.Models.Settings;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Settings;
-using Mmcc.Bot.Infrastructure.Behaviours;
-using Mmcc.Bot.Infrastructure.Commands.MemberApplications;
-using Mmcc.Bot.Infrastructure.Conditions;
-using Mmcc.Bot.Infrastructure.HostedServices;
-using Mmcc.Bot.Infrastructure.Parsers;
-using Mmcc.Bot.Infrastructure.Queries.Core;
-using Mmcc.Bot.Infrastructure.Services;
-using Mmcc.Bot.Responders.Guilds;
-using Mmcc.Bot.Responders.Messages;
-using Mmcc.Bot.Responders.Users;
-using Mmcc.Bot.Protos;
-using Mmcc.Bot.RemoraAbstractions;
-using Mmcc.Bot.Responders.Buttons;
+using Mmcc.Bot.Events.Buttons;
+using Mmcc.Bot.Events.Feedback;
+using Mmcc.Bot.Events.Guilds;
+using Mmcc.Bot.Events.Moderation.MemberApplications;
+using Mmcc.Bot.Events.Users;
+using Mmcc.Bot.Hosting.Moderation;
+using Mmcc.Bot.Middleware;
+using Mmcc.Bot.Mojang;
+using Mmcc.Bot.Polychat;
+using Mmcc.Bot.Polychat.Hosting;
+using Mmcc.Bot.Polychat.Models.Settings;
+using Mmcc.Bot.Polychat.Services;
+using Mmcc.Bot.RemoraAbstractions.Conditions;
+using Mmcc.Bot.RemoraAbstractions.Parsers;
+using Mmcc.Bot.RemoraAbstractions.Services;
 using Remora.Commands.Extensions;
 using Remora.Discord.API.Abstractions.Gateway.Commands;
 using Remora.Discord.Caching.Extensions;
@@ -139,14 +148,17 @@ namespace Mmcc.Bot
                     services.AddScoped<IHelpService, HelpService>();
                     services.AddScoped<IDmSender, DmSender>();
                     services.AddScoped<IDiscordPermissionsService, DiscordPermissionsService>();
-                    services.AddScoped<IExecutionEventService, ErrorNotificationService>();
+                    services.AddScoped<IExecutionEventService, ErrorNotificationMiddleware>();
                     services.AddScoped<IMojangApiService, MojangApiService>();
-                    services.AddScoped<IModerationService, ModerationService>();
                     services.AddScoped<ICommandResponder, CommandResponder>();
                     services.AddScoped<IInteractionResponder, InteractionResponder>();
 
-                    services.AddValidatorsFromAssemblyContaining<GetGuildInfo>();
-                    services.AddMediatR(typeof(CreateFromDiscordMessage));
+                    services.AddValidatorsFromAssemblyContaining<Program>();
+                    services.AddValidatorsFromAssemblyContaining<DiscordSettings>();
+                    services.AddValidatorsFromAssemblyContaining<PolychatSettings>();
+                    services.AddValidatorsFromAssemblyContaining<MySqlSettingsValidator>();
+
+                    services.AddMediatR(typeof(CreateFromDiscordMessage), typeof(TcpRequest<>));
                     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
                     
                     services.AddDiscordCommands();
@@ -159,7 +171,7 @@ namespace Mmcc.Bot
                     
                     // core commands;
                     services.AddCommandGroup<HelpCommands>();
-                    services.AddCommandGroup<CoreGuildCommands>();
+                    services.AddCommandGroup<GuildCommands>();
                     services.AddCommandGroup<MmccInfoCommands>();
                     
                     // tags;
@@ -188,7 +200,7 @@ namespace Mmcc.Bot
                     services.AddResponder<FeedbackAddressedResponder>();
                     services.AddResponder<MemberApplicationCreatedResponder>();
                     services.AddResponder<MemberApplicationUpdatedResponder>();
-                    services.AddResponder<DiscordChatMessageResponder>();
+                    services.AddResponder<DiscordChatMessageForwarder>();
 
                     services.AddDiscordGateway(provider =>
                     {

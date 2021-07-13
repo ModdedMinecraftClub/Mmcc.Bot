@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Remora.Commands" Version="4.0.0" />
+      <PackageReference Include="Remora.Results" Version="4.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Mmcc.Bot.Common\Mmcc.Bot.Common.csproj" />
+    </ItemGroup>
+
+</Project>
