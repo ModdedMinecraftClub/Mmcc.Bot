@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Mmcc.Bot.Caching;
 using Mmcc.Bot.CommandGroups.Core;
 using Mmcc.Bot.CommandGroups.Diagnostics;
 using Mmcc.Bot.CommandGroups.Minecraft;
@@ -30,6 +31,8 @@ using Mmcc.Bot.Responders.Guilds;
 using Mmcc.Bot.Responders.Messages;
 using Mmcc.Bot.Responders.Users;
 using Mmcc.Bot.Protos;
+using Mmcc.Bot.Responders;
+using Mmcc.Bot.Responders.Buttons;
 using Remora.Commands.Extensions;
 using Remora.Discord.API.Abstractions.Gateway.Commands;
 using Remora.Discord.Caching.Extensions;
@@ -132,9 +135,11 @@ namespace Mmcc.Bot
 
                     services.AddSingleton<IColourPalette, TailwindColourPalette>();
                     services.AddSingleton<IDiscordSanitiserService, DiscordSanitiserService>();
-                    services.AddSingleton<IHelpService, HelpService>();
-                    services.AddSingleton<IDmSender, DmSender>();
+                    services.AddSingleton<IButtonHandlerRepository, ButtonHandlerRepository>();
                     
+                    services.AddScoped<IHelpService, HelpService>();
+                    services.AddScoped<IDmSender, DmSender>();
+                    services.AddScoped<IDiscordPermissionsService, DiscordPermissionsService>();
                     services.AddScoped<IExecutionEventService, ErrorNotificationService>();
                     services.AddScoped<IMojangApiService, MojangApiService>();
                     services.AddScoped<IModerationService, ModerationService>();
@@ -202,6 +207,8 @@ namespace Mmcc.Bot
                     
                     services.AddHostedService<DiscordService>();
                     services.AddHostedService<ModerationBackgroundService>();
+
+                    services.AddResponder<ButtonInteractionCreateResponder>();
                 })
                 .UseSerilog();
     }

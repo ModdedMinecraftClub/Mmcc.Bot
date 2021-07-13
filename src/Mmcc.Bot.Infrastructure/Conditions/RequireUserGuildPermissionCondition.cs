@@ -1,12 +1,8 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Mmcc.Bot.Core.Errors;
 using Mmcc.Bot.Infrastructure.Conditions.Attributes;
+using Mmcc.Bot.Infrastructure.Services;
 using Remora.Commands.Conditions;
-using Remora.Discord.API.Abstractions.Objects;
-using Remora.Discord.API.Abstractions.Rest;
-using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
 
@@ -20,106 +16,25 @@ namespace Mmcc.Bot.Infrastructure.Conditions
     public class RequireUserGuildPermissionCondition : ICondition<RequireUserGuildPermissionAttribute>
     {
         private readonly MessageContext _context;
-        private readonly IDiscordRestChannelAPI _channelApi;
-        private readonly IDiscordRestGuildAPI _guildApi;
+        private readonly IDiscordPermissionsService _permissionsService;
 
         /// <summary>
         /// Instantiates a new instance of the <see cref="RequireUserGuildPermissionCondition"/> class.
         /// </summary>
         /// <param name="context">The message context.</param>
-        /// <param name="guildApi">The guild API.</param>
-        /// <param name="channelApi">The channel API.</param>
-        public RequireUserGuildPermissionCondition(MessageContext context, IDiscordRestGuildAPI guildApi, IDiscordRestChannelAPI channelApi)
+        /// <param name="permissionsService">The permissions service.</param>
+        public RequireUserGuildPermissionCondition(MessageContext context, IDiscordPermissionsService permissionsService)
         {
             _context = context;
-            _guildApi = guildApi;
-            _channelApi = channelApi;
+            _permissionsService = permissionsService;
         }
 
         /// <inheritdoc />
-        public async ValueTask<Result> CheckAsync(RequireUserGuildPermissionAttribute attribute, CancellationToken ct)
-        {
-            var getChannel = await _channelApi.GetChannelAsync(_context.ChannelID, ct);
-            if (!getChannel.IsSuccess)
-            {
-                return Result.FromError(getChannel);
-            }
-            var channel = getChannel.Entity;
-            if (!channel.GuildID.HasValue)
-            {
-                return new ConditionNotSatisfiedError("Command requires a guild permission but was executed outside of a guild.");
-            }
-
-            var guildId = channel.GuildID.Value;
-
-            var getGuildMember = await _guildApi.GetGuildMemberAsync(guildId, _context.User.ID, ct);
-            if (!getGuildMember.IsSuccess)
-            {
-                return Result.FromError(getGuildMember);
-            }
-
-            var getGuildRoles = await _guildApi.GetGuildRolesAsync(guildId, ct);
-            if (!getGuildRoles.IsSuccess)
-            {
-                return Result.FromError(getGuildRoles);
-            }
-
-            var guildRoles = getGuildRoles.Entity;
-            var everyoneRole = guildRoles.FirstOrDefault(r => r.Name.Equals("@everyone"));
-            if (everyoneRole is null)
-            {
-                return new NotFoundError("No @everyone role found.");
-            }
-
-            var user = getGuildMember.Entity;
-            if (user is null)
-            {
-                return new NotFoundError("Executing user not found");
-            }
-
-            var getGuild = await _guildApi.GetGuildAsync(guildId, ct: ct);
-            if (!getGuild.IsSuccess)
-            {
-                return Result.FromError(getGuild);
-            }
-            var guildOwnerId = getGuild.Entity.OwnerID;
-
-            // succeed if the user is the Owner of the guild
-            if (guildOwnerId.Equals(_context.User.ID))
-            {
-                return Result.FromSuccess();
-            }
-
-            var memberRoles = guildRoles.Where(r => user.Roles.Contains(r.ID)).ToList();
-            IDiscordPermissionSet computedPermissions;
-            if (channel.PermissionOverwrites.HasValue)
-            {
-                computedPermissions = DiscordPermissionSet.ComputePermissions(
-                    _context.User.ID,
-                    everyoneRole,
-                    memberRoles,
-                    channel.PermissionOverwrites.Value
-                );
-            }
-            else
-            {
-                computedPermissions = DiscordPermissionSet.ComputePermissions(
-                    _context.User.ID,
-                    everyoneRole,
-                    memberRoles
-                );
-            }
-
-            // succeed if the user is an Administrator of the guild
-            if (computedPermissions.HasPermission(DiscordPermission.Administrator))
-            {
-                return Result.FromSuccess();
-            }
-
-            var hasPermission = computedPermissions.HasPermission(attribute.Permission);
-            return !hasPermission
-                ? new ConditionNotSatisfiedError($"Guild User requesting the command does not have the required {attribute.Permission.ToString()} permission")
-                : Result.FromSuccess();
-        }
+        public async ValueTask<Result> CheckAsync(RequireUserGuildPermissionAttribute attribute, CancellationToken ct) =>
+            await _permissionsService.CheckHasRequiredPermission(
+                attribute.Permission,
+                _context.ChannelID,
+                _context.User, ct
+            );
     }
 }
