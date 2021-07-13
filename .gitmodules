@@ -1,3 +1,0 @@
-[submodule "src/Mmcc.Bot.Protos/Protos"]
-	path = src/Mmcc.Bot.Protos/Protos
-	url = https://github.com/ModdedMinecraftClub/protos
