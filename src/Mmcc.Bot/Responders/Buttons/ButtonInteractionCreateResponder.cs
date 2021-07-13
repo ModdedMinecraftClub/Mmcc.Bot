@@ -11,7 +11,6 @@ using Mmcc.Bot.RemoraAbstractions;
 using Remora.Commands.Results;
 using Remora.Discord.API.Abstractions.Gateway.Events;
 using Remora.Discord.API.Abstractions.Objects;
-using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Core;
 using Remora.Discord.Gateway.Responders;
@@ -23,7 +22,6 @@ namespace Mmcc.Bot.Responders.Buttons
     {
         private readonly IButtonHandlerRepository _handlerRepository;
         private readonly IDiscordPermissionsService _permissionsService;
-        private readonly IDiscordRestInteractionAPI _interactionApi;
         private readonly IColourPalette _colourPalette;
         private readonly ILogger<ButtonInteractionCreateResponder> _logger;
         private readonly IInteractionResponder _interactionResponder;
@@ -31,7 +29,6 @@ namespace Mmcc.Bot.Responders.Buttons
         public ButtonInteractionCreateResponder(
             IButtonHandlerRepository handlerRepository,
             IDiscordPermissionsService permissionsService,
-            IDiscordRestInteractionAPI interactionApi,
             IColourPalette colourPalette,
             ILogger<ButtonInteractionCreateResponder> logger,
             IInteractionResponder interactionResponder
@@ -39,7 +36,6 @@ namespace Mmcc.Bot.Responders.Buttons
         {
             _handlerRepository = handlerRepository;
             _permissionsService = permissionsService;
-            _interactionApi = interactionApi;
             _colourPalette = colourPalette;
             _logger = logger;
             _interactionResponder = interactionResponder;
