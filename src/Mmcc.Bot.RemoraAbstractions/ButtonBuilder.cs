@@ -15,13 +15,15 @@ namespace Mmcc.Bot.RemoraAbstractions
         private readonly Snowflake _snowflake;
         
         private ButtonComponent _buttonComponent;
-        private ButtonHandler? _buttonHandler; 
+        private Func<IInteractionCreate, Task<Result>>? _handler;
+        private Optional<DiscordPermission> _requiredPermission;
 
         public ButtonBuilder(ButtonComponentStyle style)
         {
             _snowflake = Snowflake.CreateTimestampSnowflake(DateTimeOffset.UtcNow);
             _buttonComponent = new(style);
-            _buttonHandler = default;
+            _handler = null;
+            _requiredPermission = new();
         }
 
         public ButtonBuilder WithLabel(string label)
@@ -65,24 +67,28 @@ namespace Mmcc.Bot.RemoraAbstractions
             return this;
         }
 
-        public ButtonBuilder WithHandler(
-            Func<IInteractionCreate, Task<Result>> handle,
-            Optional<DiscordPermission> requiredPermission = new()
-        )
+        public ButtonBuilder WithHandler(Func<IInteractionCreate, Task<Result>> handler)
         {
-            _buttonHandler = new ButtonHandler(handle, requiredPermission);
+            _handler = handler;
+            return this;
+        }
+
+        public ButtonBuilder WithRequiredPermission(DiscordPermission permission)
+        {
+            _requiredPermission = permission;
             return this;
         }
 
         public Button Build()
         {
-            if (_buttonHandler is null)
+            if (_handler is null)
             {
                 throw new Exception("No handler");
             }
 
             var builtComponent = _buttonComponent with { CustomID = _snowflake.ToString() };
-            return new(_snowflake, builtComponent, _buttonHandler);
+            var builtHandler = new ButtonHandler(_handler, _requiredPermission);
+            return new(_snowflake, builtComponent, builtHandler);
         }
     }
 }

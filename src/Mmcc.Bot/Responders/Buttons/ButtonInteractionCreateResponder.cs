@@ -7,6 +7,7 @@ using Mmcc.Bot.Caching;
 using Mmcc.Bot.Core.Models;
 using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.Infrastructure.Services;
+using Mmcc.Bot.RemoraAbstractions;
 using Remora.Commands.Results;
 using Remora.Discord.API.Abstractions.Gateway.Events;
 using Remora.Discord.API.Abstractions.Objects;
@@ -25,13 +26,15 @@ namespace Mmcc.Bot.Responders.Buttons
         private readonly IDiscordRestInteractionAPI _interactionApi;
         private readonly IColourPalette _colourPalette;
         private readonly ILogger<ButtonInteractionCreateResponder> _logger;
+        private readonly IInteractionResponder _interactionResponder;
 
         public ButtonInteractionCreateResponder(
             IButtonHandlerRepository handlerRepository,
             IDiscordPermissionsService permissionsService,
             IDiscordRestInteractionAPI interactionApi,
             IColourPalette colourPalette,
-            ILogger<ButtonInteractionCreateResponder> logger
+            ILogger<ButtonInteractionCreateResponder> logger,
+            IInteractionResponder interactionResponder
         )
         {
             _handlerRepository = handlerRepository;
@@ -39,6 +42,7 @@ namespace Mmcc.Bot.Responders.Buttons
             _interactionApi = interactionApi;
             _colourPalette = colourPalette;
             _logger = logger;
+            _interactionResponder = interactionResponder;
         }
 
         public async Task<Result> RespondAsync(IInteractionCreate ev, CancellationToken ct = new())
@@ -54,15 +58,30 @@ namespace Mmcc.Bot.Responders.Buttons
             {
                 return Result.FromSuccess();
             }
-            //var associatedMessage = ev.Message.Value.ID;
-            //var user = ev.Member.Value.User.Value.ID;
-            //var interactionId = ev.ID;
+
+            var notifyAboutDeferredRes = await _interactionResponder.NotifyDeferredMessageIsComing(ev.ID, ev.Token, ct);
+            if (!notifyAboutDeferredRes.IsSuccess)
+            {
+                return notifyAboutDeferredRes;
+            }
             
             var customId = ev.Data.Value.CustomID.Value;
             var idParseSuccessful = Snowflake.TryParse(customId, out var id);
             if (!idParseSuccessful)
             {
-                return Result.FromError(new ParsingError<Snowflake>(customId, "Could not parse button ID."));
+                var errorEmbed = new Embed
+                {
+                    Title = ":x: Invalid custom ID format",
+                    Description =
+                        $"The custom ID: {customId} was not recognised as a valid Mmcc.Bot button ID.",
+                    Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                    Colour = _colourPalette.Red,
+                    Timestamp = DateTimeOffset.UtcNow
+                };
+                var errSendRes = await _interactionResponder.SendFollowup(ev.Token, errorEmbed);
+                return errSendRes.IsSuccess
+                    ? Result.FromError(new ParsingError<Snowflake>(customId, "Could not parse button ID."))
+                    : errSendRes;
             }
 
             var ulongId = id!.Value.Value;
@@ -80,27 +99,9 @@ namespace Mmcc.Bot.Responders.Buttons
                     Colour = _colourPalette.Red,
                     Timestamp = DateTimeOffset.UtcNow
                 };
-                var response = new InteractionResponse(
-                    InteractionCallbackType.ChannelMessageWithSource,
-                    new InteractionApplicationCommandCallbackData(Embeds: new List<Embed> { errorEmbed })
-                );
-                var errSendRes = await _interactionApi.CreateInteractionResponseAsync(ev.ID, ev.Token, response, ct);
-                return !errSendRes.IsSuccess
-                    ? errSendRes
-                    : Result.FromSuccess();
+                return await _interactionResponder.SendFollowup(ev.Token, errorEmbed);
             }
-            
-            var createInteractionRes = await _interactionApi.CreateInteractionResponseAsync(
-                ev.ID,
-                ev.Token,
-                new InteractionResponse(InteractionCallbackType.DeferredUpdateMessage),
-                ct
-            );
-            if (!createInteractionRes.IsSuccess)
-            {
-                return createInteractionRes;
-            }
-            
+
             // check if user has permission;
             // ReSharper disable once InvertIf
             if (handler.RequiredPermission.HasValue)
@@ -108,9 +109,23 @@ namespace Mmcc.Bot.Responders.Buttons
                 var checkResult = await _permissionsService.CheckHasRequiredPermission(handler.RequiredPermission.Value,
                     ev.ChannelID.Value, ev.Member.Value.User.Value, ct);
 
+                // ReSharper disable once InvertIf
                 if (!checkResult.IsSuccess)
                 {
-                    return checkResult;
+                    var errorEmbed = new Embed
+                    {
+                        Title = ":x: Unauthorised",
+                        Description =
+                            "You do not have permission to use this button.",
+                        Fields = new List<EmbedField>
+                        {
+                            new("Required permission", $"`{handler.RequiredPermission.Value.ToString()}`")
+                        },
+                        Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                        Colour = _colourPalette.Red,
+                        Timestamp = DateTimeOffset.UtcNow
+                    };
+                    return await _interactionResponder.SendFollowup(ev.Token, errorEmbed);
                 }
             }
 

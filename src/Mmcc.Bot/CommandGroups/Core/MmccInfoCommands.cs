@@ -60,10 +60,8 @@ namespace Mmcc.Bot.CommandGroups.Core
         {
             var testButton = new ButtonBuilder(ButtonComponentStyle.Primary)
                 .WithLabel("Test")
-                .WithHandler(async ev =>
-                {
-                    return await _interactionResponder.SendFollowup(ev.Token, new Embed(tester));
-                }, requiredPermission:DiscordPermission.BanMembers)
+                .WithHandler(async ev => await _interactionResponder.SendFollowup(ev.Token, new Embed(tester)))
+                .WithRequiredPermission(DiscordPermission.BanMembers)
                 .Build()
                 .RegisterWith(_handlerRepository);
             return await _responder.RespondWithComponents(ActionRowUtils.FromButtons(testButton), "Test buttons");
