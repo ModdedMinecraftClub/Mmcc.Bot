@@ -12,7 +12,8 @@ namespace Mmcc.Bot.RemoraAbstractions
 {
     public class ButtonBuilder
     {
-        private Snowflake _snowflake;
+        private readonly Snowflake _snowflake;
+        
         private ButtonComponent _buttonComponent;
         private ButtonHandler? _buttonHandler; 
 
