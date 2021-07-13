@@ -56,17 +56,17 @@ namespace Mmcc.Bot.CommandGroups.Core
         }
 
         [Command("test")]
-        public async Task<IResult> Test()
+        public async Task<IResult> Test(string tester)
         {
             var testButton = new ButtonBuilder(ButtonComponentStyle.Primary)
                 .WithLabel("Test")
                 .WithHandler(async ev =>
-                    await _interactionResponder.RespondAsynchronously(
-                        ev.ID, ev.Token,
-                        () => ValueTask.FromResult<Result<IEnumerable<Embed>>>(new Embed[] { new("Title") })))
+                {
+                    return await _interactionResponder.SendFollowup(ev.Token, new Embed(tester));
+                }, requiredPermission:DiscordPermission.BanMembers)
                 .Build()
                 .RegisterWith(_handlerRepository);
-            return await _responder.RespondWithComponents(DiscordUI.FromButtons(testButton), "Test buttons");
+            return await _responder.RespondWithComponents(ActionRowUtils.FromButtons(testButton), "Test buttons");
         }
     }
 }

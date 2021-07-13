@@ -7,7 +7,7 @@ using Remora.Discord.API.Objects;
 namespace Mmcc.Bot.RemoraAbstractions
 {
     // ReSharper disable once InconsistentNaming
-    public static class DiscordUI
+    public static class ActionRowUtils
     {
         public static List<IMessageComponent> FromButtons(params Button[] buttons) =>
             new()

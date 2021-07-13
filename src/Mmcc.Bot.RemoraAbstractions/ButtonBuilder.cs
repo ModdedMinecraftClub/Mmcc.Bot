@@ -12,13 +12,13 @@ namespace Mmcc.Bot.RemoraAbstractions
 {
     public class ButtonBuilder
     {
-        private Guid _guid;
+        private Snowflake _snowflake;
         private ButtonComponent _buttonComponent;
         private ButtonHandler? _buttonHandler; 
 
         public ButtonBuilder(ButtonComponentStyle style)
         {
-            _guid = new Guid();
+            _snowflake = Snowflake.CreateTimestampSnowflake(DateTimeOffset.UtcNow);
             _buttonComponent = new(style);
             _buttonHandler = default;
         }
@@ -80,8 +80,8 @@ namespace Mmcc.Bot.RemoraAbstractions
                 throw new Exception("No handler");
             }
 
-            var builtComponent = _buttonComponent with { CustomID = _guid.ToString() };
-            return new(_guid, builtComponent, _buttonHandler);
+            var builtComponent = _buttonComponent with { CustomID = _snowflake.ToString() };
+            return new(_snowflake, builtComponent, _buttonHandler);
         }
     }
 }

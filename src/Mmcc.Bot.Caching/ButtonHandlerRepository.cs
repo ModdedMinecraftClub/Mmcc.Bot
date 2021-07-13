@@ -7,9 +7,9 @@ namespace Mmcc.Bot.Caching
     public interface IButtonHandlerRepository
     {
         void Register(Button button);
-        void Register(Guid buttonGuid, ButtonHandler handler);
-        void Deregister(Guid buttonGuid);
-        ButtonHandler? GetOrDefault(Guid buttonGuid);
+        void Register(ulong buttonId, ButtonHandler handler);
+        void Deregister(ulong buttonId);
+        ButtonHandler? GetOrDefault(ulong buttonId);
     }
     
     public class ButtonHandlerRepository : IButtonHandlerRepository
@@ -22,19 +22,19 @@ namespace Mmcc.Bot.Caching
         }
 
         public void Register(Button button) =>
-            Register(button.Guid, button.Handler);
+            Register(button.Id.Value, button.Handler);
         
-        public void Register(Guid buttonGuid, ButtonHandler handler) =>
-            _cache.Set(buttonGuid, handler, new MemoryCacheEntryOptions
+        public void Register(ulong buttonId, ButtonHandler handler) =>
+            _cache.Set(buttonId, handler, new MemoryCacheEntryOptions
             {
                 SlidingExpiration = TimeSpan.FromMinutes(5),
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
             });
 
-        public void Deregister(Guid buttonGuid) =>
-            _cache.Remove(buttonGuid);
+        public void Deregister(ulong buttonId) =>
+            _cache.Remove(buttonId);
         
-        public ButtonHandler? GetOrDefault(Guid buttonGuid) =>
-            _cache.Get<ButtonHandler>(buttonGuid);
+        public ButtonHandler? GetOrDefault(ulong buttonId) =>
+            _cache.Get<ButtonHandler>(buttonId);
     }
 }

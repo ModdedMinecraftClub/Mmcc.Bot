@@ -13,7 +13,7 @@ namespace Mmcc.Bot.Caching.Entities
     );
 
     public record Button(
-        Guid Guid,
+        Snowflake Id,
         IButtonComponent Component,
         ButtonHandler Handler
     );
