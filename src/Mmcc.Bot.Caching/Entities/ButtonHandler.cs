@@ -13,6 +13,7 @@ namespace Mmcc.Bot.Caching.Entities
     );
 
     public record Button(
+        Guid Guid,
         IButtonComponent Component,
         ButtonHandler Handler
     );

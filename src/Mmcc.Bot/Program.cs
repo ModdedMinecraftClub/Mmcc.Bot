@@ -143,6 +143,7 @@ namespace Mmcc.Bot
                     services.AddScoped<IMojangApiService, MojangApiService>();
                     services.AddScoped<IModerationService, ModerationService>();
                     services.AddScoped<ICommandResponder, CommandResponder>();
+                    services.AddScoped<IInteractionResponder, InteractionResponder>();
 
                     services.AddValidatorsFromAssemblyContaining<GetGuildInfo>();
                     services.AddMediatR(typeof(CreateFromDiscordMessage));

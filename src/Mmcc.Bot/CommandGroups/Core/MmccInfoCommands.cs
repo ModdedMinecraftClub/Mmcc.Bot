@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Mmcc.Bot.Caching;
 using Mmcc.Bot.Caching.Entities;
+using Mmcc.Bot.Core.Extensions.Caching;
 using Mmcc.Bot.Core.Statics;
 using Mmcc.Bot.RemoraAbstractions;
 using Remora.Commands.Attributes;
@@ -23,14 +24,16 @@ namespace Mmcc.Bot.CommandGroups.Core
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly IDiscordRestWebhookAPI _webhookApi;
         private readonly IButtonHandlerRepository _handlerRepository;
+        private readonly IInteractionResponder _interactionResponder;
 
-        public MmccInfoCommands(ICommandResponder responder, IDiscordRestInteractionAPI interactionApi, IDiscordRestChannelAPI channelApi, IButtonHandlerRepository handlerRepository, IDiscordRestWebhookAPI webhookApi)
+        public MmccInfoCommands(ICommandResponder responder, IDiscordRestInteractionAPI interactionApi, IDiscordRestChannelAPI channelApi, IButtonHandlerRepository handlerRepository, IDiscordRestWebhookAPI webhookApi, IInteractionResponder interactionResponder)
         {
             _responder = responder;
             _interactionApi = interactionApi;
             _channelApi = channelApi;
             _handlerRepository = handlerRepository;
             _webhookApi = webhookApi;
+            _interactionResponder = interactionResponder;
         }
 
         [Command("mmcc")]
@@ -55,29 +58,15 @@ namespace Mmcc.Bot.CommandGroups.Core
         [Command("test")]
         public async Task<IResult> Test()
         {
-            var testButtonGuid = new Guid();
-            var testButton = new Button(
-                new ButtonComponent(ButtonComponentStyle.Primary, "Test", CustomID: testButtonGuid.ToString()),
-                new ButtonHandler(async ev =>
-                {
-                    await _interactionApi.CreateInteractionResponseAsync(ev.ID, ev.Token,
-                        new InteractionResponse(InteractionCallbackType.DeferredUpdateMessage));
-
-                    var res = await _webhookApi.CreateFollowupMessageAsync(new(618231038744854539), ev.Token, "responseee");
-
-                    return res.IsSuccess ? Result.FromSuccess() : Result.FromError(res);
-                })
-            );
-            var buttons = new List<IMessageComponent>
-            {
-                new ActionRowComponent(new List<IButtonComponent>
-                {
-                    testButton.Component
-                })
-            };
-
-            _handlerRepository.Register(testButtonGuid, testButton.Handler);
-            return await _responder.RespondWithComponents(buttons, "Test buttons");
+            var testButton = new ButtonBuilder(ButtonComponentStyle.Primary)
+                .WithLabel("Test")
+                .WithHandler(async ev =>
+                    await _interactionResponder.RespondAsynchronously(
+                        ev.ID, ev.Token,
+                        () => ValueTask.FromResult<Result<IEnumerable<Embed>>>(new Embed[] { new("Title") })))
+                .Build()
+                .RegisterWith(_handlerRepository);
+            return await _responder.RespondWithComponents(DiscordUI.FromButtons(testButton), "Test buttons");
         }
     }
 }

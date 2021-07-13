@@ -6,6 +6,7 @@ namespace Mmcc.Bot.Caching
 {
     public interface IButtonHandlerRepository
     {
+        void Register(Button button);
         void Register(Guid buttonGuid, ButtonHandler handler);
         void Deregister(Guid buttonGuid);
         ButtonHandler? GetOrDefault(Guid buttonGuid);
@@ -20,6 +21,9 @@ namespace Mmcc.Bot.Caching
             _cache = cache;
         }
 
+        public void Register(Button button) =>
+            Register(button.Guid, button.Handler);
+        
         public void Register(Guid buttonGuid, ButtonHandler handler) =>
             _cache.Set(buttonGuid, handler, new MemoryCacheEntryOptions
             {

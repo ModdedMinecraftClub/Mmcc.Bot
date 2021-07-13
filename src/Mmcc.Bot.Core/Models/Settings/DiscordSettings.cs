@@ -13,6 +13,11 @@ namespace Mmcc.Bot.Core.Models.Settings
         public char Prefix { get; set; }
         
         /// <summary>
+        /// Discord Application ID (used for interactions).
+        /// </summary>
+        public ulong ApplicationId { get; set; }
+        
+        /// <summary>
         /// Discord API token.
         /// </summary>
         public string Token { get; set; } = null!;
