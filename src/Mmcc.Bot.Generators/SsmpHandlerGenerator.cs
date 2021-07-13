@@ -14,7 +14,7 @@ namespace Mmcc.Bot.Generators
             var receiver = (SyntaxReceiver)context.SyntaxContextReceiver!;
             var classes = receiver.Classes;
             var templateGenerator = new TemplateGenerator(receiver.SsmpInterfaceSymbol!,
-                receiver.MediatRInterfaceSymbol!, receiver.ProtobufAnySymbol!, receiver.LoggerSymbol!, classes);
+                receiver.MediatRInterfaceSymbol!, receiver.ProtobufAnySymbol!, receiver.LoggerSymbol!, receiver.ScopeFactorySymbol!, classes);
             var generatedCode = templateGenerator.Generate();
 
             context.AddSource("SsmpHandler.cs", generatedCode);
@@ -34,6 +34,7 @@ namespace Mmcc.Bot.Generators
             public INamedTypeSymbol? MediatRInterfaceSymbol { get; private set; }
             public INamedTypeSymbol? ProtobufAnySymbol { get; private set; }
             public INamedTypeSymbol? LoggerSymbol { get; private set; }
+            public INamedTypeSymbol? ScopeFactorySymbol { get; private set; }
             public List<ClassDeclarationSyntax> Classes { get; }
 
             public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
@@ -44,6 +45,7 @@ namespace Mmcc.Bot.Generators
                 MediatRInterfaceSymbol ??= context.SemanticModel.Compilation.GetTypeByMetadataName("MediatR.IMediator");
                 ProtobufAnySymbol ??= context.SemanticModel.Compilation.GetTypeByMetadataName("Google.Protobuf.WellKnownTypes.Any");
                 LoggerSymbol ??= context.SemanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.Logging.ILogger");
+                ScopeFactorySymbol ??= context.SemanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IServiceScopeFactory");
 
                 if (context.Node is ClassDeclarationSyntax { BaseList: { } baseList } cds
                     && baseList.Types.Any(t => IsModuleClass(t, context.SemanticModel, _messageInterfaceSymbol!)))
@@ -70,6 +72,7 @@ namespace Mmcc.Bot.Generators
             private readonly INamedTypeSymbol _mediatRInterfaceSymbol;
             private readonly INamedTypeSymbol _protobufAnySymbol;
             private readonly INamedTypeSymbol _loggerSymbol;
+            private readonly INamedTypeSymbol _scopeFactorySymbol;
 
             private readonly List<ClassDeclarationSyntax> _classes;
 
@@ -80,6 +83,7 @@ namespace Mmcc.Bot.Generators
                 INamedTypeSymbol mediatRInterfaceSymbol,
                 INamedTypeSymbol protobufAnySymbol,
                 INamedTypeSymbol loggerSymbol,
+                INamedTypeSymbol scopeFactorySymbol,
                 List<ClassDeclarationSyntax> classes
             )
             {
@@ -87,6 +91,7 @@ namespace Mmcc.Bot.Generators
                 _mediatRInterfaceSymbol = mediatRInterfaceSymbol;
                 _protobufAnySymbol = protobufAnySymbol;
                 _loggerSymbol = loggerSymbol;
+                _scopeFactorySymbol = scopeFactorySymbol;
                 _classes = classes;
             }
 
@@ -98,18 +103,19 @@ namespace Mmcc.Bot.Generators
             protected override string FillInStub(string generatedFiller) =>
                 $@"
 using global::Microsoft.Extensions.Logging;
+using global::Microsoft.Extensions.DependencyInjection;
 
 // auto-generated
 namespace {GeneratedNamespace}
 {{
     public class SsmpHandler : {AnnotateTypeWithGlobal(_ssmpInterfaceSymbol)}
     {{
-        private readonly {AnnotateTypeWithGlobal(_mediatRInterfaceSymbol)} _mediator;
+        private readonly {AnnotateTypeWithGlobal(_scopeFactorySymbol)} _scopeFactory;
         private readonly {AnnotatedLogger} _logger;
         
-        public SsmpHandler({AnnotateTypeWithGlobal(_mediatRInterfaceSymbol)} mediator, {AnnotatedLogger} logger)
+        public SsmpHandler({AnnotateTypeWithGlobal(_scopeFactorySymbol)} scopeFactory, {AnnotatedLogger} logger)
         {{
-            _mediator = mediator;
+            _scopeFactory = scopeFactory;
             _logger = logger;
         }}
         
@@ -136,13 +142,15 @@ namespace {GeneratedNamespace}
                 var messages = _classes.Select(c => AnnotateMsgType(c.Identifier.ValueText)).ToList();
                 var firstMessage = messages.First();
 
+                sb.AppendLine("using var scope = _scopeFactory.CreateScope();");
+                sb.AppendLine($"var mediator = scope.ServiceProvider.GetRequiredService<{AnnotateTypeWithGlobal(_mediatRInterfaceSymbol)}>();");
                 sb.AppendLine($"var any = {AnnotateTypeWithGlobal(_protobufAnySymbol)}.Parser.ParseFrom(message);\n");
                 sb.AppendLine($"if (any.Is({firstMessage}.Descriptor))");
                 sb.AppendLine("{");
                 sb.AppendLine(Indent($"var msg = any.Unpack<{firstMessage}>();", 1));
                 sb.AppendLine(Indent(
                     $"var req = new global::Mmcc.Bot.Protos.TcpRequest<{firstMessage}>(connectedClient, msg);", 1));
-                sb.AppendLine(Indent("await _mediator.Send(req);", 1));
+                sb.AppendLine(Indent("await mediator.Send(req);", 1));
                 sb.AppendLine("}");
 
                 for (var i = 1; i < messages.Count; i++)
@@ -152,7 +160,7 @@ namespace {GeneratedNamespace}
                     sb.AppendLine(Indent($"var msg = any.Unpack<{messages[i]}>();", 1));
                     sb.AppendLine(Indent(
                         $"var req = new global::Mmcc.Bot.Protos.TcpRequest<{messages[i]}>(connectedClient, msg);", 1));
-                    sb.AppendLine(Indent("await _mediator.Send(req);", 1));
+                    sb.AppendLine(Indent("await mediator.Send(req);", 1));
                     sb.AppendLine("}");
                 }
 

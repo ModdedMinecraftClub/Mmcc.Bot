@@ -133,9 +133,9 @@ namespace Mmcc.Bot
                     });
 
                     services.AddSingleton<IColourPalette, TailwindColourPalette>();
-                    services.AddSingleton<IDiscordSanitiserService, DiscordSanitiserService>();
                     services.AddSingleton<IButtonHandlerRepository, ButtonHandlerRepository>();
                     
+                    services.AddScoped<IDiscordSanitiserService, DiscordSanitiserService>();
                     services.AddScoped<IHelpService, HelpService>();
                     services.AddScoped<IDmSender, DmSender>();
                     services.AddScoped<IDiscordPermissionsService, DiscordPermissionsService>();
@@ -210,6 +210,7 @@ namespace Mmcc.Bot
 
                     services.AddResponder<ButtonInteractionCreateResponder>();
                 })
+                .UseDefaultServiceProvider(options => options.ValidateScopes = true)
                 .UseSerilog();
     }
 }
