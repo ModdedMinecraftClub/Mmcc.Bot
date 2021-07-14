@@ -65,7 +65,7 @@ Replace the placeholder with whatever values you want.
 
 *If you prefer setting environment variables in a different way, you can see all the available options docker has in the [docker-compose manual](https://docs.docker.com/compose/).*
 
-3. Go to `.src/Mmcc.Bot`. Locate the file called `appsettings.default.json` and rename it to `appsettings.json`. Open it and fill it. In the `MySql` section set the IP to `172.18.0.2` and port to `3306`. If that does not work, you will have to locate the IP of the MariaDB docker container by starting it and using the [Docker CLI](https://docs.docker.com/engine/reference/commandline/cli/).
+3. Go to `.src/Mmcc.Bot`. Locate the file called `appsettings.default.json` and rename it to `appsettings.json`. Open it and fill it. In the `MySql` section keep the IP set to `db` and port to `3306`.
 
 4. Duplicate the file and name the duplicate `appsettings.Development.json` but this time set the IP in the `MySql` section to `localhost`. Leave the rest the same.
 
