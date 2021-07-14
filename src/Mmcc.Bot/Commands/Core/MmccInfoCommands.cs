@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Mmcc.Bot.Caching;
 using Mmcc.Bot.Common.Extensions.Caching;
 using Mmcc.Bot.Common.Statics;
+using Mmcc.Bot.RemoraAbstractions;
 using Mmcc.Bot.RemoraAbstractions.Services;
 using Mmcc.Bot.RemoraAbstractions.Ui;
 using Remora.Commands.Attributes;
@@ -54,6 +56,7 @@ namespace Mmcc.Bot.Commands.Core
             return await _responder.RespondWithComponents(usefulLinks, "Useful links");
         }
 
+        // TODO: remove once app buttons are implemented;
         [Command("test")]
         public async Task<IResult> Test(string tester)
         {
