@@ -2,10 +2,10 @@
 
 namespace Mmcc.Bot.RemoraAbstractions
 {
+    // TODO: use this everywhere instead of DateTimeOffset.ToString();
     /// <summary>
     /// Represents a Discord timestamp.
     /// </summary>
-    // TODO: use this everywhere instead of UTC;
     public readonly struct DiscordTimestamp : IEquatable<DiscordTimestamp>
     {
         /// <summary>
