@@ -6,12 +6,14 @@ WORKDIR /src
 
 COPY "Mmcc.Bot.sln" "Mmcc.Bot.sln"
 
-COPY "Mmcc.Bot.Protos/Mmcc.Bot.Protos.csproj" "Mmcc.Bot.Protos/Mmcc.Bot.Protos.csproj"
 COPY "Mmcc.Bot.Database/Mmcc.Bot.Database.csproj" "Mmcc.Bot.Database/Mmcc.Bot.Database.csproj"
+COPY "Mmcc.Bot.Caching/Mmcc.Bot.Caching.csproj" "Mmcc.Bot.Caching/Mmcc.Bot.Caching.csproj"
+COPY "Mmcc.Bot.Common/Mmcc.Bot.Common.csproj" "Mmcc.Bot.Common/Mmcc.Bot.Common.csproj"
 COPY "Mmcc.Bot.Generators/Mmcc.Bot.Generators.csproj" "Mmcc.Bot.Generators/Mmcc.Bot.Generators.csproj"
-COPY "Mmcc.Bot.Core/Mmcc.Bot.Core.csproj" "Mmcc.Bot.Core/Mmcc.Bot.Core.csproj"
-COPY "Mmcc.Bot.Infrastructure/Mmcc.Bot.Infrastructure.csproj" "Mmcc.Bot.Infrastructure/Mmcc.Bot.Infrastructure.csproj"
-COPY "Mmcc.Bot.Tools/Mmcc.Bot.Tools.DbConverter/Mmcc.Bot.Tools.DbConverter.csproj" "Mmcc.Bot.Tools/Mmcc.Bot.Tools.DbConverter/Mmcc.Bot.Tools.DbConverter.csproj"
+COPY "Mmcc.Bot.RemoraAbstractions/Mmcc.Bot.RemoraAbstractions.csproj" "Mmcc.Bot.RemoraAbstractions/Mmcc.Bot.RemoraAbstractions.csproj"
+COPY "Mmcc.Bot.Mojang/Mmcc.Bot.Mojang.csproj" "Mmcc.Bot.Mojang/Mmcc.Bot.Mojang.csproj"
+COPY "Mmcc.Bot.Polychat/Mmcc.Bot.Polychat.csproj" "Mmcc.Bot.Polychat/Mmcc.Bot.Polychat.csproj"
+COPY "Mmcc.Bot.Common.Extensions/Mmcc.Bot.Common.Extensions.csproj" "Mmcc.Bot.Common.Extensions/Mmcc.Bot.Common.Extensions.csproj"
 COPY "Mmcc.Bot/Mmcc.Bot.csproj" "Mmcc.Bot/Mmcc.Bot.csproj"
 
 COPY . .
