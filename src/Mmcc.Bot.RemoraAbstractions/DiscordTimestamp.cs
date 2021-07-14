@@ -32,7 +32,7 @@ namespace Mmcc.Bot.RemoraAbstractions
         /// <param name="style">The style identifier.</param>
         /// <returns>The styled Discord timestamp <see cref="string"/>.</returns>
         ///
-        /// <remarks>The valid style identifiers are available at <see href="https://github.com/discord/discord-api-docs/blob/ff4d9d8ea6493405a8823492338880c47fb02996/docs/Reference.md#timestamp-styles"/>.</remarks>
+        /// <remarks>The valid style identifiers are available at <see href="https://github.com/discord/discord-api-docs/blob/master/docs/Reference.md#timestamp-styles"/>.</remarks>
         private string AsStyled(char style) =>
             $"<t:{Value.ToUnixTimeSeconds()}:{style}>";
 
