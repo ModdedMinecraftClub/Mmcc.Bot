@@ -48,6 +48,8 @@ The bot has two deployment methods:
 
 4. Clone this repository. From now on the root of the cloned repository will be refered to as `./`
 
+5. Initialise the protos submodule by running `git submodule update --init --recursive` in `./`.
+
 ### Docker deployment
 
 1. Install [Docker](https://www.docker.com/).
