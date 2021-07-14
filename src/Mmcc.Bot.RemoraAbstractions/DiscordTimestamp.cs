@@ -5,6 +5,7 @@ namespace Mmcc.Bot.RemoraAbstractions
     /// <summary>
     /// Represents a Discord timestamp.
     /// </summary>
+    // TODO: use this everywhere instead of UTC;
     public readonly struct DiscordTimestamp : IEquatable<DiscordTimestamp>
     {
         /// <summary>
