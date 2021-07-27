@@ -112,24 +112,21 @@ namespace Mmcc.Bot.RemoraAbstractions.Services
             }
 
             var memberRoles = guildRoles.Where(r => user.Roles.Contains(r.ID)).ToList();
-            IDiscordPermissionSet computedPermissions;
-            if (channel.PermissionOverwrites.HasValue)
+            var computedPermissions = channel.PermissionOverwrites switch
             {
-                computedPermissions = DiscordPermissionSet.ComputePermissions(
+                { HasValue: true, Value: { } overwrites } => DiscordPermissionSet.ComputePermissions(
                     userToCheck.ID,
                     everyoneRole,
                     memberRoles,
-                    channel.PermissionOverwrites.Value
-                );
-            }
-            else
-            {
-                computedPermissions = DiscordPermissionSet.ComputePermissions(
+                    overwrites
+                ),
+
+                _ => DiscordPermissionSet.ComputePermissions(
                     userToCheck.ID,
                     everyoneRole,
                     memberRoles
-                );
-            }
+                )
+            };
 
             // succeed if the user is an Administrator of the guild
             if (computedPermissions.HasPermission(DiscordPermission.Administrator))
