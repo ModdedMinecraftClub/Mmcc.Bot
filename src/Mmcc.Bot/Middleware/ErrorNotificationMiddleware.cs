@@ -69,11 +69,11 @@ namespace Mmcc.Bot.Middleware
             };
             errorEmbed = err switch
             {
-                ValidationError vErr => errorEmbed with
+                ValidationError(var message, var readOnlyList, _) => errorEmbed with
                 {
                     Title = ":exclamation: Validation error.",
-                    Description = vErr.Message.Replace('\'', '`'),
-                    Fields = new List<EmbedField> {vErr.ValidationFailures.ToEmbedField()}
+                    Description = message.Replace('\'', '`'),
+                    Fields = new List<EmbedField> {readOnlyList.ToEmbedField()}
                 },
                 NotFoundError => errorEmbed with
                 {
