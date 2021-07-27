@@ -10,7 +10,7 @@ using Remora.Discord.API.Objects;
 using Remora.Discord.Gateway.Responders;
 using Remora.Results;
 
-namespace Mmcc.Bot.Events.Moderation.MemberApplications
+namespace Mmcc.Bot.EventResponders.Moderation.MemberApplications
 {
     /// <summary>
     /// Responds to a creation of a member application, that is a message that contains a screenshot and that was sent in the #member-apps channel.

@@ -15,7 +15,7 @@ using Remora.Discord.Core;
 using Remora.Discord.Gateway.Responders;
 using Remora.Results;
 
-namespace Mmcc.Bot.Events.Buttons
+namespace Mmcc.Bot.EventResponders.Buttons
 {
     public class ButtonInteractionCreateResponder : IResponder<IInteractionCreate>
     {

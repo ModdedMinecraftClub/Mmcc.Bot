@@ -12,7 +12,7 @@ using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.Gateway.Responders;
 using Remora.Results;
 
-namespace Mmcc.Bot.Events.Guilds
+namespace Mmcc.Bot.EventResponders.Guilds
 {
     /// <summary>
     /// Responds to a <see cref="IGuildCreate"/> event.

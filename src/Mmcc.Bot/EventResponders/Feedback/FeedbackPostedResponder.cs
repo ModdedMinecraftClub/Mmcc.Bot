@@ -6,7 +6,7 @@ using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.Gateway.Responders;
 using Remora.Results;
 
-namespace Mmcc.Bot.Events.Feedback
+namespace Mmcc.Bot.EventResponders.Feedback
 {
     public class FeedbackPostedResponder : IResponder<IMessageCreate>
     {

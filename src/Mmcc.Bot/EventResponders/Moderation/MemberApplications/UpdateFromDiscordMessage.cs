@@ -11,7 +11,7 @@ using Mmcc.Bot.Database.Entities;
 using Remora.Discord.API.Abstractions.Gateway.Events;
 using Remora.Results;
 
-namespace Mmcc.Bot.Events.Moderation.MemberApplications
+namespace Mmcc.Bot.EventResponders.Moderation.MemberApplications
 {
     /// <summary>
     /// Updates a member application from a Discord message.

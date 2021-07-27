@@ -10,7 +10,7 @@ using Remora.Discord.API.Objects;
 using Remora.Discord.Gateway.Responders;
 using Remora.Results;
 
-namespace Mmcc.Bot.Events.Feedback
+namespace Mmcc.Bot.EventResponders.Feedback
 {
     /// <summary>
     /// Responds to emojis that signify that feedback has been addressed, and protect them from being added by non-Staff.

@@ -12,7 +12,7 @@ using Remora.Discord.Core;
 using Remora.Discord.Gateway.Responders;
 using Remora.Results;
 
-namespace Mmcc.Bot.Events.Users
+namespace Mmcc.Bot.EventResponders.Users
 {
     /// <summary>
     /// Responds to a Discord user joining a guild.
