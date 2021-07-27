@@ -3,6 +3,7 @@ using System.Linq;
 using MediatR;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Statics;
+using Mmcc.Bot.RemoraAbstractions.Services;
 using Remora.Commands.Trees;
 using Remora.Discord.API.Objects;
 using Remora.Results;
@@ -46,7 +47,6 @@ namespace Mmcc.Bot.Commands.Core.Help
                 };
 
                 _helpService.TraverseAndGetHelpEmbeds(_commandTree.Root.Children.ToList(), embeds);
-
                 return embeds;
             }
         }

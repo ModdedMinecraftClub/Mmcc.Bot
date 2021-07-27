@@ -6,7 +6,7 @@ using Mmcc.Bot.Common.Statics;
 using Remora.Commands.Trees.Nodes;
 using Remora.Discord.API.Objects;
 
-namespace Mmcc.Bot.Commands.Core.Help
+namespace Mmcc.Bot.RemoraAbstractions.Services
 {
     /// <summary>
     /// Service for obtaining help embeds.
