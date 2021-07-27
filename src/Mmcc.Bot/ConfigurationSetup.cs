@@ -20,7 +20,7 @@ namespace Mmcc.Bot
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="hostContext">The <see cref="HostBuilderContext"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddBotConfig(
+        public static IServiceCollection ConfigureBot(
             this IServiceCollection services,
             HostBuilderContext hostContext
         )

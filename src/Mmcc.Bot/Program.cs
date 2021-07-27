@@ -84,7 +84,7 @@ namespace Mmcc.Bot
                 .ConfigureServices((hostContext, services) =>
                 {
                     // config;
-                    services.AddBotConfig(hostContext);
+                    services.ConfigureBot(hostContext);
                     
                     // db;
                     services.AddBotDatabaseContext();
