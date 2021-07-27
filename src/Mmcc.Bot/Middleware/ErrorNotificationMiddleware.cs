@@ -43,10 +43,8 @@ namespace Mmcc.Bot.Middleware
         }
 
         /// <inheritdoc />
-        public Task<Result> BeforeExecutionAsync(ICommandContext context, CancellationToken ct)
-        {
-            return Task.FromResult(Result.FromSuccess());
-        }
+        public Task<Result> BeforeExecutionAsync(ICommandContext context, CancellationToken ct) =>
+            Task.FromResult(Result.FromSuccess());
 
         /// <inheritdoc />
         public async Task<Result> AfterExecutionAsync(
