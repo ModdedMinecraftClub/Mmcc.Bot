@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using Google.Protobuf.Collections;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Common.Models.Colours;
@@ -144,11 +145,10 @@ namespace Mmcc.Bot.Commands.Moderation.Bans
                 {
                     var proto = new GenericCommand
                     {
-
-                        DefaultCommand = "ban",
                         DiscordCommandName = "ban",
+                        DefaultCommand = "ban $args",
                         DiscordChannelId = request.ChannelId.Value.ToString(),
-                        Args = {request.UserIgn}
+                        Args = { request.UserIgn }
                     };
                     await _ps.BroadcastMessage(proto);
                 }
