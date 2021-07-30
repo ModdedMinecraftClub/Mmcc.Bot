@@ -157,9 +157,9 @@ namespace Mmcc.Bot.Commands.Moderation.MemberApplications
 
                     await _ps.SendMessage(server, proto);
                 }
-                
+
                 var addRoleResult =
-                    await _guildApi.AddGuildMemberRoleAsync(request.GuildId, userId, role.ID, cancellationToken);
+                    await _guildApi.AddGuildMemberRoleAsync(request.GuildId, userId, role.ID, new(), cancellationToken);
                 if (!addRoleResult.IsSuccess)
                 {
                     return Result<MemberApplication>.FromError(addRoleResult);

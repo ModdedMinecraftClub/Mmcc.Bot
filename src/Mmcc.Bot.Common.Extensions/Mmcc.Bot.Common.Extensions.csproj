@@ -14,8 +14,8 @@
 
     <ItemGroup>
       <PackageReference Include="FluentValidation" Version="10.1.0" />
-      <PackageReference Include="Remora.Discord" Version="3.0.33" />
-      <PackageReference Include="Remora.Discord.API" Version="21.0.0" />
+      <PackageReference Include="Remora.Discord" Version="3.0.42" />
+      <PackageReference Include="Remora.Discord.API" Version="24.0.2" />
     </ItemGroup>
 
 </Project>

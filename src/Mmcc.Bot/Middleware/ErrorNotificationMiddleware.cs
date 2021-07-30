@@ -58,7 +58,7 @@ namespace Mmcc.Bot.Middleware
                 return Result.FromSuccess();
             }
 
-            var err = executionResult.Unwrap();
+            var err = executionResult.Error;
             var errorEmbed = new Embed
             {
                 Thumbnail = EmbedProperties.MmccLogoThumbnail,

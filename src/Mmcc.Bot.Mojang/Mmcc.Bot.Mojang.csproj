@@ -6,8 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Remora.Commands" Version="4.0.0" />
-      <PackageReference Include="Remora.Results" Version="4.0.1" />
+      <PackageReference Include="Remora.Commands" Version="4.1.1" />
+      <PackageReference Include="Remora.Results" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>

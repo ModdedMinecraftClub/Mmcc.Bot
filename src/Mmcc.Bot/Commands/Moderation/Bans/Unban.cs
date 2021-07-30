@@ -121,6 +121,7 @@ namespace Mmcc.Bot.Commands.Moderation.Bans
                     var banResult = await _guildApi.RemoveGuildBanAsync(
                         new(request.ModerationAction.GuildId),
                         new(request.ModerationAction.UserDiscordId.Value),
+                        new(),
                         cancellationToken
                     );
 
