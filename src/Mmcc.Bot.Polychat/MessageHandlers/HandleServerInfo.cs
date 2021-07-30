@@ -4,7 +4,7 @@ using Mmcc.Bot.Polychat.Abstractions;
 using Mmcc.Bot.Polychat.Models;
 using Mmcc.Bot.Polychat.Services;
 
-namespace Mmcc.Bot.Polychat.IncomingMessageHandlers
+namespace Mmcc.Bot.Polychat.MessageHandlers
 {
     /// <summary>
     /// Handles an incoming <see cref="ServerInfo"/> message.

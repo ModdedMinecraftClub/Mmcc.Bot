@@ -9,7 +9,7 @@ using Mmcc.Bot.Polychat.Models.Settings;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.API.Abstractions.Rest;
 
-namespace Mmcc.Bot.Polychat.IncomingMessageHandlers
+namespace Mmcc.Bot.Polychat.MessageHandlers
 {
     /// <summary>
     /// Handles an incoming <see cref="ServerStatus"/> message.
