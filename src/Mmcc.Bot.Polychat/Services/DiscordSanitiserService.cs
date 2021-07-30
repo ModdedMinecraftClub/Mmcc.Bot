@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Mmcc.Bot.Polychat.Abstractions;
 using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.Core;
@@ -70,8 +71,9 @@ namespace Mmcc.Bot.Polychat.Services
             s = SanitiseStandardEmoji(s);
             s = SanitiseCustomEmoji(s);
             s = s.Replace("️", " ");
-            
-            return s;
+
+            var chatString = new PolychatChatMessageString(s);
+            return chatString.ToSanitisedString();
         }
         
         private string SanitiseUsernameAndNicknameMentions(string s, IEnumerable<IUserMention> userMentions)
