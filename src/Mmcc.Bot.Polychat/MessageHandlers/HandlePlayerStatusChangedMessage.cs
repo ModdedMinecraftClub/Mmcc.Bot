@@ -36,27 +36,26 @@ namespace Mmcc.Bot.Polychat.MessageHandlers
                 {
                     throw new KeyNotFoundException($"Could not find server {sanitisedId} in the list of online servers");
                 }
-
-                var playersOnline = request.Message.NewPlayersOnline.PlayersOnline;
+                
                 var newPlayersList = request.Message.NewPlayersOnline.PlayerNames.ToList();
 
-                if (request.Message.NewPlayerStatus is ServerPlayerStatusChangedEvent.Types.PlayerStatus.Left
+                if (
+                    request.Message.NewPlayerStatus is ServerPlayerStatusChangedEvent.Types.PlayerStatus.Left
                     && newPlayersList.Contains(request.Message.PlayerUsername)
                 )
                 {
                     newPlayersList.Remove(request.Message.PlayerUsername);
-                    playersOnline = playersOnline == 0 ? playersOnline : playersOnline - 1;
                 }
-                else if (request.Message.NewPlayerStatus is ServerPlayerStatusChangedEvent.Types.PlayerStatus.Joined
-                         && !newPlayersList.Contains(request.Message.PlayerUsername)
+                else if (
+                    request.Message.NewPlayerStatus is ServerPlayerStatusChangedEvent.Types.PlayerStatus.Joined
+                    && !newPlayersList.Contains(request.Message.PlayerUsername)
                 )
                 {
                     newPlayersList.Add(request.Message.PlayerUsername);
-                    playersOnline += 1;
                 }
 
-                server.PlayersOnline = playersOnline;
                 server.OnlinePlayerNames = newPlayersList;
+                server.PlayersOnline = newPlayersList.Count;
 
                 _polychatService.AddOrUpdateOnlineServer(sanitisedId, server);
                 await _polychatService.ForwardMessage(sanitisedId, request.Message);
