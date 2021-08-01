@@ -52,7 +52,7 @@ namespace Mmcc.Bot.Polychat.Services
         private const string CustomEmojiRegex = "<:(.*):[0-9]+>";
         
         // matches valid minecraft color / format codes, according to https://www.digminecraft.com/lists/color_list_pc.php
-        private const string MinecraftCodeRegex = "§[0-9a-r]";
+        private const string MinecraftCodeRegex = "§[0-9a-rA-R]";
 
         /// <summary>
         /// Instantiates a new instance of <see cref="DiscordSanitiserService"/>.
