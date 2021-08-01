@@ -189,6 +189,6 @@ namespace Mmcc.Bot.Polychat.Services
             Regex.Replace(s, CustomEmojiRegex, match => $":{match.Groups[1].Value}:");
         
         private string SanitiseMinecraftFormatting(string s) =>
-            Regex.Replace(s, MinecraftCodeRegex, "");
+            Regex.Replace(s, MinecraftCodeRegex, " ");
     }
 }
