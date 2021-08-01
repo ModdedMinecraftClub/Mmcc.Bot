@@ -50,6 +50,9 @@ namespace Mmcc.Bot.Polychat.Services
         
         // matches all custom emoji with a group containing the emoji name;
         private const string CustomEmojiRegex = "<:(.*):[0-9]+>";
+        
+        // matches valid minecraft color / format codes, according to https://www.digminecraft.com/lists/color_list_pc.php
+        private const string MinecraftCodeRegex = "§[0-9a-r]";
 
         /// <summary>
         /// Instantiates a new instance of <see cref="DiscordSanitiserService"/>.
@@ -70,6 +73,7 @@ namespace Mmcc.Bot.Polychat.Services
             s = await SanitiseRoleMentions(s, message.GuildID);
             s = SanitiseStandardEmoji(s);
             s = SanitiseCustomEmoji(s);
+            s = SanitiseMinecraftFormatting(s);
             s = s.Replace("️", " ");
 
             var chatString = new PolychatChatMessageString(s);
@@ -183,5 +187,8 @@ namespace Mmcc.Bot.Polychat.Services
 
         private string SanitiseCustomEmoji(string s) =>
             Regex.Replace(s, CustomEmojiRegex, match => $":{match.Groups[1].Value}:");
+        
+        private string SanitiseMinecraftFormatting(string s) =>
+            Regex.Replace(s, MinecraftCodeRegex, "");
     }
 }
