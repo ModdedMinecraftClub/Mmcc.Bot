@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Mmcc.Bot.Common.Models.Settings;
+using Mmcc.Bot.Polychat.Abstractions;
 using Mmcc.Bot.Polychat.Models.Settings;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.API.Abstractions.Gateway.Events;
@@ -42,7 +43,8 @@ namespace Mmcc.Bot.Polychat
             }
 
             var sanitisedMsgContent = await _sanitiser.SanitiseMessageContent(ev);
-            var protoMsgContent = $"§9[Discord] §7{ev.Author.Username}§r: {sanitisedMsgContent}";
+            var authorPolychatString = new PolychatChatMessageString(ev.Author.Username);
+            var protoMsgContent = $"§9[Discord] §7{authorPolychatString.ToSanitisedString()}§r: {sanitisedMsgContent}";
             var protoMsg = new ChatMessage
             {
                 ServerId = "Discord",
