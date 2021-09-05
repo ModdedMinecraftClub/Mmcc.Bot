@@ -4,14 +4,15 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
-using Mmcc.Bot.Common.Errors;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
 using Mmcc.Bot.RemoraAbstractions.Services;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
+using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
+using Remora.Discord.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.Commands.Guilds
@@ -67,7 +68,7 @@ namespace Mmcc.Bot.Commands.Guilds
                         Timestamp = DateTimeOffset.UtcNow,
                         Colour = _colourPalette.Blue,
                         Thumbnail = e.GuildIconUrl is null
-                            ? new()
+                            ? new Optional<IEmbedThumbnail>()
                             : new EmbedThumbnail(e.GuildIconUrl.ToString())
                     }),
 

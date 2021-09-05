@@ -76,12 +76,12 @@ namespace Mmcc.Bot.Commands.Moderation.PlayerInfo
         {
             var fields = new List<EmbedField>();
             var iconUrl = new Optional<string>();
-            Optional<IEmbedThumbnail> embedThumbnail = user.Avatar?.Value is null
-                ? new()
+            var embedThumbnail = user.Avatar?.Value is null
+                ? new Optional<IEmbedThumbnail>()
                 : CDN.GetUserAvatarUrl(user, CDNImageFormat.PNG) switch
                 {
                     {IsSuccess: true, Entity: { } e} => new EmbedThumbnail(e.ToString()),
-                    _ => new()
+                    _ => new Optional<IEmbedThumbnail>()
                 };
 
             fields.Add(user.GetEmbedField());
@@ -161,7 +161,7 @@ namespace Mmcc.Bot.Commands.Moderation.PlayerInfo
                 };
 
                 var getNamesHistory = await _mojangApi.GetNameHistory(getUuid.Entity.Id);
-                if (getNamesHistory.IsSuccess && getNamesHistory.Entity is not null)
+                if (getNamesHistory.IsSuccess)
                 {
                     fields.Add(getNamesHistory.Entity.GetEmbedField());
                 }

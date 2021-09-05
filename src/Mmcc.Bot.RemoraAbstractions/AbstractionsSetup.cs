@@ -29,8 +29,8 @@ namespace Mmcc.Bot.RemoraAbstractions
             services.AddCondition<RequireGuildCondition>();
             services.AddCondition<RequireUserGuildPermissionCondition>();
 
-            services.AddParser<TimeSpan, TimeSpanParser>();
-            services.AddParser<ExpiryDate, ExpiryDateParser>();
+            services.AddParser<TimeSpanParser>();
+            services.AddParser<ExpiryDateParser>();
 
             return services;
         }

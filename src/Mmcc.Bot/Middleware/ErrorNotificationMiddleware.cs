@@ -7,7 +7,6 @@ using Mmcc.Bot.Common.Errors;
 using Mmcc.Bot.Common.Extensions.FluentValidation.Results;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Statics;
-using Mmcc.Bot.Core.Errors;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
@@ -19,7 +18,7 @@ namespace Mmcc.Bot.Middleware
     /// <summary>
     /// Service that handles notifying the user that the command has failed.
     /// </summary>
-    public class ErrorNotificationMiddleware : IExecutionEventService
+    public class ErrorNotificationMiddleware : IPostExecutionEvent
     {
         private readonly ILogger<ErrorNotificationMiddleware> _logger;
         private readonly IDiscordRestChannelAPI _channelApi;
@@ -41,10 +40,6 @@ namespace Mmcc.Bot.Middleware
             _channelApi = channelApi;
             _colourPalette = colourPalette;
         }
-
-        /// <inheritdoc />
-        public Task<Result> BeforeExecutionAsync(ICommandContext context, CancellationToken ct) =>
-            Task.FromResult(Result.FromSuccess());
 
         /// <inheritdoc />
         public async Task<Result> AfterExecutionAsync(

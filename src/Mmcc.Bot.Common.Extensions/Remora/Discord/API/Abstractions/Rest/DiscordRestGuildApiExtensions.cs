@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Mmcc.Bot.Common.Errors;
 using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.Core;
@@ -32,14 +31,9 @@ namespace Mmcc.Bot.Common.Extensions.Remora.Discord.API.Abstractions.Rest
             }
 
             var guildChannels = getGuildChannelsResult.Entity;
-            if (guildChannels is null)
-            {
-                return new NotFoundError("Guild channels for current guild not found.");
-            }
-
             var channel = guildChannels
-                .Where(c => c.Name.HasValue && c.Name.Value is not null)
-                .FirstOrDefault(c => c.Name.Value!.Equals(channelName));
+                .Where(c => c.Name.HasValue)
+                .FirstOrDefault(c => c.Name.Value.Equals(channelName));
             if (channel is null)
             {
                 return new NotFoundError(

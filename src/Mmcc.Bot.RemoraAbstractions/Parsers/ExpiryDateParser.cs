@@ -23,7 +23,7 @@ namespace Mmcc.Bot.RemoraAbstractions.Parsers
         };
 
         /// <inheritdoc />
-        public override async ValueTask<Result<ExpiryDate>> TryParse(string value, CancellationToken ct)
+        public override async ValueTask<Result<ExpiryDate>> TryParseAsync(string value, CancellationToken ct = default)
         {
             if (PermanentAliases.Contains(value.ToLowerInvariant()))
             {
@@ -31,7 +31,7 @@ namespace Mmcc.Bot.RemoraAbstractions.Parsers
             }
 
             var timeSpanParser = new TimeSpanParser();
-            var parseTimeSpanResult = await timeSpanParser.TryParse(value, ct);
+            var parseTimeSpanResult = await timeSpanParser.TryParseAsync(value, ct);
 
             if (!parseTimeSpanResult.IsSuccess)
             {

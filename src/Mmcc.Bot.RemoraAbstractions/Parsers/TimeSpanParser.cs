@@ -33,7 +33,7 @@ namespace Mmcc.Bot.RemoraAbstractions.Parsers
         };
         
         /// <inheritdoc />
-        public override ValueTask<Result<TimeSpan>> TryParse(string value, CancellationToken ct)
+        public override ValueTask<Result<TimeSpan>> TryParseAsync(string value, CancellationToken ct = default)
         {
             return new(
                 TimeSpan.TryParseExact(value.ToLowerInvariant(), Formats, CultureInfo.InvariantCulture,

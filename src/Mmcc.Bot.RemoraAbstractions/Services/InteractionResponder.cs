@@ -23,13 +23,11 @@ namespace Mmcc.Bot.RemoraAbstractions.Services
     
     public class InteractionResponder : IInteractionResponder
     {
-        private readonly IDiscordRestWebhookAPI _webhookApi;
         private readonly DiscordSettings _discordSettings;
         private readonly IDiscordRestInteractionAPI _interactionApi;
 
-        public InteractionResponder(IDiscordRestWebhookAPI webhookApi, DiscordSettings discordSettings, IDiscordRestInteractionAPI interactionApi)
+        public InteractionResponder(DiscordSettings discordSettings, IDiscordRestInteractionAPI interactionApi)
         {
-            _webhookApi = webhookApi;
             _discordSettings = discordSettings;
             _interactionApi = interactionApi;
         }
@@ -47,7 +45,7 @@ namespace Mmcc.Bot.RemoraAbstractions.Services
         
         public async Task<Result> SendFollowup(string interactionToken, params Embed[] embeds)
         {
-            var res = await _webhookApi.CreateFollowupMessageAsync(
+            var res = await _interactionApi.CreateFollowupMessageAsync(
                 new(_discordSettings.ApplicationId),
                 interactionToken,
                 embeds: embeds.ToList()

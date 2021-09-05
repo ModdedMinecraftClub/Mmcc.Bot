@@ -26,7 +26,7 @@ namespace Mmcc.Bot.RemoraAbstractions.Parsers
             "ign", "name", "username", "igns", "names", "usernames"
         };
 
-        public override async ValueTask<Result<DiscordMemberApplication>> TryParse(string s, CancellationToken ct)
+        public override async ValueTask<Result<DiscordMemberApplication>> TryParseAsync(string s, CancellationToken ct = default)
         {
             if (!s.Contains('\n'))
             {

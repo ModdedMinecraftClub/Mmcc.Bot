@@ -5,8 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
+using Mmcc.Bot.Common.Errors;
 using Mmcc.Bot.Common.Extensions.System;
-using Mmcc.Bot.Core.Errors;
 using Remora.Results;
 
 namespace Mmcc.Bot.Behaviours

@@ -3,7 +3,7 @@ using FluentValidation.Results;
 using Remora.Commands.Trees.Nodes;
 using Remora.Results;
 
-namespace Mmcc.Bot.Core.Errors
+namespace Mmcc.Bot.Common.Errors
 {
     /// <summary>
     /// Represents a parameter validation error.

@@ -1,7 +1,7 @@
 ﻿using Remora.Commands.Trees.Nodes;
 using Remora.Results;
 
-namespace Mmcc.Bot.Core.Errors
+namespace Mmcc.Bot.Common.Errors
 {
     /// <summary>
     /// Represents a failure resulting from a property being null or missing.

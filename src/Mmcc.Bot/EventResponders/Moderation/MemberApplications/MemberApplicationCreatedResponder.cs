@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Mmcc.Bot.Common.Errors;
 using Mmcc.Bot.Common.Models.Settings;
-using Mmcc.Bot.Core.Errors;
 using Remora.Discord.API.Abstractions.Gateway.Events;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
