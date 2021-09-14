@@ -112,12 +112,12 @@ namespace Mmcc.Bot
                     services.AddDiscordCaching();
                     services.AddBotBackgroundServices();
                 })
-                .UseDefaultServiceProvider(options => options.ValidateScopes = true)
                 .AddDiscordService(provider =>
                 {
                     var discordConfig = provider.GetRequiredService<DiscordSettings>();
                     return discordConfig.Token;
                 })
+                .UseDefaultServiceProvider(options => options.ValidateScopes = true)
                 .UseSerilog();
     }
 }
