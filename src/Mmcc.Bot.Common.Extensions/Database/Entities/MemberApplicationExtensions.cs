@@ -45,7 +45,7 @@ namespace Mmcc.Bot.Common.Extensions.Database.Entities
             {
                 Title = $"Member Application #{memberApplication.MemberApplicationId}",
                 Description =
-                    $"Submitted at {new DiscordTimestamp(memberApplication.AppTime).AsStyled(DiscordTimestampStyle.ShortDateTime)} UTC.",
+                    $"Submitted at {new DiscordTimestamp(memberApplication.AppTime).AsStyled(DiscordTimestampStyle.ShortDateTime)}.",
                 Fields = new List<EmbedField>
                 {
                     new("Author", $"{memberApplication.AuthorDiscordName} (ID: `{memberApplication.AuthorDiscordId}`)",
@@ -72,7 +72,7 @@ namespace Mmcc.Bot.Common.Extensions.Database.Entities
             memberApplications.Select(app => new EmbedField
             (
                 $"[{app.MemberApplicationId}] {app.AuthorDiscordName}",
-                $"*Submitted at:* {new DiscordTimestamp(app.AppTime).AsStyled(DiscordTimestampStyle.ShortDateTime)} UTC.",
+                $"*Submitted at:* {new DiscordTimestamp(app.AppTime).AsStyled(DiscordTimestampStyle.ShortDateTime)}.",
                 false
             ));
     }
