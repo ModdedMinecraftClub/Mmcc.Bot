@@ -7,8 +7,8 @@
 
     <ItemGroup>
         <PackageReference Include="FluentValidation" Version="10.1.0" />
-        <PackageReference Include="Remora.Commands" Version="7.0.1" />
-        <PackageReference Include="Remora.Discord.API" Version="30.0.0" />
+        <PackageReference Include="Remora.Commands" Version="7.0.2" />
+        <PackageReference Include="Remora.Discord.API" Version="31.0.0" />
         <PackageReference Include="BetterSsmp" Version="0.0.3" />
     </ItemGroup>
 </Project>

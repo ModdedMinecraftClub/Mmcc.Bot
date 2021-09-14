@@ -21,6 +21,7 @@ using Mmcc.Bot.Polychat;
 using Mmcc.Bot.RemoraAbstractions;
 using Remora.Discord.Caching.Extensions;
 using Remora.Discord.Gateway.Extensions;
+using Remora.Discord.Hosting.Extensions;
 using Remora.Discord.Hosting.Services;
 using Serilog;
 using Serilog.Core;
@@ -110,16 +111,15 @@ namespace Mmcc.Bot
                     services.AddBotMiddlewares();
                     services.AddBotCommands();
                     services.AddBotGatewayEventResponders();
-                    services.AddDiscordGateway(provider =>
-                    {
-                        var discordConfig = provider.GetRequiredService<DiscordSettings>();
-                        return discordConfig.Token;
-                    });
                     services.AddDiscordCaching();
-                    services.AddHostedService<DiscordService>();
                     services.AddBotBackgroundServices();
                 })
                 .UseDefaultServiceProvider(options => options.ValidateScopes = true)
+                .AddDiscordService(provider =>
+                {
+                    var discordConfig = provider.GetRequiredService<DiscordSettings>();
+                    return discordConfig.Token;
+                })
                 .UseSerilog();
     }
 }
