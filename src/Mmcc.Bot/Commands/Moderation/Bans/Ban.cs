@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using Google.Protobuf.Collections;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Common.Models.Colours;

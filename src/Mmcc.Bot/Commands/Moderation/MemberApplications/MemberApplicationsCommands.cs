@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
-using Mmcc.Bot.Common.Errors;
 using Mmcc.Bot.Common.Extensions.Database.Entities;
 using Mmcc.Bot.Common.Extensions.Remora.Discord.API.Abstractions.Rest;
 using Mmcc.Bot.Common.Models.Colours;

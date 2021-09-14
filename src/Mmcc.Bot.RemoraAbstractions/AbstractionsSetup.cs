@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
-using Mmcc.Bot.Common.Models;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Mmcc.Bot.RemoraAbstractions.Conditions;
 using Mmcc.Bot.RemoraAbstractions.Parsers;
 using Mmcc.Bot.RemoraAbstractions.Services;

@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
-using Mmcc.Bot.Common.Errors;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Statics;
 using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;

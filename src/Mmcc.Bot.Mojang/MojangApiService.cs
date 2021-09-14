@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Mmcc.Bot.Common.Errors;
 using Mmcc.Bot.Mojang.Errors;
 using Mmcc.Bot.Mojang.Models;
 using Remora.Results;

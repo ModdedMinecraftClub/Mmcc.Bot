@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Threading.Tasks;
 using MediatR;
-using Mmcc.Bot.Common.Errors;
 using Mmcc.Bot.RemoraAbstractions.Services;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;

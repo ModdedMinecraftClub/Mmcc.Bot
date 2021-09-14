@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Commands.Moderation.Bans;
-using Mmcc.Bot.Common.Errors;
 using Mmcc.Bot.Common.Extensions.Database.Entities;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Statics;

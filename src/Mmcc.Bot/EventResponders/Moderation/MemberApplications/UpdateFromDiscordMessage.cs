@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Mmcc.Bot.Common.Errors;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Entities;
 using Remora.Discord.API.Abstractions.Gateway.Events;
