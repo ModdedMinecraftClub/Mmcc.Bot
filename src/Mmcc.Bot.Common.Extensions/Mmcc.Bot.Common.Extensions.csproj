@@ -10,6 +10,7 @@
       <ProjectReference Include="..\Mmcc.Bot.Common\Mmcc.Bot.Common.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Database\Mmcc.Bot.Database.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Mojang\Mmcc.Bot.Mojang.csproj" />
+      <ProjectReference Include="..\Mmcc.Bot.RemoraAbstractions\Mmcc.Bot.RemoraAbstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

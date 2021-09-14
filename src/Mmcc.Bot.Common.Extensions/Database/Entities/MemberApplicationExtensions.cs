@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Database.Entities;
+using Mmcc.Bot.RemoraAbstractions.Timestamps;
 using Remora.Discord.API.Objects;
 
 namespace Mmcc.Bot.Common.Extensions.Database.Entities
@@ -43,10 +44,12 @@ namespace Mmcc.Bot.Common.Extensions.Database.Entities
             return new Embed
             {
                 Title = $"Member Application #{memberApplication.MemberApplicationId}",
-                Description = $"Submitted at {DateTimeOffset.FromUnixTimeMilliseconds(memberApplication.AppTime).UtcDateTime} UTC.",
+                Description =
+                    $"Submitted at {new DiscordTimestamp(memberApplication.AppTime).AsStyled(DiscordTimestampStyle.ShortDateTime)} UTC.",
                 Fields = new List<EmbedField>
                 {
-                    new("Author", $"{memberApplication.AuthorDiscordName} (ID: `{memberApplication.AuthorDiscordId}`)", false),
+                    new("Author", $"{memberApplication.AuthorDiscordName} (ID: `{memberApplication.AuthorDiscordId}`)",
+                        false),
                     new("Status", embedConditionalAttributes.StatusFieldValue, false),
                     new(
                         "Provided details",
@@ -59,7 +62,7 @@ namespace Mmcc.Bot.Common.Extensions.Database.Entities
                 Thumbnail = new EmbedThumbnail(memberApplication.ImageUrl)
             };
         }
-        
+
         /// <summary>
         /// Gets an enumerable of formatted embed fields that represent the member applications. 
         /// </summary>
@@ -69,7 +72,7 @@ namespace Mmcc.Bot.Common.Extensions.Database.Entities
             memberApplications.Select(app => new EmbedField
             (
                 $"[{app.MemberApplicationId}] {app.AuthorDiscordName}",
-                $"*Submitted at:* {DateTimeOffset.FromUnixTimeMilliseconds(app.AppTime).UtcDateTime} UTC.",
+                $"*Submitted at:* {new DiscordTimestamp(app.AppTime).AsStyled(DiscordTimestampStyle.ShortDateTime)} UTC.",
                 false
             ));
     }
