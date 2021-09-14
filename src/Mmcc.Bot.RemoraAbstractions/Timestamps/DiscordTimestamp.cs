@@ -16,6 +16,13 @@ namespace Mmcc.Bot.RemoraAbstractions.Timestamps
             Value = value;
 
         /// <summary>
+        /// Creates a new <see cref="DiscordTimestamp"/> with the given <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value in UNIX milliseconds format.</param>
+        public DiscordTimestamp(long value) =>
+            Value = DateTimeOffset.FromUnixTimeMilliseconds(value);
+
+        /// <summary>
         /// The value.
         /// </summary>
         public DateTimeOffset Value { get; }
