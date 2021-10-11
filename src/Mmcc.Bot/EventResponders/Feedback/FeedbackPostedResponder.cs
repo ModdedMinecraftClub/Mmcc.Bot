@@ -6,37 +6,36 @@ using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.Gateway.Responders;
 using Remora.Results;
 
-namespace Mmcc.Bot.EventResponders.Feedback
+namespace Mmcc.Bot.EventResponders.Feedback;
+
+public class FeedbackPostedResponder : IResponder<IMessageCreate>
 {
-    public class FeedbackPostedResponder : IResponder<IMessageCreate>
+    private readonly IDiscordRestChannelAPI _channelApi;
+    private readonly DiscordSettings _discordSettings;
+
+    public FeedbackPostedResponder(IDiscordRestChannelAPI channelApi, DiscordSettings discordSettings)
     {
-        private readonly IDiscordRestChannelAPI _channelApi;
-        private readonly DiscordSettings _discordSettings;
+        _channelApi = channelApi;
+        _discordSettings = discordSettings;
+    }
 
-        public FeedbackPostedResponder(IDiscordRestChannelAPI channelApi, DiscordSettings discordSettings)
+    public async Task<Result> RespondAsync(IMessageCreate ev, CancellationToken ct = default)
+    {
+        if (ev.Author.IsBot.HasValue && ev.Author.IsBot.Value
+            || ev.Author.IsSystem.HasValue && ev.Author.IsSystem.Value
+            || !ev.GuildID.HasValue
+            || ev.ChannelID.Value != _discordSettings.FeedbackChannelId
+        )
         {
-            _channelApi = channelApi;
-            _discordSettings = discordSettings;
+            return Result.FromSuccess();
         }
 
-        public async Task<Result> RespondAsync(IMessageCreate ev, CancellationToken ct = default)
+        var createUpReactionResult = await _channelApi.CreateReactionAsync(ev.ChannelID, ev.ID, "👍", ct);
+        if (!createUpReactionResult.IsSuccess)
         {
-            if (ev.Author.IsBot.HasValue && ev.Author.IsBot.Value
-                || ev.Author.IsSystem.HasValue && ev.Author.IsSystem.Value
-                || !ev.GuildID.HasValue
-                || ev.ChannelID.Value != _discordSettings.FeedbackChannelId
-            )
-            {
-                return Result.FromSuccess();
-            }
-
-            var createUpReactionResult = await _channelApi.CreateReactionAsync(ev.ChannelID, ev.ID, "👍", ct);
-            if (!createUpReactionResult.IsSuccess)
-            {
-                return createUpReactionResult;
-            }
-
-            return await _channelApi.CreateReactionAsync(ev.ChannelID, ev.ID, "👎", ct);
+            return createUpReactionResult;
         }
+
+        return await _channelApi.CreateReactionAsync(ev.ChannelID, ev.ID, "👎", ct);
     }
 }

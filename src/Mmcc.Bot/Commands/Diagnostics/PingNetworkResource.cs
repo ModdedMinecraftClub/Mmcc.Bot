@@ -6,80 +6,79 @@ using FluentValidation;
 using MediatR;
 using Remora.Results;
 
-namespace Mmcc.Bot.Commands.Diagnostics
+namespace Mmcc.Bot.Commands.Diagnostics;
+
+/// <summary>
+/// Pings a network resource.
+/// </summary>
+public class PingNetworkResource
 {
     /// <summary>
-    /// Pings a network resource.
+    /// Query to ping a network resource.
     /// </summary>
-    public class PingNetworkResource
+    public class Query : IRequest<Result<QueryResult>>
     {
         /// <summary>
-        /// Query to ping a network resource.
+        /// Address of the network resource to ping.
         /// </summary>
-        public class Query : IRequest<Result<QueryResult>>
-        {
-            /// <summary>
-            /// Address of the network resource to ping.
-            /// </summary>
-            public string Address { get; set; } = null!;
-        }
+        public string Address { get; set; } = null!;
+    }
 
-        public class Validator : AbstractValidator<Query>
+    public class Validator : AbstractValidator<Query>
+    {
+        public Validator()
         {
-            public Validator()
-            {
-                RuleFor(q => q.Address)
-                    .NotEmpty();
-            }
+            RuleFor(q => q.Address)
+                .NotEmpty();
         }
+    }
         
-        public class QueryResult
-        {
-            /// <summary>
-            /// Address of the pinged network resource.
-            /// </summary>
-            public string Address { get; set; } = null!;
+    public class QueryResult
+    {
+        /// <summary>
+        /// Address of the pinged network resource.
+        /// </summary>
+        public string Address { get; set; } = null!;
             
-            /// <summary>
-            /// Status.
-            /// </summary>
-            public IPStatus Status { get; set; }
+        /// <summary>
+        /// Status.
+        /// </summary>
+        public IPStatus Status { get; set; }
             
-            /// <summary>
-            /// Roundtrip time in milliseconds.
-            /// </summary>
-            public long? RoundtripTime { get; set; }
-        }
+        /// <summary>
+        /// Roundtrip time in milliseconds.
+        /// </summary>
+        public long? RoundtripTime { get; set; }
+    }
         
+    /// <inheritdoc />
+    public class Handler : IRequestHandler<Query, Result<QueryResult>>
+    {
+        private const int Timeout = 120;
+            
         /// <inheritdoc />
-        public class Handler : IRequestHandler<Query, Result<QueryResult>>
+        public async Task<Result<QueryResult>> Handle(Query request, CancellationToken cancellationToken)
         {
-            private const int Timeout = 120;
-            
-            /// <inheritdoc />
-            public async Task<Result<QueryResult>> Handle(Query request, CancellationToken cancellationToken)
+            try
             {
-                try
+                var ping = new Ping();
+                var options = new PingOptions
                 {
-                    var ping = new Ping();
-                    var options = new PingOptions
-                    {
-                        DontFragment = true
-                    };
-                    var buffer = new byte[32];
-                    var reply = await ping.SendPingAsync(request.Address, Timeout, buffer, options);
+                    DontFragment = true
+                };
+                var buffer = new byte[32];
+                var reply = await ping.SendPingAsync(request.Address, Timeout, buffer, options);
 
-                    return Result<QueryResult>.FromSuccess(new()
-                    {
-                        Address = reply.Address.ToString(),
-                        Status = reply.Status,
-                        RoundtripTime = reply.RoundtripTime,
-                    });
-                }
-                catch (Exception e)
+                return Result<QueryResult>.FromSuccess(new()
                 {
-                    return e;
-                }
+                    Address = reply.Address.ToString(),
+                    Status = reply.Status,
+                    RoundtripTime = reply.RoundtripTime,
+                });
+            }
+            catch (Exception e)
+            {
+                return e;
             }
         }
     }

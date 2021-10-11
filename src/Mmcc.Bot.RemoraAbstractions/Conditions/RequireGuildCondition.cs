@@ -6,32 +6,31 @@ using Remora.Commands.Results;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
 
-namespace Mmcc.Bot.RemoraAbstractions.Conditions
+namespace Mmcc.Bot.RemoraAbstractions.Conditions;
+
+/// <summary>
+/// Checks if the command was executed within a guild before allowing execution.
+/// </summary>
+public class RequireGuildCondition : ICondition<RequireGuildAttribute>
 {
+    private readonly MessageContext _context;
+        
     /// <summary>
-    /// Checks if the command was executed within a guild before allowing execution.
+    /// Instantiates a new instance of the <see cref="RequireGuildCondition"/> class.
     /// </summary>
-    public class RequireGuildCondition : ICondition<RequireGuildAttribute>
+    /// <param name="context">The message context.</param>
+    public RequireGuildCondition(MessageContext context)
     {
-        private readonly MessageContext _context;
+        _context = context;
+    }
         
-        /// <summary>
-        /// Instantiates a new instance of the <see cref="RequireGuildCondition"/> class.
-        /// </summary>
-        /// <param name="context">The message context.</param>
-        public RequireGuildCondition(MessageContext context)
-        {
-            _context = context;
-        }
-        
-        /// <inheritdoc />
-        public ValueTask<Result> CheckAsync(RequireGuildAttribute attribute, CancellationToken ct)
-        {
-            var guild = _context.Message.GuildID;
-            return new(!guild.HasValue
-                ? new ConditionNotSatisfiedError(
-                    "Command that requires to be executed within a guild was executed outside of one")
-                : Result.FromSuccess());
-        }
+    /// <inheritdoc />
+    public ValueTask<Result> CheckAsync(RequireGuildAttribute attribute, CancellationToken ct)
+    {
+        var guild = _context.Message.GuildID;
+        return new(!guild.HasValue
+            ? new ConditionNotSatisfiedError(
+                "Command that requires to be executed within a guild was executed outside of one")
+            : Result.FromSuccess());
     }
 }

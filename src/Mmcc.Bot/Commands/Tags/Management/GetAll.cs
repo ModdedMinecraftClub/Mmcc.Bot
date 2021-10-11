@@ -11,55 +11,54 @@ using Mmcc.Bot.Database.Entities;
 using Remora.Discord.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Commands.Tags.Management
+namespace Mmcc.Bot.Commands.Tags.Management;
+
+/// <summary>
+/// Gets all tags belonging to a guild.
+/// </summary>
+public class GetAll
 {
     /// <summary>
-    /// Gets all tags belonging to a guild.
+    /// Query to get all tags belonging to a guild.
     /// </summary>
-    public class GetAll
+    /// <param name="GuildId">The guild ID.</param>
+    public record Query(Snowflake GuildId) : IRequest<Result<IList<Tag>>>;
+
+    /// <summary>
+    /// Validates the <see cref="Query"/>.
+    /// </summary>
+    public class Validator : AbstractValidator<Query>
     {
-        /// <summary>
-        /// Query to get all tags belonging to a guild.
-        /// </summary>
-        /// <param name="GuildId">The guild ID.</param>
-        public record Query(Snowflake GuildId) : IRequest<Result<IList<Tag>>>;
+        public Validator() =>
+            RuleFor(q => q.GuildId)
+                .NotNull();
+    }
+
+    /// <inheritdoc />
+    public class Handler : IRequestHandler<Query, Result<IList<Tag>>>
+    {
+        private readonly BotContext _context;
 
         /// <summary>
-        /// Validates the <see cref="Query"/>.
+        /// Instantiates a new instance of the <see cref="Handler"/> class.
         /// </summary>
-        public class Validator : AbstractValidator<Query>
+        /// <param name="context">The bot DB context.</param>
+        public Handler(BotContext context)
         {
-            public Validator() =>
-                RuleFor(q => q.GuildId)
-                    .NotNull();
+            _context = context;
         }
 
-        /// <inheritdoc />
-        public class Handler : IRequestHandler<Query, Result<IList<Tag>>>
+        public async Task<Result<IList<Tag>>> Handle(Query request, CancellationToken cancellationToken)
         {
-            private readonly BotContext _context;
-
-            /// <summary>
-            /// Instantiates a new instance of the <see cref="Handler"/> class.
-            /// </summary>
-            /// <param name="context">The bot DB context.</param>
-            public Handler(BotContext context)
+            try
             {
-                _context = context;
+                return await _context.Tags
+                    .Where(t => t.GuildId == request.GuildId.Value)
+                    .ToListAsync(cancellationToken);
             }
-
-            public async Task<Result<IList<Tag>>> Handle(Query request, CancellationToken cancellationToken)
+            catch (Exception e)
             {
-                try
-                {
-                    return await _context.Tags
-                        .Where(t => t.GuildId == request.GuildId.Value)
-                        .ToListAsync(cancellationToken);
-                }
-                catch (Exception e)
-                {
-                    return e;
-                }
+                return e;
             }
         }
     }

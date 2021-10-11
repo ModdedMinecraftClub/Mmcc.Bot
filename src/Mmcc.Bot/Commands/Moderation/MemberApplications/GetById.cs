@@ -9,75 +9,74 @@ using Mmcc.Bot.Database.Entities;
 using Remora.Discord.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Commands.Moderation.MemberApplications
+namespace Mmcc.Bot.Commands.Moderation.MemberApplications;
+
+/// <summary>
+/// Gets a member application by ID, provided it belongs to the given guild.
+/// </summary>
+public class GetById
 {
     /// <summary>
-    /// Gets a member application by ID, provided it belongs to the given guild.
+    /// Query to get a member application by ID.
     /// </summary>
-    public class GetById
+    public class Query : IRequest<Result<MemberApplication?>>
     {
         /// <summary>
-        /// Query to get a member application by ID.
+        /// ID of the application
         /// </summary>
-        public class Query : IRequest<Result<MemberApplication?>>
-        {
-            /// <summary>
-            /// ID of the application
-            /// </summary>
-            public int ApplicationId { get; set; }
+        public int ApplicationId { get; set; }
             
-            /// <summary>
-            /// ID of the Guild.
-            /// </summary>
-            public Snowflake GuildId { get; set; }
-        }
-
         /// <summary>
-        /// Validates the <see cref="Query"/>.
+        /// ID of the Guild.
         /// </summary>
-        public class Validator : AbstractValidator<Query>
-        {
-            public Validator()
-            {
-                RuleFor(q => q.ApplicationId)
-                    .NotEmpty();
+        public Snowflake GuildId { get; set; }
+    }
 
-                RuleFor(q => q.GuildId)
-                    .NotEmpty();
-            }
-        }
-        
-        /// <inheritdoc />
-        public class Handler : IRequestHandler<Query, Result<MemberApplication?>>
+    /// <summary>
+    /// Validates the <see cref="Query"/>.
+    /// </summary>
+    public class Validator : AbstractValidator<Query>
+    {
+        public Validator()
         {
-            private readonly BotContext _context;
+            RuleFor(q => q.ApplicationId)
+                .NotEmpty();
+
+            RuleFor(q => q.GuildId)
+                .NotEmpty();
+        }
+    }
+        
+    /// <inheritdoc />
+    public class Handler : IRequestHandler<Query, Result<MemberApplication?>>
+    {
+        private readonly BotContext _context;
             
-            /// <summary>
-            /// Instantiates a new instance of <see cref="Handler"/>.
-            /// </summary>
-            /// <param name="context">The db context.</param>
-            public Handler(BotContext context)
+        /// <summary>
+        /// Instantiates a new instance of <see cref="Handler"/>.
+        /// </summary>
+        /// <param name="context">The db context.</param>
+        public Handler(BotContext context)
+        {
+            _context = context;
+        }
+            
+        /// <inheritdoc />
+        public async Task<Result<MemberApplication?>> Handle(Query request, CancellationToken cancellationToken)
+        {
+            try
             {
-                _context = context;
+                var res = await _context.MemberApplications
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(
+                        app => app.MemberApplicationId == request.ApplicationId &&
+                               app.GuildId == request.GuildId.Value,
+                        cancellationToken);
+                return res;
             }
-            
-            /// <inheritdoc />
-            public async Task<Result<MemberApplication?>> Handle(Query request, CancellationToken cancellationToken)
+            catch (Exception e)
             {
-                try
-                {
-                    var res = await _context.MemberApplications
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(
-                            app => app.MemberApplicationId == request.ApplicationId &&
-                                   app.GuildId == request.GuildId.Value,
-                            cancellationToken);
-                    return res;
-                }
-                catch (Exception e)
-                {
-                    return e;
-                }
+                return e;
             }
         }
     }

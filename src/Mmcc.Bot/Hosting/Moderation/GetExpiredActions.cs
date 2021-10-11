@@ -9,55 +9,54 @@ using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Entities;
 using Remora.Results;
 
-namespace Mmcc.Bot.Hosting.Moderation
+namespace Mmcc.Bot.Hosting.Moderation;
+
+/// <summary>
+/// Gets all active moderation actions.
+/// </summary>
+public class GetExpiredActions
 {
     /// <summary>
-    /// Gets all active moderation actions.
+    /// Query to get all active moderation actions.
     /// </summary>
-    public class GetExpiredActions
-    {
-        /// <summary>
-        /// Query to get all active moderation actions.
-        /// </summary>
-        public record Query(bool EnableTracking = true) : IRequest<Result<IList<ModerationAction>>>;
+    public record Query(bool EnableTracking = true) : IRequest<Result<IList<ModerationAction>>>;
         
-        /// <inheritdoc />
-        public class Handler : IRequestHandler<Query, Result<IList<ModerationAction>>>
+    /// <inheritdoc />
+    public class Handler : IRequestHandler<Query, Result<IList<ModerationAction>>>
+    {
+        private readonly BotContext _context;
+
+        /// <summary>
+        /// Instantiates a new instance of <see cref="BotContext"/> class.
+        /// </summary>
+        /// <param name="context">The db context.</param>
+        public Handler(BotContext context)
         {
-            private readonly BotContext _context;
+            _context = context;
+        }
 
-            /// <summary>
-            /// Instantiates a new instance of <see cref="BotContext"/> class.
-            /// </summary>
-            /// <param name="context">The db context.</param>
-            public Handler(BotContext context)
+        /// <inheritdoc />
+        public async Task<Result<IList<ModerationAction>>> Handle(Query request, CancellationToken cancellationToken)
+        {
+            try
             {
-                _context = context;
+                var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                var cmd = _context.ModerationActions
+                    .Where(ma => ma.IsActive
+                                 && ma.ExpiryDate != null
+                                 && ma.ModerationActionType != ModerationActionType.Warn
+                                 && ma.ExpiryDate < now);
+
+                if (!request.EnableTracking)
+                {
+                    cmd = cmd.AsNoTracking();
+                }
+
+                return await cmd.ToListAsync(cancellationToken);
             }
-
-            /// <inheritdoc />
-            public async Task<Result<IList<ModerationAction>>> Handle(Query request, CancellationToken cancellationToken)
+            catch (Exception e)
             {
-                try
-                {
-                    var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                    var cmd = _context.ModerationActions
-                        .Where(ma => ma.IsActive
-                                     && ma.ExpiryDate != null
-                                     && ma.ModerationActionType != ModerationActionType.Warn
-                                     && ma.ExpiryDate < now);
-
-                    if (!request.EnableTracking)
-                    {
-                        cmd = cmd.AsNoTracking();
-                    }
-
-                    return await cmd.ToListAsync(cancellationToken);
-                }
-                catch (Exception e)
-                {
-                    return e;
-                }
+                return e;
             }
         }
     }

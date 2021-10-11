@@ -9,64 +9,63 @@ using Mmcc.Bot.Database.Entities;
 using Remora.Discord.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Commands.Tags.Management
+namespace Mmcc.Bot.Commands.Tags.Management;
+
+/// <summary>
+/// Deletes a tag.
+/// </summary>
+public class Delete
 {
     /// <summary>
-    /// Deletes a tag.
+    /// Command to delete a tag.
     /// </summary>
-    public class Delete
+    public record Command(Snowflake GuildId, string TagName) : IRequest<Result<Tag>>;
+
+    /// <summary>
+    /// Validates the <see cref="Command"/>.
+    /// </summary>
+    public class Validator : AbstractValidator<Command>
     {
-        /// <summary>
-        /// Command to delete a tag.
-        /// </summary>
-        public record Command(Snowflake GuildId, string TagName) : IRequest<Result<Tag>>;
-
-        /// <summary>
-        /// Validates the <see cref="Command"/>.
-        /// </summary>
-        public class Validator : AbstractValidator<Command>
+        public Validator()
         {
-            public Validator()
-            {
-                RuleFor(c => c.GuildId)
-                    .NotNull();
+            RuleFor(c => c.GuildId)
+                .NotNull();
 
-                RuleFor(c => c.TagName)
-                    .NotEmpty();
-            }
+            RuleFor(c => c.TagName)
+                .NotEmpty();
         }
+    }
         
-        /// <inheritdoc />
-        public class Handler : IRequestHandler<Command, Result<Tag>>
+    /// <inheritdoc />
+    public class Handler : IRequestHandler<Command, Result<Tag>>
+    {
+        private readonly BotContext _context;
+
+        /// <summary>
+        /// Instantiates a new instance of <see cref="Handler"/>.
+        /// </summary>
+        /// <param name="context">The bot DB context.</param>
+        public Handler(BotContext context)
         {
-            private readonly BotContext _context;
+            _context = context;
+        }
 
-            /// <summary>
-            /// Instantiates a new instance of <see cref="Handler"/>.
-            /// </summary>
-            /// <param name="context">The bot DB context.</param>
-            public Handler(BotContext context)
+        /// <inheritdoc />
+        public async Task<Result<Tag>> Handle(Command request, CancellationToken cancellationToken)
+        {
+            try
             {
-                _context = context;
+                var tag = await _context.Tags
+                    .FirstOrDefaultAsync(t => t.GuildId == request.GuildId.Value && t.TagName == request.TagName,
+                        cancellationToken);
+
+                _context.Remove(tag);
+                await _context.SaveChangesAsync(cancellationToken);
+                return tag;
             }
-
-            /// <inheritdoc />
-            public async Task<Result<Tag>> Handle(Command request, CancellationToken cancellationToken)
+            catch (Exception e)
             {
-                try
-                {
-                    var tag = await _context.Tags
-                        .FirstOrDefaultAsync(t => t.GuildId == request.GuildId.Value && t.TagName == request.TagName,
-                            cancellationToken);
-
-                    _context.Remove(tag);
-                    await _context.SaveChangesAsync(cancellationToken);
-                    return tag;
-                }
-                catch (Exception e)
-                {
-                    return e;
-                }
+                return e;
             }
         }
     }

@@ -9,82 +9,81 @@ using Mmcc.Bot.Polychat.Models.Settings;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.API.Abstractions.Rest;
 
-namespace Mmcc.Bot.Polychat.MessageHandlers
+namespace Mmcc.Bot.Polychat.MessageHandlers;
+
+/// <summary>
+/// Handles an incoming <see cref="ServerStatus"/> message.
+/// </summary>
+public class HandleServerStatus
 {
-    /// <summary>
-    /// Handles an incoming <see cref="ServerStatus"/> message.
-    /// </summary>
-    public class HandleServerStatus
+    public class Handler : AsyncRequestHandler<TcpRequest<ServerStatus>>
     {
-        public class Handler : AsyncRequestHandler<TcpRequest<ServerStatus>>
+        private readonly IPolychatService _polychatService;
+        private readonly IDiscordRestChannelAPI _channelApi;
+        private readonly PolychatSettings _polychatSettings;
+        private readonly ILogger<HandleServerStatus> _logger;
+
+        public Handler(IPolychatService polychatService, IDiscordRestChannelAPI channelApi, PolychatSettings polychatSettings, ILogger<HandleServerStatus> logger)
         {
-            private readonly IPolychatService _polychatService;
-            private readonly IDiscordRestChannelAPI _channelApi;
-            private readonly PolychatSettings _polychatSettings;
-            private readonly ILogger<HandleServerStatus> _logger;
+            _polychatService = polychatService;
+            _channelApi = channelApi;
+            _polychatSettings = polychatSettings;
+            _logger = logger;
+        }
 
-            public Handler(IPolychatService polychatService, IDiscordRestChannelAPI channelApi, PolychatSettings polychatSettings, ILogger<HandleServerStatus> logger)
+        protected override async Task Handle(TcpRequest<ServerStatus> request, CancellationToken cancellationToken)
+        {
+            var msg = request.Message;
+            var serverId = new PolychatServerIdString(msg.ServerId);
+            var sanitisedId = serverId.ToSanitisedUppercase();
+            var server = _polychatService.GetOnlineServerOrDefault(sanitisedId);
+
+            if (server is not null)
             {
-                _polychatService = polychatService;
-                _channelApi = channelApi;
-                _polychatSettings = polychatSettings;
-                _logger = logger;
-            }
+                await _polychatService.ForwardMessage(sanitisedId, msg);
 
-            protected override async Task Handle(TcpRequest<ServerStatus> request, CancellationToken cancellationToken)
-            {
-                var msg = request.Message;
-                var serverId = new PolychatServerIdString(msg.ServerId);
-                var sanitisedId = serverId.ToSanitisedUppercase();
-                var server = _polychatService.GetOnlineServerOrDefault(sanitisedId);
-
-                if (server is not null)
+                if (
+                    msg.Status is
+                        ServerStatus.Types.ServerStatusEnum.Stopped or ServerStatus.Types.ServerStatusEnum.Crashed
+                )
                 {
-                    await _polychatService.ForwardMessage(sanitisedId, msg);
+                    _polychatService.RemoveOnlineServer(sanitisedId);
+                    _logger.LogInformation("Removed server {id} from the list of online servers.", sanitisedId);
+                    request.ConnectedClient.StopListening();
+                }
 
-                    if (
-                        msg.Status is
-                            ServerStatus.Types.ServerStatusEnum.Stopped or ServerStatus.Types.ServerStatusEnum.Crashed
-                    )
-                    {
-                        _polychatService.RemoveOnlineServer(sanitisedId);
-                        _logger.LogInformation("Removed server {id} from the list of online servers.", sanitisedId);
-                        request.ConnectedClient.StopListening();
-                    }
+                var getChatChannelResult =
+                    await _channelApi.GetChannelAsync(new(_polychatSettings.ChatChannelId), cancellationToken);
+                if (!getChatChannelResult.IsSuccess)
+                {
+                    throw new Exception(getChatChannelResult.Error.Message);
+                }
 
-                    var getChatChannelResult =
-                        await _channelApi.GetChannelAsync(new(_polychatSettings.ChatChannelId), cancellationToken);
-                    if (!getChatChannelResult.IsSuccess)
-                    {
-                        throw new Exception(getChatChannelResult.Error.Message);
-                    }
+                var message = $"Server {msg.Status.ToString().ToLowerInvariant()}.";
+                var chatMessage = new PolychatChatMessageString(sanitisedId, message);
+                var sendMessageResult =
+                    await _channelApi.CreateMessageAsync(new(_polychatSettings.ChatChannelId),
+                        chatMessage.ToDiscordFormattedString(), ct: cancellationToken);
+                if (!sendMessageResult.IsSuccess)
+                {
+                    throw new Exception(getChatChannelResult.Error?.Message ??
+                                        "Could not forward message to Discord.");
+                }
 
-                    var message = $"Server {msg.Status.ToString().ToLowerInvariant()}.";
-                    var chatMessage = new PolychatChatMessageString(sanitisedId, message);
-                    var sendMessageResult =
-                        await _channelApi.CreateMessageAsync(new(_polychatSettings.ChatChannelId),
-                            chatMessage.ToDiscordFormattedString(), ct: cancellationToken);
-                    if (!sendMessageResult.IsSuccess)
-                    {
-                        throw new Exception(getChatChannelResult.Error?.Message ??
-                                            "Could not forward message to Discord.");
-                    }
-
-                    _logger.LogInformation("Server {id} changed status to {newStatus}", sanitisedId,
-                        msg.Status);
+                _logger.LogInformation("Server {id} changed status to {newStatus}", sanitisedId,
+                    msg.Status);
+            }
+            else
+            {
+                if (msg.Status == ServerStatus.Types.ServerStatusEnum.Started)
+                {
+                    _logger.LogWarning(
+                        "Server {id} has unexpectedly sent ServerStatus message before sending ServerInfo message.",
+                        sanitisedId);
                 }
                 else
                 {
-                    if (msg.Status == ServerStatus.Types.ServerStatusEnum.Started)
-                    {
-                        _logger.LogWarning(
-                            "Server {id} has unexpectedly sent ServerStatus message before sending ServerInfo message.",
-                            sanitisedId);
-                    }
-                    else
-                    {
-                        throw new KeyNotFoundException($"Could not find server {sanitisedId} in the list of online servers");
-                    }
+                    throw new KeyNotFoundException($"Could not find server {sanitisedId} in the list of online servers");
                 }
             }
         }

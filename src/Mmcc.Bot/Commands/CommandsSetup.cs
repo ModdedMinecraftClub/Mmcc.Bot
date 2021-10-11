@@ -14,47 +14,46 @@ using Mmcc.Bot.Commands.Tags.Usage;
 using Remora.Commands.Extensions;
 using Remora.Discord.Commands.Extensions;
 
-namespace Mmcc.Bot.Commands
+namespace Mmcc.Bot.Commands;
+
+/// <summary>
+/// Extension methods that register commands with the service collection.
+/// </summary>
+public static class CommandsSetup
 {
     /// <summary>
-    /// Extension methods that register commands with the service collection.
+    /// Registers commands with the service collection.
     /// </summary>
-    public static class CommandsSetup
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <returns>The <see cref="IServiceCollection"/>.</returns>
+    public static IServiceCollection AddBotCommands(this IServiceCollection services)
     {
-        /// <summary>
-        /// Registers commands with the service collection.
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddBotCommands(this IServiceCollection services)
-        {
-            services.AddDiscordCommands();
+        services.AddDiscordCommands();
 
-            // core commands;
-            services.AddCommandGroup<HelpCommands>();
-            services.AddCommandGroup<GuildCommands>();
-            services.AddCommandGroup<MmccInfoCommands>();
+        // core commands;
+        services.AddCommandGroup<HelpCommands>();
+        services.AddCommandGroup<GuildCommands>();
+        services.AddCommandGroup<MmccInfoCommands>();
                     
-            // tags;
-            services.AddCommandGroup<TagsManagementCommands>();
-            services.AddCommandGroup<TagsUsageCommands>();
+        // tags;
+        services.AddCommandGroup<TagsManagementCommands>();
+        services.AddCommandGroup<TagsUsageCommands>();
 
-            // diagnostics;
-            services.AddCommandGroup<DiagnosticsCommands>();
+        // diagnostics;
+        services.AddCommandGroup<DiagnosticsCommands>();
                     
-            // in game;
-            services.AddCommandGroup<MinecraftServersCommands>();
+        // in game;
+        services.AddCommandGroup<MinecraftServersCommands>();
                     
-            // member apps;
-            services.AddCommandGroup<MemberApplicationsCommands>();
+        // member apps;
+        services.AddCommandGroup<MemberApplicationsCommands>();
 
-            // moderation;
-            services.AddCommandGroup<GeneralModerationCommands>();
-            services.AddCommandGroup<PlayerInfoCommands>();
-            services.AddCommandGroup<BanCommands>();
-            services.AddCommandGroup<WarnCommands>();
+        // moderation;
+        services.AddCommandGroup<GeneralModerationCommands>();
+        services.AddCommandGroup<PlayerInfoCommands>();
+        services.AddCommandGroup<BanCommands>();
+        services.AddCommandGroup<WarnCommands>();
 
-            return services;
-        }
+        return services;
     }
 }

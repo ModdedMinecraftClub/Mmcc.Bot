@@ -1,29 +1,28 @@
 ﻿using FluentValidation;
 
-namespace Mmcc.Bot.Polychat.Models.Settings
+namespace Mmcc.Bot.Polychat.Models.Settings;
+
+/// <summary>
+/// Settings for communication with Polychat2.
+/// </summary>
+public class PolychatSettings
 {
     /// <summary>
-    /// Settings for communication with Polychat2.
+    /// ID of the channel where MC chat will be forwarded to.
     /// </summary>
-    public class PolychatSettings
-    {
-        /// <summary>
-        /// ID of the channel where MC chat will be forwarded to.
-        /// </summary>
-        public ulong ChatChannelId { get; set; }
+    public ulong ChatChannelId { get; set; }
 
-        /// <summary>
-        /// Settings for broadcasts.
-        /// </summary>
-        public BroadcastsSettings? BroadcastsSettings { get; set; }
-    }
+    /// <summary>
+    /// Settings for broadcasts.
+    /// </summary>
+    public BroadcastsSettings? BroadcastsSettings { get; set; }
+}
 
-    public class PolychatSettingsValidator : AbstractValidator<PolychatSettings>
+public class PolychatSettingsValidator : AbstractValidator<PolychatSettings>
+{
+    public PolychatSettingsValidator()
     {
-        public PolychatSettingsValidator()
-        {
-            RuleFor(s => s.ChatChannelId)
-                .NotEmpty();
-        }
+        RuleFor(s => s.ChatChannelId)
+            .NotEmpty();
     }
 }

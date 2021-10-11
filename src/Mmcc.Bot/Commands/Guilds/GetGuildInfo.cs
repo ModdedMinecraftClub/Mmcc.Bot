@@ -11,89 +11,88 @@ using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Commands.Guilds
+namespace Mmcc.Bot.Commands.Guilds;
+
+/// <summary>
+/// Gets guild info.
+/// </summary>
+public class GetGuildInfo
 {
     /// <summary>
-    /// Gets guild info.
+    /// Query to get guild info.
     /// </summary>
-    public class GetGuildInfo
+    public record Query(Snowflake GuildId) : IRequest<Result<QueryResult>>;
+
+    /// <summary>
+    /// Validates the <see cref="Query"/>.
+    /// </summary>
+    public class Validator : AbstractValidator<Query>
     {
-        /// <summary>
-        /// Query to get guild info.
-        /// </summary>
-        public record Query(Snowflake GuildId) : IRequest<Result<QueryResult>>;
+        public Validator()
+        {
+            RuleFor(q => q.GuildId)
+                .NotNull();
+        }
+    }
+
+    /// <summary>
+    /// Result of the query to get guild info.
+    /// </summary>
+    public record QueryResult(
+        string GuildName,
+        Snowflake GuildOwnerId,
+        int? GuildMaxMembers,
+        IList<IRole> GuildRoles,
+        Uri? GuildIconUrl
+    );
+
+    /// <inheritdoc />
+    public class Handler : IRequestHandler<Query, Result<QueryResult>>
+    {
+        private readonly IDiscordRestGuildAPI _guildApi;
 
         /// <summary>
-        /// Validates the <see cref="Query"/>.
+        /// Instantiates a new instance of <see cref="Handler"/> class.
         /// </summary>
-        public class Validator : AbstractValidator<Query>
+        /// <param name="guildApi">The guild API.</param>
+        public Handler(IDiscordRestGuildAPI guildApi)
         {
-            public Validator()
-            {
-                RuleFor(q => q.GuildId)
-                    .NotNull();
-            }
+            _guildApi = guildApi;
         }
 
-        /// <summary>
-        /// Result of the query to get guild info.
-        /// </summary>
-        public record QueryResult(
-            string GuildName,
-            Snowflake GuildOwnerId,
-            int? GuildMaxMembers,
-            IList<IRole> GuildRoles,
-            Uri? GuildIconUrl
-        );
-
         /// <inheritdoc />
-        public class Handler : IRequestHandler<Query, Result<QueryResult>>
+        public async Task<Result<QueryResult>> Handle(Query request, CancellationToken cancellationToken)
         {
-            private readonly IDiscordRestGuildAPI _guildApi;
-
-            /// <summary>
-            /// Instantiates a new instance of <see cref="Handler"/> class.
-            /// </summary>
-            /// <param name="guildApi">The guild API.</param>
-            public Handler(IDiscordRestGuildAPI guildApi)
+            var getGuildInfoResult = await _guildApi.GetGuildAsync(request.GuildId, ct: cancellationToken);
+            if (!getGuildInfoResult.IsSuccess)
             {
-                _guildApi = guildApi;
+                return Result<QueryResult>.FromError(getGuildInfoResult);
             }
 
-            /// <inheritdoc />
-            public async Task<Result<QueryResult>> Handle(Query request, CancellationToken cancellationToken)
+            var guildInfo = getGuildInfoResult.Entity;
+            if (guildInfo is null)
             {
-                var getGuildInfoResult = await _guildApi.GetGuildAsync(request.GuildId, ct: cancellationToken);
-                if (!getGuildInfoResult.IsSuccess)
-                {
-                    return Result<QueryResult>.FromError(getGuildInfoResult);
-                }
-
-                var guildInfo = getGuildInfoResult.Entity;
-                if (guildInfo is null)
-                {
-                    return new NotFoundError("Guild not found.");
-                }
-
-                Uri? iconUrl;
-                if (guildInfo.Icon is not null)
-                {
-                    var getIconUrlResult = CDN.GetGuildIconUrl(request.GuildId, guildInfo.Icon, CDNImageFormat.PNG);
-                    iconUrl = !getIconUrlResult.IsSuccess ? null : getIconUrlResult.Entity;
-                }
-                else
-                {
-                    iconUrl = null;
-                }
-
-                return new QueryResult(
-                    guildInfo.Name,
-                    guildInfo.OwnerID,
-                    guildInfo.MaxMembers.HasValue ? guildInfo.MaxMembers.Value : null,
-                    guildInfo.Roles.Skip(1).ToList(),
-                    iconUrl
-                );
+                return new NotFoundError("Guild not found.");
             }
+
+            Uri? iconUrl;
+            if (guildInfo.Icon is not null)
+            {
+                var getIconUrlResult = CDN.GetGuildIconUrl(request.GuildId, guildInfo.Icon, CDNImageFormat.PNG);
+                iconUrl = !getIconUrlResult.IsSuccess ? null : getIconUrlResult.Entity;
+            }
+            else
+            {
+                iconUrl = null;
+            }
+
+            return new QueryResult(
+                guildInfo.Name,
+                guildInfo.OwnerID,
+                guildInfo.MaxMembers.HasValue ? guildInfo.MaxMembers.Value : null,
+                guildInfo.Roles.Skip(1).ToList(),
+                iconUrl
+            );
         }
     }
 }

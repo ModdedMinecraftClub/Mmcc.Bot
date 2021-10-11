@@ -5,16 +5,15 @@ using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Caching.Entities
-{
-    public record ButtonHandler(
-        Func<IInteractionCreate, Task<Result>> Handle,
-        Optional<DiscordPermission> RequiredPermission = new()
-    );
+namespace Mmcc.Bot.Caching.Entities;
 
-    public record Button(
-        Snowflake Id,
-        IButtonComponent Component,
-        ButtonHandler Handler
-    );
-}
+public record ButtonHandler(
+    Func<IInteractionCreate, Task<Result>> Handle,
+    Optional<DiscordPermission> RequiredPermission = new()
+);
+
+public record Button(
+    Snowflake Id,
+    IButtonComponent Component,
+    ButtonHandler Handler
+);

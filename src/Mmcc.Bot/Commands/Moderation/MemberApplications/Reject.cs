@@ -9,82 +9,81 @@ using Mmcc.Bot.Database.Entities;
 using Remora.Discord.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Commands.Moderation.MemberApplications
+namespace Mmcc.Bot.Commands.Moderation.MemberApplications;
+
+/// <summary>
+/// Rejects a member application.
+/// </summary>
+public class Reject
 {
     /// <summary>
-    /// Rejects a member application.
+    /// Command to reject an application.
     /// </summary>
-    public class Reject
+    public class Command : IRequest<Result<MemberApplication>>
     {
         /// <summary>
-        /// Command to reject an application.
+        /// ID of the application to reject.
         /// </summary>
-        public class Command : IRequest<Result<MemberApplication>>
+        public int Id { get; set; }
+            
+        /// <summary>
+        /// ID of the channel in which the command was executed.
+        /// </summary>
+        public Snowflake GuildId { get; set; }
+            
+    }
+
+    /// <summary>
+    /// Validates the <see cref="Command"/>.
+    /// </summary>
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
         {
-            /// <summary>
-            /// ID of the application to reject.
-            /// </summary>
-            public int Id { get; set; }
-            
-            /// <summary>
-            /// ID of the channel in which the command was executed.
-            /// </summary>
-            public Snowflake GuildId { get; set; }
-            
+            RuleFor(c => c.Id)
+                .NotNull();
+
+            RuleFor(c => c.GuildId)
+                .NotNull();
         }
+    }
+        
+    /// <inheritdoc />
+    public class Handler : IRequestHandler<Command, Result<MemberApplication>>
+    {
+        private readonly BotContext _context;
 
         /// <summary>
-        /// Validates the <see cref="Command"/>.
+        /// Instantiates a new instance of <see cref="Handler"/>.
         /// </summary>
-        public class Validator : AbstractValidator<Command>
+        /// <param name="context">The db context.</param>
+        public Handler(BotContext context)
         {
-            public Validator()
-            {
-                RuleFor(c => c.Id)
-                    .NotNull();
-
-                RuleFor(c => c.GuildId)
-                    .NotNull();
-            }
+            _context = context;
         }
-        
+
         /// <inheritdoc />
-        public class Handler : IRequestHandler<Command, Result<MemberApplication>>
+        public async Task<Result<MemberApplication>> Handle(Command request, CancellationToken cancellationToken)
         {
-            private readonly BotContext _context;
-
-            /// <summary>
-            /// Instantiates a new instance of <see cref="Handler"/>.
-            /// </summary>
-            /// <param name="context">The db context.</param>
-            public Handler(BotContext context)
+            try
             {
-                _context = context;
-            }
-
-            /// <inheritdoc />
-            public async Task<Result<MemberApplication>> Handle(Command request, CancellationToken cancellationToken)
-            {
-                try
+                var app = await _context.MemberApplications
+                    .FirstOrDefaultAsync(
+                        a => a.MemberApplicationId == request.Id && a.GuildId == request.GuildId.Value,
+                        cancellationToken);
+                if (app is null)
                 {
-                    var app = await _context.MemberApplications
-                        .FirstOrDefaultAsync(
-                            a => a.MemberApplicationId == request.Id && a.GuildId == request.GuildId.Value,
-                            cancellationToken);
-                    if (app is null)
-                    {
-                        return new NotFoundError($"Could not find application with ID: {request.Id}");
-                    }
+                    return new NotFoundError($"Could not find application with ID: {request.Id}");
+                }
 
-                    app.AppStatus = ApplicationStatus.Rejected;
-                    await _context.SaveChangesAsync(cancellationToken);
+                app.AppStatus = ApplicationStatus.Rejected;
+                await _context.SaveChangesAsync(cancellationToken);
                     
-                    return Result<MemberApplication>.FromSuccess(app);
-                }
-                catch (Exception e)
-                {
-                    return e;
-                }
+                return Result<MemberApplication>.FromSuccess(app);
+            }
+            catch (Exception e)
+            {
+                return e;
             }
         }
     }

@@ -13,83 +13,82 @@ using Remora.Discord.Commands.Contexts;
 using Remora.Discord.Commands.Services;
 using Remora.Results;
 
-namespace Mmcc.Bot.Middleware
+namespace Mmcc.Bot.Middleware;
+
+/// <summary>
+/// Service that handles notifying the user that the command has failed.
+/// </summary>
+public class ErrorNotificationMiddleware : IPostExecutionEvent
 {
+    private readonly ILogger<ErrorNotificationMiddleware> _logger;
+    private readonly IDiscordRestChannelAPI _channelApi;
+    private readonly IColourPalette _colourPalette;
+
     /// <summary>
-    /// Service that handles notifying the user that the command has failed.
+    /// Instantiates a new instance of <see cref="ErrorNotificationMiddleware"/>.
     /// </summary>
-    public class ErrorNotificationMiddleware : IPostExecutionEvent
+    /// <param name="logger">The logger.</param>
+    /// <param name="channelApi">The channel API.</param>
+    /// <param name="colourPalette">The colour palette.</param>
+    public ErrorNotificationMiddleware(
+        ILogger<ErrorNotificationMiddleware> logger,
+        IDiscordRestChannelAPI channelApi,
+        IColourPalette colourPalette
+    )
     {
-        private readonly ILogger<ErrorNotificationMiddleware> _logger;
-        private readonly IDiscordRestChannelAPI _channelApi;
-        private readonly IColourPalette _colourPalette;
+        _logger = logger;
+        _channelApi = channelApi;
+        _colourPalette = colourPalette;
+    }
 
-        /// <summary>
-        /// Instantiates a new instance of <see cref="ErrorNotificationMiddleware"/>.
-        /// </summary>
-        /// <param name="logger">The logger.</param>
-        /// <param name="channelApi">The channel API.</param>
-        /// <param name="colourPalette">The colour palette.</param>
-        public ErrorNotificationMiddleware(
-            ILogger<ErrorNotificationMiddleware> logger,
-            IDiscordRestChannelAPI channelApi,
-            IColourPalette colourPalette
-        )
+    /// <inheritdoc />
+    public async Task<Result> AfterExecutionAsync(
+        ICommandContext context,
+        IResult executionResult,
+        CancellationToken ct
+    )
+    {
+        if (executionResult.IsSuccess)
         {
-            _logger = logger;
-            _channelApi = channelApi;
-            _colourPalette = colourPalette;
+            return Result.FromSuccess();
         }
 
-        /// <inheritdoc />
-        public async Task<Result> AfterExecutionAsync(
-            ICommandContext context,
-            IResult executionResult,
-            CancellationToken ct
-        )
+        var err = executionResult.Error;
+        var errorEmbed = new Embed
         {
-            if (executionResult.IsSuccess)
+            Thumbnail = EmbedProperties.MmccLogoThumbnail,
+            Colour = _colourPalette.Red,
+            Timestamp = DateTimeOffset.UtcNow
+        };
+        errorEmbed = err switch
+        {
+            ValidationError(var message, var readOnlyList, _) => errorEmbed with
             {
-                return Result.FromSuccess();
+                Title = ":exclamation: Validation error.",
+                Description = message.Replace('\'', '`'),
+                Fields = new List<EmbedField> {readOnlyList.ToEmbedField()}
+            },
+            NotFoundError => errorEmbed with
+            {
+                Title = ":x: Resource not found.",
+                Description = err.Message
+            },
+            null => errorEmbed with
+            {
+                Title = ":exclamation: Error.",
+                Description = "Unknown error."
+            },
+            _ => errorEmbed with
+            {
+                Title = $":x: {err.GetType()}.",
+                Description = err.Message
             }
+        };
 
-            var err = executionResult.Error;
-            var errorEmbed = new Embed
-            {
-                Thumbnail = EmbedProperties.MmccLogoThumbnail,
-                Colour = _colourPalette.Red,
-                Timestamp = DateTimeOffset.UtcNow
-            };
-            errorEmbed = err switch
-            {
-                ValidationError(var message, var readOnlyList, _) => errorEmbed with
-                {
-                    Title = ":exclamation: Validation error.",
-                    Description = message.Replace('\'', '`'),
-                    Fields = new List<EmbedField> {readOnlyList.ToEmbedField()}
-                },
-                NotFoundError => errorEmbed with
-                {
-                    Title = ":x: Resource not found.",
-                    Description = err.Message
-                },
-                null => errorEmbed with
-                {
-                    Title = ":exclamation: Error.",
-                    Description = "Unknown error."
-                },
-                _ => errorEmbed with
-                {
-                    Title = $":x: {err.GetType()}.",
-                    Description = err.Message
-                }
-            };
-
-            var sendEmbedResult =
-                await _channelApi.CreateMessageAsync(context.ChannelID, embeds: new[] { errorEmbed }, ct: ct);
-            return !sendEmbedResult.IsSuccess
-                ? Result.FromError(sendEmbedResult)
-                : Result.FromSuccess();
-        }
+        var sendEmbedResult =
+            await _channelApi.CreateMessageAsync(context.ChannelID, embeds: new[] { errorEmbed }, ct: ct);
+        return !sendEmbedResult.IsSuccess
+            ? Result.FromError(sendEmbedResult)
+            : Result.FromSuccess();
     }
 }
