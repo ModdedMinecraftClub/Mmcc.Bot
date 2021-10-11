@@ -29,8 +29,7 @@ using Serilog.Events;
 using Serilog.Formatting.Compact;
 using Serilog.Sinks.SystemConsole.Themes;
 
-var isDevelopment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")?.Equals("Development") ?? false;
-var hostBuilder = Host.CreateDefaultBuilder(args)
+var host = Host.CreateDefaultBuilder(args)
     .ConfigureLogging((context, builder) =>
     {
         if (context.HostingEnvironment.IsDevelopment())
@@ -76,7 +75,10 @@ var hostBuilder = Host.CreateDefaultBuilder(args)
         return discordConfig.Token;
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = true)
-    .UseSerilog();
+    .UseSerilog()
+    .Build();
+
+var isDevelopment = host.Services.GetRequiredService<IHostEnvironment>().IsDevelopment();
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -101,7 +103,7 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     Log.Information("Starting the host...");
-    hostBuilder.Build().Run();
+    await host.RunAsync();
 }
 catch (Exception e)
 {
