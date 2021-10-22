@@ -59,7 +59,7 @@ public class Delete
                     .FirstOrDefaultAsync(t => t.GuildId == request.GuildId.Value && t.TagName == request.TagName,
                         cancellationToken);
 
-                _context.Remove(tag);
+                _context.Remove(tag!);
                 await _context.SaveChangesAsync(cancellationToken);
                 return tag;
             }
