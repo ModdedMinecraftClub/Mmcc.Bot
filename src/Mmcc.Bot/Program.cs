@@ -74,31 +74,31 @@ var host = Host.CreateDefaultBuilder(args)
         var discordConfig = provider.GetRequiredService<DiscordSettings>();
         return discordConfig.Token;
     })
+    .UseSerilog((_, provider, loggerConfiguration) =>
+    {
+        var isDevelopment = provider.GetRequiredService<IHostEnvironment>().IsDevelopment();
+
+        loggerConfiguration
+            .MinimumLevel.Information()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+            .MinimumLevel.Override("System.Net.Http.HttpClient",
+                isDevelopment ? LogEventLevel.Information : LogEventLevel.Warning)
+            .Enrich.FromLogContext()
+            .WriteTo.Console(
+                outputTemplate: "[{Timestamp:dd/MM/yyyy HH:mm:ss:fff} {Level:u3}] {Message:lj}{NewLine}{Exception}",
+                theme: isDevelopment ? null : AnsiConsoleTheme.Literate
+            )
+            .WriteTo.File(
+                new CompactJsonFormatter(),
+                Path.Combine("logs", "log.clef"),
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: 14,
+                levelSwitch: new LoggingLevelSwitch(LogEventLevel.Warning)
+            );
+    })
     .UseDefaultServiceProvider(options => options.ValidateScopes = true)
-    .UseSerilog()
     .Build();
-
-var isDevelopment = host.Services.GetRequiredService<IHostEnvironment>().IsDevelopment();
-
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-    .MinimumLevel.Override("System.Net.Http.HttpClient",
-        isDevelopment ? LogEventLevel.Information : LogEventLevel.Warning)
-    .Enrich.FromLogContext()
-    .WriteTo.Console(
-        outputTemplate: "[{Timestamp:dd/MM/yyyy HH:mm:ss:fff} {Level:u3}] {Message:lj}{NewLine}{Exception}",
-        theme: isDevelopment ? null : AnsiConsoleTheme.Literate
-    )
-    .WriteTo.File(
-        new CompactJsonFormatter(),
-        Path.Combine("logs", "log.clef"),
-        rollingInterval: RollingInterval.Day,
-        retainedFileCountLimit: 14,
-        levelSwitch: new LoggingLevelSwitch(LogEventLevel.Warning)
-    )
-    .CreateLogger();
 
 try
 {
