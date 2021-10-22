@@ -55,19 +55,18 @@ public class HandleCommandResult
                 colour = _colourPalette.Blue;
             }
 
-            var embeds = new List<Embed>
+            var sendCmdExecutedNotificationResult = await _channelApi.CreateMessageAsync(
+                channelSnowflake,
+                content: $"[{msg.ServerId}] Command `{msg.Command}` executed!",
+                ct: cancellationToken);
+
+            if (!sendCmdExecutedNotificationResult.IsSuccess)
             {
-                new()
-                {
-                    Title = $"Command `{msg.Command}` executed!",
-                    Fields = new List<EmbedField>
-                    {
-                        new("Server", msg.ServerId, false)
-                    },
-                    Timestamp = DateTimeOffset.UtcNow,
-                    Colour = colour
-                }
-            };
+                _logger.LogError("Error while sending command output embed: {Error}",
+                    sendCmdExecutedNotificationResult.Error.Message);
+            }
+
+            var embeds = new List<Embed>();
             var output = msg.CommandOutput
                 .Batch(1024)
                 .Select(chars => new string(chars.ToArray()))
@@ -94,7 +93,7 @@ public class HandleCommandResult
 
                 if (!sendMessageResult.IsSuccess)
                 {
-                    _logger.LogError("Error while sending command output embed: {error}",
+                    _logger.LogError("Error while sending command output embed: {Error}",
                         sendMessageResult.Error.Message);
                 }
             }
