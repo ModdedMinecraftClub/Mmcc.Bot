@@ -19,7 +19,7 @@ public class HandleCommandResult
     public class CommandResultHandler : AsyncRequestHandler<TcpRequest<GenericCommandResult>>
     {
         private readonly IDiscordRestChannelAPI _channelApi;
-        private readonly ILogger<HandleCommandResult> _logger;
+        private readonly ILogger<CommandResultHandler> _logger;
         private readonly IColourPalette _colourPalette;
 
         public CommandResultHandler(IDiscordRestChannelAPI channelApi, ILogger<CommandResultHandler> logger, IColourPalette colourPalette)
