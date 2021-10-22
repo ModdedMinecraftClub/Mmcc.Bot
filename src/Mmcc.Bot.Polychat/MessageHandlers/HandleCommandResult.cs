@@ -16,13 +16,13 @@ namespace Mmcc.Bot.Polychat.MessageHandlers;
 
 public class HandleCommandResult
 {
-    public class Handler : AsyncRequestHandler<TcpRequest<GenericCommandResult>>
+    public class CommandResultHandler : AsyncRequestHandler<TcpRequest<GenericCommandResult>>
     {
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly ILogger<HandleCommandResult> _logger;
         private readonly IColourPalette _colourPalette;
 
-        public Handler(IDiscordRestChannelAPI channelApi, ILogger<HandleCommandResult> logger, IColourPalette colourPalette)
+        public CommandResultHandler(IDiscordRestChannelAPI channelApi, ILogger<CommandResultHandler> logger, IColourPalette colourPalette)
         {
             _channelApi = channelApi;
             _logger = logger;
@@ -68,7 +68,7 @@ public class HandleCommandResult
 
             var embeds = new List<Embed>();
             var output = msg.CommandOutput
-                .Batch(1024)
+                .Chunk(1024)
                 .Select(chars => new string(chars.ToArray()))
                 .ToList();
             embeds
