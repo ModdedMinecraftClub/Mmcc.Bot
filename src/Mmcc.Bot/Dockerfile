@@ -1,7 +1,7 @@
-FROM mcr.microsoft.com/dotnet/runtime:5.0.8 AS base
+FROM mcr.microsoft.com/dotnet/runtime:6.0.0-rc.2 AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0.302-buster-slim AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0.100-rc.2-bullseye-slim AS build
 WORKDIR /src
 
 COPY "Mmcc.Bot.sln" "Mmcc.Bot.sln"
