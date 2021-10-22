@@ -8,7 +8,6 @@ using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Statics;
 using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
 using Mmcc.Bot.RemoraAbstractions.Services;
-using MoreLinq;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
@@ -145,7 +144,7 @@ public class TagsManagementCommands : CommandGroup
             { IsSuccess: true, Entity: { } e } when e.Any() =>
                 await _responder.Respond(
                     e
-                        .Batch(20)
+                        .Chunk(20)
                         .Select(tags => new Embed
                         {
                             Title = "Tags",
