@@ -4,10 +4,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Polychat.Abstractions;
 using Mmcc.Bot.Polychat.Models.Settings;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.API.Abstractions.Rest;
+using Remora.Discord.API.Objects;
 
 namespace Mmcc.Bot.Polychat.MessageHandlers;
 
@@ -22,13 +24,21 @@ public class HandleServerStatus
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly PolychatSettings _polychatSettings;
         private readonly ILogger<HandleServerStatus> _logger;
+        private readonly IColourPalette _colourPalette;
 
-        public Handler(IPolychatService polychatService, IDiscordRestChannelAPI channelApi, PolychatSettings polychatSettings, ILogger<HandleServerStatus> logger)
+        public Handler(
+            IPolychatService polychatService,
+            IDiscordRestChannelAPI channelApi,
+            PolychatSettings polychatSettings,
+            ILogger<HandleServerStatus> logger,
+            IColourPalette colourPalette
+        )
         {
             _polychatService = polychatService;
             _channelApi = channelApi;
             _polychatSettings = polychatSettings;
             _logger = logger;
+            _colourPalette = colourPalette;
         }
 
         protected override async Task Handle(TcpRequest<ServerStatus> request, CancellationToken cancellationToken)
@@ -59,11 +69,17 @@ public class HandleServerStatus
                     throw new Exception(getChatChannelResult.Error.Message);
                 }
 
+                var embedColour = msg.Status switch
+                {
+                    ServerStatus.Types.ServerStatusEnum.Started => _colourPalette.Green,
+                    ServerStatus.Types.ServerStatusEnum.Unknown => _colourPalette.Blue,
+                    _ => _colourPalette.Black
+                };
                 var message = $"Server {msg.Status.ToString().ToLowerInvariant()}.";
                 var chatMessage = new PolychatChatMessageString(sanitisedId, message);
-                var sendMessageResult =
-                    await _channelApi.CreateMessageAsync(new(_polychatSettings.ChatChannelId),
-                        chatMessage.ToDiscordFormattedString(), ct: cancellationToken);
+                var embed = new Embed(chatMessage.ToSanitisedString(), Colour: embedColour);
+                var sendMessageResult = await _channelApi.CreateMessageAsync(new(_polychatSettings.ChatChannelId),
+                    embeds: new[] {embed}, ct: cancellationToken);
                 if (!sendMessageResult.IsSuccess)
                 {
                     throw new Exception(getChatChannelResult.Error?.Message ??
