@@ -7,6 +7,7 @@ namespace Mmcc.Bot.Common.Models.Colours
     /// </summary>
     public interface IColourPalette
     {
+        public Color Black { get; }
         public Color Gray { get; }
         public Color Red { get; }
         public Color Yellow { get; }

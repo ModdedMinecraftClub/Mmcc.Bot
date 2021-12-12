@@ -5,6 +5,7 @@ namespace Mmcc.Bot.Common.Models.Colours
     /// <inheritdoc />
     public class TailwindColourPalette : IColourPalette
     {
+        public Color Black => ColorTranslator.FromHtml("#1E293B");
         public Color Gray => ColorTranslator.FromHtml("#6B7280");
         public Color Red => ColorTranslator.FromHtml("#EF4444");
         public Color Yellow => ColorTranslator.FromHtml("#F59E0B");
