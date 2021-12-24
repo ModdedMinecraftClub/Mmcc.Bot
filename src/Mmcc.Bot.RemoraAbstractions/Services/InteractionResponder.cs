@@ -19,6 +19,8 @@ public interface IInteractionResponder
     );
         
     Task<Result> SendFollowup(string interactionToken, params Embed[] embeds);
+
+    Task<Result> SendFollowup(string interactionToken, string msg);
 }
     
 public class InteractionResponder : IInteractionResponder
@@ -49,6 +51,18 @@ public class InteractionResponder : IInteractionResponder
             new(_discordSettings.ApplicationId),
             interactionToken,
             embeds: embeds.ToList()
+        );
+        return res.IsSuccess
+            ? Result.FromSuccess()
+            : Result.FromError(res);
+    }
+    
+    public async Task<Result> SendFollowup(string interactionToken, string msg)
+    {
+        var res = await _interactionApi.CreateFollowupMessageAsync(
+            new(_discordSettings.ApplicationId),
+            interactionToken,
+            msg
         );
         return res.IsSuccess
             ? Result.FromSuccess()

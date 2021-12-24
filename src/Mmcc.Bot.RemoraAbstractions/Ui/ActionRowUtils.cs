@@ -9,7 +9,7 @@ namespace Mmcc.Bot.RemoraAbstractions.Ui;
 // ReSharper disable once InconsistentNaming
 public static class ActionRowUtils
 {
-    public static List<IMessageComponent> FromButtons(params Button[] buttons) =>
+    public static List<IMessageComponent> FromButtons(params HandleableButton[] buttons) =>
         new()
         {
             new ActionRowComponent(buttons.Select(b => b.Component).ToList())

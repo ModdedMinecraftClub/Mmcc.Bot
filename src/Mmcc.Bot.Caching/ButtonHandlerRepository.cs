@@ -10,11 +10,11 @@ namespace Mmcc.Bot.Caching;
 public interface IButtonHandlerRepository
 {
     /// <summary>
-    /// Registers a new button handler from a <see cref="Button"/> object with the repository.
+    /// Registers a new button handler from a <see cref="HandleableButton"/> object with the repository.
     /// </summary>
-    /// <param name="button"><see cref="Button"/> object containing the handler.</param>
-    void Register(Button button);
-        
+    /// <param name="handleableButton"><see cref="HandleableButton"/> object containing the handler.</param>
+    void Register(HandleableButton handleableButton);
+    
     /// <summary>
     /// Registers a button handler with the repository.
     /// </summary>
@@ -63,8 +63,8 @@ public class ButtonHandlerRepository : IButtonHandlerRepository
     }
 
     /// <inheritdoc />
-    public void Register(Button button) =>
-        Register(button.Id.Value, button.Handler);
+    public void Register(HandleableButton handleableButton) =>
+        Register(handleableButton.Id.Value, handleableButton.Handler);
         
     /// <inheritdoc />
     public void Register(ulong buttonId, ButtonHandler handler) =>

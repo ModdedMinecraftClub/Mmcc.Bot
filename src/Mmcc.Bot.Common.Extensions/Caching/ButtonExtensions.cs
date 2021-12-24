@@ -5,10 +5,10 @@ namespace Mmcc.Bot.Common.Extensions.Caching
 {
     public static class ButtonExtensions
     {
-        public static Button RegisterWith(this Button button, IButtonHandlerRepository repository)
+        public static HandleableButton RegisterWith(this HandleableButton handleableButton, IButtonHandlerRepository repository)
         {
-            repository.Register(button);
-            return button;
+            repository.Register(handleableButton);
+            return handleableButton;
         }
     }
 }

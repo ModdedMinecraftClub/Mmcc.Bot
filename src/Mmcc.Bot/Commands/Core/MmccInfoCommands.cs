@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Mmcc.Bot.Caching;
+using Mmcc.Bot.Caching.Entities;
 using Mmcc.Bot.Common.Extensions.Caching;
 using Mmcc.Bot.Common.Statics;
+using Mmcc.Bot.EventResponders.Buttons;
 using Mmcc.Bot.RemoraAbstractions.Services;
 using Mmcc.Bot.RemoraAbstractions.Ui;
 using Remora.Commands.Attributes;
@@ -11,6 +14,7 @@ using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
+using Remora.Discord.Commands.Contexts;
 using Remora.Discord.Core;
 using Remora.Results;
 
@@ -24,8 +28,9 @@ public class MmccInfoCommands : CommandGroup
     private readonly IDiscordRestWebhookAPI _webhookApi;
     private readonly IButtonHandlerRepository _handlerRepository;
     private readonly IInteractionResponder _interactionResponder;
+    private readonly MessageContext _context;
 
-    public MmccInfoCommands(ICommandResponder responder, IDiscordRestInteractionAPI interactionApi, IDiscordRestChannelAPI channelApi, IButtonHandlerRepository handlerRepository, IDiscordRestWebhookAPI webhookApi, IInteractionResponder interactionResponder)
+    public MmccInfoCommands(ICommandResponder responder, IDiscordRestInteractionAPI interactionApi, IDiscordRestChannelAPI channelApi, IButtonHandlerRepository handlerRepository, IDiscordRestWebhookAPI webhookApi, IInteractionResponder interactionResponder, MessageContext context)
     {
         _responder = responder;
         _interactionApi = interactionApi;
@@ -33,6 +38,7 @@ public class MmccInfoCommands : CommandGroup
         _handlerRepository = handlerRepository;
         _webhookApi = webhookApi;
         _interactionResponder = interactionResponder;
+        _context = context;
     }
 
     [Command("mmcc")]
@@ -56,14 +62,15 @@ public class MmccInfoCommands : CommandGroup
 
     // TODO: remove once app buttons are implemented;
     [Command("test")]
-    public async Task<IResult> Test(string tester)
+    public async Task<IResult> Test()
     {
-        var testButton = new ButtonBuilder(ButtonComponentStyle.Primary)
-            .WithLabel("Test")
-            .WithHandler(async ev => await _interactionResponder.SendFollowup(ev.Token, new Embed(tester)))
-            .WithRequiredPermission(DiscordPermission.BanMembers)
-            .Build()
-            .RegisterWith(_handlerRepository);
+        var id = new Snowflake((ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        var component = new ButtonComponent(ButtonComponentStyle.Primary, "Test",
+            CustomID: id.ToString());
+        var testButton = HandleableButton.Create<TestHandler.Command, TestHandler.Context>(id, component, new TestHandler.Context(_context.ChannelID));
+        
+        _handlerRepository.Register(testButton);
+        
         return await _responder.RespondWithComponents(ActionRowUtils.FromButtons(testButton), "Test buttons");
     }
 }

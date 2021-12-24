@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Caching;
 using Mmcc.Bot.Common.Models.Colours;
@@ -24,13 +25,15 @@ public class ButtonInteractionCreateResponder : IResponder<IInteractionCreate>
     private readonly IColourPalette _colourPalette;
     private readonly ILogger<ButtonInteractionCreateResponder> _logger;
     private readonly IInteractionResponder _interactionResponder;
+    private readonly IMediator _mediator;
 
     public ButtonInteractionCreateResponder(
         IButtonHandlerRepository handlerRepository,
         IDiscordPermissionsService permissionsService,
         IColourPalette colourPalette,
         ILogger<ButtonInteractionCreateResponder> logger,
-        IInteractionResponder interactionResponder
+        IInteractionResponder interactionResponder,
+        IMediator mediator
     )
     {
         _handlerRepository = handlerRepository;
@@ -38,6 +41,7 @@ public class ButtonInteractionCreateResponder : IResponder<IInteractionCreate>
         _colourPalette = colourPalette;
         _logger = logger;
         _interactionResponder = interactionResponder;
+        _mediator = mediator;
     }
 
     public async Task<Result> RespondAsync(IInteractionCreate ev, CancellationToken ct = new())
@@ -124,6 +128,9 @@ public class ButtonInteractionCreateResponder : IResponder<IInteractionCreate>
             }
         }
 
-        return await handler.Handle(ev);
+        var context = handler.Context;
+        var command = Activator.CreateInstance(handler.HandlerCommandType, ev.Token, context);
+
+        return (Result) (await _mediator.Send(command!, ct))!;
     }
 }
