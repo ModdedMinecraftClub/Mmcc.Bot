@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -10,6 +11,7 @@ using Mmcc.Bot.Polychat.Models.Settings;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
+using Remora.Discord.Core;
 
 namespace Mmcc.Bot.Polychat.MessageHandlers;
 
@@ -69,21 +71,22 @@ public class HandleServerStatus
                     throw new Exception(getChatChannelResult.Error.Message);
                 }
 
-                var embedColour = msg.Status switch
+                Optional<Color> embedColour = msg.Status switch
                 {
                     ServerStatus.Types.ServerStatusEnum.Started => _colourPalette.Green,
-                    ServerStatus.Types.ServerStatusEnum.Unknown => _colourPalette.Blue,
-                    _ => _colourPalette.Black
+                    ServerStatus.Types.ServerStatusEnum.Crashed => _colourPalette.Red,
+                    ServerStatus.Types.ServerStatusEnum.Stopped => _colourPalette.Black,
+                    _ => new()
                 };
                 var message = $"Server {msg.Status.ToString().ToLowerInvariant()}.";
                 var chatMessage = new PolychatChatMessageString(sanitisedId, message);
                 var embed = new Embed(chatMessage.ToSanitisedString(), Colour: embedColour);
                 var sendMessageResult = await _channelApi.CreateMessageAsync(new(_polychatSettings.ChatChannelId),
                     embeds: new[] {embed}, ct: cancellationToken);
+                
                 if (!sendMessageResult.IsSuccess)
                 {
-                    throw new Exception(getChatChannelResult.Error?.Message ??
-                                        "Could not forward message to Discord.");
+                    throw new Exception(getChatChannelResult.Error?.Message ?? "Could not forward message to Discord.");
                 }
 
                 _logger.LogInformation("Server {id} changed status to {newStatus}", sanitisedId,
