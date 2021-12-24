@@ -6,7 +6,9 @@ using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Common.Errors;
 using Mmcc.Bot.Common.Extensions.FluentValidation.Results;
 using Mmcc.Bot.Common.Models.Colours;
+using Mmcc.Bot.Common.Models.Settings;
 using Mmcc.Bot.Common.Statics;
+using Remora.Commands.Results;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
@@ -23,6 +25,7 @@ public class ErrorNotificationMiddleware : IPostExecutionEvent
     private readonly ILogger<ErrorNotificationMiddleware> _logger;
     private readonly IDiscordRestChannelAPI _channelApi;
     private readonly IColourPalette _colourPalette;
+    private readonly DiscordSettings _discordSettings;
 
     /// <summary>
     /// Instantiates a new instance of <see cref="ErrorNotificationMiddleware"/>.
@@ -33,12 +36,14 @@ public class ErrorNotificationMiddleware : IPostExecutionEvent
     public ErrorNotificationMiddleware(
         ILogger<ErrorNotificationMiddleware> logger,
         IDiscordRestChannelAPI channelApi,
-        IColourPalette colourPalette
+        IColourPalette colourPalette,
+        DiscordSettings discordSettings
     )
     {
         _logger = logger;
         _channelApi = channelApi;
         _colourPalette = colourPalette;
+        _discordSettings = discordSettings;
     }
 
     /// <inheritdoc />
@@ -62,6 +67,11 @@ public class ErrorNotificationMiddleware : IPostExecutionEvent
         };
         errorEmbed = err switch
         {
+            CommandNotFoundError cnfe => errorEmbed with
+            {
+              Title  = ":exclamation: Command not found",
+              Description = $"Could not find a matching command for `{_discordSettings.Prefix}{cnfe.OriginalInput}`."
+            },
             ValidationError(var message, var readOnlyList, _) => errorEmbed with
             {
                 Title = ":exclamation: Validation error.",
