@@ -25,7 +25,7 @@ public record HandleableButton
         Optional<DiscordPermission> requiredPermission = new()
     )
         where THandlerCommand : IRequest<Result>
-        where TContext : class, new()
+        where TContext : class
         => new(id, component, new(typeof(THandlerCommand), typeof(TContext), context, requiredPermission));
 
     public void Deconstruct(out Snowflake id, out IButtonComponent component, out ButtonHandler handler)
