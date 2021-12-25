@@ -30,7 +30,9 @@ public class MmccInfoCommands : CommandGroup
     private readonly IInteractionResponder _interactionResponder;
     private readonly MessageContext _context;
 
-    public MmccInfoCommands(ICommandResponder responder, IDiscordRestInteractionAPI interactionApi, IDiscordRestChannelAPI channelApi, IButtonHandlerRepository handlerRepository, IDiscordRestWebhookAPI webhookApi, IInteractionResponder interactionResponder, MessageContext context)
+    public MmccInfoCommands(ICommandResponder responder, IDiscordRestInteractionAPI interactionApi,
+        IDiscordRestChannelAPI channelApi, IButtonHandlerRepository handlerRepository,
+        IDiscordRestWebhookAPI webhookApi, IInteractionResponder interactionResponder, MessageContext context)
     {
         _responder = responder;
         _interactionApi = interactionApi;
@@ -60,6 +62,7 @@ public class MmccInfoCommands : CommandGroup
         return await _responder.RespondWithComponents(usefulLinks, "Useful links");
     }
 
+#if DEBUG
     // TODO: remove once app buttons are implemented;
     [Command("test")]
     public async Task<IResult> Test()
@@ -67,10 +70,13 @@ public class MmccInfoCommands : CommandGroup
         var id = new Snowflake((ulong) DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
         var component = new ButtonComponent(ButtonComponentStyle.Primary, "Test",
             CustomID: id.ToString());
-        var testButton = HandleableButton.Create<TestHandler.Command, TestHandler.Context>(id, component, new TestHandler.Context(_context.ChannelID));
-        
+        var testButton =
+            HandleableButton.Create<TestHandler.Command, TestHandler.Context>(id, component,
+                new TestHandler.Context(_context.ChannelID));
+
         _handlerRepository.Register(testButton);
-        
+
         return await _responder.RespondWithComponents(ActionRowUtils.FromButtons(testButton), "Test buttons");
     }
+#endif
 }
