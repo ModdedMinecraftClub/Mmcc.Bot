@@ -130,7 +130,22 @@ public class ButtonInteractionCreateResponder : IResponder<IInteractionCreate>
 
         var context = handler.Context;
         var command = Activator.CreateInstance(handler.HandlerCommandType, ev.Token, context);
+        var buttonActionResult = (Result) (await _mediator.Send(command!, ct))!;
 
-        return (Result) (await _mediator.Send(command!, ct))!;
+        if (!buttonActionResult.IsSuccess)
+        {
+            var errorEmbed = new Embed
+            {
+                Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                Colour = _colourPalette.Red,
+                Timestamp = DateTimeOffset.UtcNow,
+                Title = $":x: {buttonActionResult.Error.GetType()}.",
+                Description = buttonActionResult.Error.Message
+            };
+            
+            return await _interactionResponder.SendFollowup(ev.Token, errorEmbed);
+        }
+
+        return Result.FromSuccess();
     }
 }
