@@ -6,7 +6,7 @@ using Mmcc.Bot.Polychat.Models;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Results;
 
-namespace Mmcc.Bot.Polychat.Notifications;
+namespace Mmcc.Bot.Polychat.Jobs.Recurring.Restarts;
 
 public class NotifyAboutRestart
 {

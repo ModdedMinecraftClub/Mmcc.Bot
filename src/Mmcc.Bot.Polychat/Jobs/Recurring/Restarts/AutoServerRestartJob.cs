@@ -5,10 +5,9 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Polychat.MessageSenders;
 using Mmcc.Bot.Polychat.Models.Settings;
-using Mmcc.Bot.Polychat.Notifications;
 using Mmcc.Bot.Polychat.Services;
 
-namespace Mmcc.Bot.Polychat.Jobs.Recurring;
+namespace Mmcc.Bot.Polychat.Jobs.Recurring.Restarts;
 
 [Queue("serverrestarts")]
 [AutomaticRetry(Attempts = 3, DelaysInSeconds = new[] { 30, 60, 90 })]

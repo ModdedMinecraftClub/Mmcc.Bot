@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Hangfire;
 using MediatR;
 using Mmcc.Bot.Common.Models.Colours;
-using Mmcc.Bot.Polychat.Jobs.Recurring;
+using Mmcc.Bot.Polychat.Jobs.Recurring.Restarts;
 using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
 using Mmcc.Bot.RemoraAbstractions.Services;
 using Remora.Commands.Attributes;
@@ -12,7 +12,7 @@ using Remora.Commands.Groups;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
 
-namespace Mmcc.Bot.Commands.Minecraft;
+namespace Mmcc.Bot.Commands.Minecraft.Restarts;
 
 [Group("restarts")]
 [Description("Commands for managing automatic restarts")]
@@ -44,7 +44,7 @@ public class MinecraftAutoRestartsCommands : CommandGroup
         try
         {
             RecurringJob.AddOrUpdate<AutoServerRestartJob>(AutoServerRestartJob.CreateJobId(serverId),
-                job => job.Execute(serverId), Cron.Minutely);
+                job => job.Execute(serverId), cronExpression);
         }
         catch(Exception e)
         {

@@ -1,13 +1,10 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hangfire;
-using Hangfire.Storage;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Common.Hosting;
-using Mmcc.Bot.Polychat.Notifications;
+using Mmcc.Bot.Polychat.Jobs.Recurring.Restarts;
 using Mmcc.Bot.Polychat.Services;
 
 namespace Mmcc.Bot.Polychat.Hosting;
@@ -33,18 +30,10 @@ public class RestartNotifierService : TimedBackgroundService<RestartNotifierServ
 
     protected override async Task OnExecute(CancellationToken ct)
     {
-        var jobs = JobStorage.Current
-            .GetConnection()
-            .GetRecurringJobs()
-            .Where(
-                j => j.Id.StartsWith("AUTO_RESTART") && 
-                     j.NextExecution is not null && 
-                     j.NextExecution.Value - DateTime.UtcNow < TimeSpan.FromMinutes(5)
-            );
+        var upcomingRestarts = await _mediator.Send(new GetUpcomingRestarts.Query(), ct);
 
-        foreach (var job in jobs)
+        foreach (var (serverId, job) in upcomingRestarts)
         {
-            var serverId = job.Id[(job.Id.LastIndexOf("_", StringComparison.Ordinal) + 1)..];
             var server = _ps.GetOnlineServerOrDefault(serverId);
 
             if (server is null)
@@ -53,8 +42,7 @@ public class RestartNotifierService : TimedBackgroundService<RestartNotifierServ
                 return;
             }
 
-            await _mediator.Send(new NotifyAboutRestart.Command(server, job.NextExecution!.Value - DateTime.UtcNow),
-                ct);
+            await _mediator.Send(new NotifyAboutRestart.Command(server, job.NextExecution!.Value - DateTime.UtcNow), ct);
         }
     }
 }
