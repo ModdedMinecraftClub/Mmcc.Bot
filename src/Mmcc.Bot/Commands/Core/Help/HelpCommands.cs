@@ -51,9 +51,7 @@ public class HelpCommands : CommandGroup
             return getEmbedsResult;
         }
 
-        var embedChunks = getEmbedsResult.Entity
-            .Chunk(10)
-            .ToList();
+        var embedChunks = getEmbedsResult.Entity.Chunk(10);
 
         foreach (var embeds in embedChunks)
         {
