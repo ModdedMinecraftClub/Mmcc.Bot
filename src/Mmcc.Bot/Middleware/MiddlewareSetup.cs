@@ -13,6 +13,11 @@ public static class MiddlewareSetup
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddBotMiddlewares(this IServiceCollection services) =>
+    public static IServiceCollection AddBotMiddlewares(this IServiceCollection services)
+    {
         services.AddScoped<IPostExecutionEvent, ErrorNotificationMiddleware>();
+        services.AddScoped<IPostExecutionEvent, TelemetryMiddleware>();
+
+        return services;
+    }
 }

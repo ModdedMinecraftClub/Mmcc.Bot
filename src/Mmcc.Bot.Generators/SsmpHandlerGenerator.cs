@@ -13,8 +13,15 @@ namespace Mmcc.Bot.Generators
         {
             var receiver = (SyntaxReceiver)context.SyntaxContextReceiver!;
             var classes = receiver.Classes;
-            var templateGenerator = new TemplateGenerator(receiver.SsmpInterfaceSymbol!,
-                receiver.MediatRInterfaceSymbol!, receiver.ProtobufAnySymbol!, receiver.LoggerSymbol!, receiver.ScopeFactorySymbol!, classes);
+            var templateGenerator = new TemplateGenerator(
+                receiver.SsmpInterfaceSymbol!,
+                receiver.MediatRInterfaceSymbol!,
+                receiver.ProtobufAnySymbol!,
+                receiver.LoggerSymbol!,
+                receiver.ScopeFactorySymbol!,
+                receiver.TelemetrySymbol!,
+                receiver.RequestTelemetrySymbol!,
+                classes);
             var generatedCode = templateGenerator.Generate();
 
             context.AddSource("SsmpHandler.cs", generatedCode);
@@ -35,6 +42,8 @@ namespace Mmcc.Bot.Generators
             public INamedTypeSymbol? ProtobufAnySymbol { get; private set; }
             public INamedTypeSymbol? LoggerSymbol { get; private set; }
             public INamedTypeSymbol? ScopeFactorySymbol { get; private set; }
+            public INamedTypeSymbol? TelemetrySymbol { get; private set; }
+            public INamedTypeSymbol? RequestTelemetrySymbol { get; private set; }
             public List<ClassDeclarationSyntax> Classes { get; }
 
             public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
@@ -46,6 +55,8 @@ namespace Mmcc.Bot.Generators
                 ProtobufAnySymbol ??= context.SemanticModel.Compilation.GetTypeByMetadataName("Google.Protobuf.WellKnownTypes.Any");
                 LoggerSymbol ??= context.SemanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.Logging.ILogger");
                 ScopeFactorySymbol ??= context.SemanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IServiceScopeFactory");
+                TelemetrySymbol ??= context.SemanticModel.Compilation.GetTypeByMetadataName("Microsoft.ApplicationInsights.TelemetryClient");
+                RequestTelemetrySymbol ??= context.SemanticModel.Compilation.GetTypeByMetadataName("Microsoft.ApplicationInsights.DataContracts.RequestTelemetry");
 
                 if (context.Node is ClassDeclarationSyntax { BaseList: { } baseList } cds
                     && baseList.Types.Any(t => IsModuleClass(t, context.SemanticModel, _messageInterfaceSymbol!)))
@@ -73,6 +84,8 @@ namespace Mmcc.Bot.Generators
             private readonly INamedTypeSymbol _protobufAnySymbol;
             private readonly INamedTypeSymbol _loggerSymbol;
             private readonly INamedTypeSymbol _scopeFactorySymbol;
+            private readonly INamedTypeSymbol _telemetrySymbol;
+            private readonly INamedTypeSymbol _requestTelemetrySymbol;
 
             private readonly List<ClassDeclarationSyntax> _classes;
 
@@ -84,6 +97,8 @@ namespace Mmcc.Bot.Generators
                 INamedTypeSymbol protobufAnySymbol,
                 INamedTypeSymbol loggerSymbol,
                 INamedTypeSymbol scopeFactorySymbol,
+                INamedTypeSymbol telemetrySymbol,
+                INamedTypeSymbol requestTelemetrySymbol,
                 List<ClassDeclarationSyntax> classes
             )
             {
@@ -92,6 +107,8 @@ namespace Mmcc.Bot.Generators
                 _protobufAnySymbol = protobufAnySymbol;
                 _loggerSymbol = loggerSymbol;
                 _scopeFactorySymbol = scopeFactorySymbol;
+                _telemetrySymbol = telemetrySymbol;
+                _requestTelemetrySymbol = requestTelemetrySymbol;
                 _classes = classes;
             }
 
@@ -104,6 +121,7 @@ namespace Mmcc.Bot.Generators
                 $@"
 using global::Microsoft.Extensions.Logging;
 using global::Microsoft.Extensions.DependencyInjection;
+using global::Microsoft.ApplicationInsights;
 
 // auto-generated
 namespace {GeneratedNamespace}
@@ -143,14 +161,20 @@ namespace {GeneratedNamespace}
                 var firstMessage = messages.First();
 
                 sb.AppendLine("using var scope = _scopeFactory.CreateScope();");
+                sb.AppendLine($"var telemetry = scope.ServiceProvider.GetRequiredService<{AnnotateTypeWithGlobal(_telemetrySymbol)}>();");
+                sb.AppendLine($"using var operation = telemetry.StartOperation<{AnnotateTypeWithGlobal(_requestTelemetrySymbol)}>(\"Ssmp::TcpMessage\");");
+                sb.AppendLine("operation.Telemetry.Success = false;");
+                sb.AppendLine("operation.Telemetry.ResponseCode = \"INTERNAL_ERROR\";");
                 sb.AppendLine($"var mediator = scope.ServiceProvider.GetRequiredService<{AnnotateTypeWithGlobal(_mediatRInterfaceSymbol)}>();");
                 sb.AppendLine($"var any = {AnnotateTypeWithGlobal(_protobufAnySymbol)}.Parser.ParseFrom(message);\n");
                 sb.AppendLine($"if (any.Is({firstMessage}.Descriptor))");
                 sb.AppendLine("{");
                 sb.AppendLine(Indent($"var msg = any.Unpack<{firstMessage}>();", 1));
-                sb.AppendLine(Indent(
-                    $"var req = new global::{GeneratedNamespace}.TcpRequest<{firstMessage}>(connectedClient, msg);", 1));
+                sb.AppendLine(Indent($"operation.Telemetry.Name = \"{firstMessage}\";", 1));
+                sb.AppendLine(Indent($"var req = new global::{GeneratedNamespace}.TcpRequest<{firstMessage}>(connectedClient, msg);", 1));
                 sb.AppendLine(Indent("await mediator.Send(req);", 1));
+                sb.AppendLine(Indent("operation.Telemetry.Success = true;", 1));
+                sb.AppendLine(Indent("operation.Telemetry.ResponseCode = \"OK\";", 1));
                 sb.AppendLine("}");
 
                 for (var i = 1; i < messages.Count; i++)
@@ -158,15 +182,19 @@ namespace {GeneratedNamespace}
                     sb.AppendLine($"else if (any.Is({messages[i]}.Descriptor))");
                     sb.AppendLine("{");
                     sb.AppendLine(Indent($"var msg = any.Unpack<{messages[i]}>();", 1));
-                    sb.AppendLine(Indent(
-                        $"var req = new global::{GeneratedNamespace}.TcpRequest<{messages[i]}>(connectedClient, msg);", 1));
+                    sb.AppendLine(Indent($"operation.Telemetry.Name = \"{messages[i]}\";", 1));
+                    sb.AppendLine(Indent($"var req = new global::{GeneratedNamespace}.TcpRequest<{messages[i]}>(connectedClient, msg);", 1));
                     sb.AppendLine(Indent("await mediator.Send(req);", 1));
+                    sb.AppendLine(Indent("operation.Telemetry.Success = true;", 1));
+                    sb.AppendLine(Indent("operation.Telemetry.ResponseCode = \"OK\";", 1));
                     sb.AppendLine("}");
                 }
 
                 sb.AppendLine("else");
                 sb.AppendLine("{");
                 sb.AppendLine(Indent($"_logger.LogWarning(\"Received unknown message.\");", 1));
+                sb.AppendLine(Indent("operation.Telemetry.Success = false;", 1));
+                sb.AppendLine(Indent("operation.Telemetry.ResponseCode = \"UNKNOWN_MSG_ERROR\";", 1));
                 sb.Append("}");
 
                 return sb.ToString();

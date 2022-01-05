@@ -17,6 +17,7 @@
         </PackageReference>
         <PackageReference Include="Hangfire" Version="1.7.28" />
         <PackageReference Include="MediatR" Version="9.0.0" />
+        <PackageReference Include="Microsoft.ApplicationInsights" Version="2.20.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
         <PackageReference Include="BetterSsmp" Version="0.0.3" />
         <PackageReference Include="Remora.Discord" Version="3.0.71" />

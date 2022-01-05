@@ -20,8 +20,11 @@ public class RestartNotifierService : TimedBackgroundService<RestartNotifierServ
     private readonly IMediator _mediator;
     private readonly IPolychatService _ps;
 
-    public RestartNotifierService(ILogger<RestartNotifierService> logger, IMediator mediator, IPolychatService ps) 
-        : base(TimeBetweenIterationsInMillis, logger)
+    public RestartNotifierService(
+        ILogger<RestartNotifierService> logger,
+        IMediator mediator,
+        IPolychatService ps
+    ) : base(TimeBetweenIterationsInMillis, logger)
     {
         _mediator = mediator;
         _ps = ps;
