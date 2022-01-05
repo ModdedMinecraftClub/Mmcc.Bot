@@ -45,19 +45,27 @@ public class HelpCommands : CommandGroup
     public async Task<IResult> Help()
     {
         var getEmbedsResult = await _mediator.Send(new GetForAll.Query());
+        
         if (!getEmbedsResult.IsSuccess)
         {
             return getEmbedsResult;
         }
 
-        var embeds = getEmbedsResult.Entity.ToList();
-        return await _dmSender.Send(_context.User.ID, embeds) switch
-        {
-            { IsSuccess: true } =>
-                await _responder.Respond("Help has been sent to your DMs :smile:."),
+        var embedChunks = getEmbedsResult.Entity
+            .Chunk(10)
+            .ToList();
 
-            { IsSuccess: false } res => res
-        };
+        foreach (var embeds in embedChunks)
+        {
+            var sendDmChunkRes = await _dmSender.Send(_context.User.ID, embeds);
+            
+            if (!sendDmChunkRes.IsSuccess)
+            {
+                return sendDmChunkRes;
+            }
+        }
+        
+        return await _responder.Respond("Help has been sent to your DMs :smile:.");
     }
 
     [Command("help")]

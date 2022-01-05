@@ -45,7 +45,7 @@ public static class CommandsSetup
         // in game;
         services.AddCommandGroup<MinecraftServersCommands>();
         services.AddCommandGroup<MinecraftAutoRestartsCommands>();
-                    
+        
         // member apps;
         services.AddCommandGroup<MemberApplicationsCommands>();
 

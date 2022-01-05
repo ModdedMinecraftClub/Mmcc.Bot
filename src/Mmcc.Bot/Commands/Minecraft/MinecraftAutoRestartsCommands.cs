@@ -14,8 +14,8 @@ using Remora.Results;
 
 namespace Mmcc.Bot.Commands.Minecraft;
 
-[Group("mcrestarts", "mcr", "restarts")]
-[Description("Commands for managing automatic restarts.")]
+[Group("restarts")]
+[Description("Commands for managing automatic restarts")]
 [RequireGuild]
 public class MinecraftAutoRestartsCommands : CommandGroup
 {
