@@ -15,6 +15,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Hangfire" Version="1.7.28" />
         <PackageReference Include="MediatR" Version="9.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
         <PackageReference Include="BetterSsmp" Version="0.0.3" />
@@ -27,6 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Mmcc.Bot.Common.Extensions\Mmcc.Bot.Common.Extensions.csproj" />
         <ProjectReference Include="..\Mmcc.Bot.Common\Mmcc.Bot.Common.csproj" />
         <ProjectReference Include="..\Mmcc.Bot.Generators\Mmcc.Bot.Generators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
     </ItemGroup>

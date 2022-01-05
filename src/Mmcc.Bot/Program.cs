@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using FluentValidation;
+using Hangfire;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -68,6 +69,8 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddBotGatewayEventResponders();
         services.AddDiscordCaching();
         services.AddBotBackgroundServices();
+
+        services.AddHangfire();
     })
     .AddDiscordService(provider =>
     {
