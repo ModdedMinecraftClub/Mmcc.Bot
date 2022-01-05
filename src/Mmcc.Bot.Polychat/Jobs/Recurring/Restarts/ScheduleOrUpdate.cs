@@ -9,11 +9,11 @@ namespace Mmcc.Bot.Commands.Minecraft.Restarts;
 
 public class ScheduleOrUpdate
 {
-    public record Query(string ServerId, string CronExpression) : IRequest<Result<RecurringJobDto?>>;
+    public record Command(string ServerId, string CronExpression) : IRequest<Result<RecurringJobDto?>>;
 
-    public class Handler : RequestHandler<Query, Result<RecurringJobDto?>>
+    public class Handler : RequestHandler<Command, Result<RecurringJobDto?>>
     {
-        protected override Result<RecurringJobDto?> Handle(Query request)
+        protected override Result<RecurringJobDto?> Handle(Command request)
         {
             var (serverId, cronExpression) = request;
             var jobId = AutoServerRestartJob.CreateJobId(serverId);

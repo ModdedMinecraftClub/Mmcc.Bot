@@ -18,7 +18,7 @@ public class AutoServerRestartJob
     private readonly IPolychatService _polychatService;
     private readonly IMediator _mediator;
 
-    public static string CreateJobId(string serverId) => $"AUTO_RESTART_{serverId}";
+    public static string CreateJobId(string serverId) => $"{PolychatJobIdPrefixes.Restart}_{serverId}";
 
     public AutoServerRestartJob(
         ILogger<AutoServerRestartJob> logger,
@@ -45,7 +45,7 @@ public class AutoServerRestartJob
 
         for (var i = 5; i > 0; i--)
         {
-            await _mediator.Send(new NotifyAboutRestart.Command(server, TimeSpan.FromSeconds(i)));
+            await _mediator.Send(new Notify.Command(server, TimeSpan.FromSeconds(i)));
             await Task.Delay(1000);
         }
 

@@ -8,7 +8,7 @@ using Remora.Results;
 
 namespace Mmcc.Bot.Polychat.Jobs.Recurring.Restarts;
 
-public class NotifyAboutRestart
+public class Notify
 {
     public record Command(OnlineServer ServerToNotify, TimeSpan TimeUntilRestart) : IRequest<Result>;
     

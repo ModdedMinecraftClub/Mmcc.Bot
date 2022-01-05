@@ -30,7 +30,7 @@ public class RestartNotifierService : TimedBackgroundService<RestartNotifierServ
 
     protected override async Task OnExecute(CancellationToken ct)
     {
-        var upcomingRestarts = await _mediator.Send(new GetUpcomingRestarts.Query(), ct);
+        var upcomingRestarts = await _mediator.Send(new GetUpcoming.Query(), ct);
 
         foreach (var (serverId, job) in upcomingRestarts)
         {
@@ -42,7 +42,7 @@ public class RestartNotifierService : TimedBackgroundService<RestartNotifierServ
                 return;
             }
 
-            await _mediator.Send(new NotifyAboutRestart.Command(server, job.NextExecution!.Value - DateTime.UtcNow), ct);
+            await _mediator.Send(new Notify.Command(server, job.NextExecution!.Value - DateTime.UtcNow), ct);
         }
     }
 }
