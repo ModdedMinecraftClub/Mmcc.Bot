@@ -49,7 +49,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddValidatorsFromAssemblyContaining<MySqlSettingsValidator>();
 
         // Azure stuff;
-        services.AddAzure(hostContext);
+        services.AddAppInsights(hostContext);
 
         // MediatR;
         services.AddMediatR(typeof(CreateFromDiscordMessage), typeof(TcpRequest<>));

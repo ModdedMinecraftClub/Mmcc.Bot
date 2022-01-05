@@ -6,9 +6,9 @@ using Mmcc.Bot.Common.Models.Settings;
 
 namespace Mmcc.Bot.Setup;
 
-public static class AzureSetup
+public static class AppInsightsSetup
 {
-    public static IServiceCollection AddAzure(this IServiceCollection services, HostBuilderContext hostContext)
+    public static IServiceCollection AddAppInsights(this IServiceCollection services, HostBuilderContext hostContext)
     {
         var azureConfig = hostContext.Configuration.GetSection("AzureLogging");
 
