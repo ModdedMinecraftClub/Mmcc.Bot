@@ -47,8 +47,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddValidatorsFromAssemblyContaining<GetExpiredActions>();
         services.AddValidatorsFromAssemblyContaining<DiscordSettings>();
         services.AddValidatorsFromAssemblyContaining<MySqlSettingsValidator>();
-
-        // Azure stuff;
+        
         services.AddAppInsights(hostContext);
 
         // MediatR;
