@@ -1,6 +1,6 @@
 using MediatR;
 using Remora.Discord.API.Abstractions.Objects;
-using Remora.Discord.Core;
+using Remora.Rest.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.Caching.Entities;

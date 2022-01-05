@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
 using Mmcc.Bot.Polychat.Services;
-using Remora.Discord.Core;
+using Remora.Rest.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.Polychat.MessageSenders;

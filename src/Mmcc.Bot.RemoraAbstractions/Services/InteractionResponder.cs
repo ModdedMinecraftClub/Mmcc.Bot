@@ -5,7 +5,7 @@ using Mmcc.Bot.Common.Models.Settings;
 using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
-using Remora.Discord.Core;
+using Remora.Rest.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.RemoraAbstractions.Services;
@@ -38,12 +38,8 @@ public class InteractionResponder : IInteractionResponder
         Snowflake interactionId,
         string interactionToken,
         CancellationToken ct = default
-    ) => await _interactionApi.CreateInteractionResponseAsync(
-        interactionId,
-        interactionToken,
-        new InteractionResponse(InteractionCallbackType.DeferredChannelMessageWithSource),
-        ct
-    );
+    ) => await _interactionApi.CreateInteractionResponseAsync(interactionId, interactionToken,
+        new InteractionResponse(InteractionCallbackType.DeferredChannelMessageWithSource), ct: ct);
         
     public async Task<Result> SendFollowup(string interactionToken, params Embed[] embeds)
     {

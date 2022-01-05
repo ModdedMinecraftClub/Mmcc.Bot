@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
-using Remora.Discord.Core;
+using Remora.Rest.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.Common.Extensions.Remora.Discord.API.Abstractions.Rest

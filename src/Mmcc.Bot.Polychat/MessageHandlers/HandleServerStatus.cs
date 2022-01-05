@@ -11,7 +11,7 @@ using Mmcc.Bot.Polychat.Models.Settings;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
-using Remora.Discord.Core;
+using Remora.Rest.Core;
 
 namespace Mmcc.Bot.Polychat.MessageHandlers;
 

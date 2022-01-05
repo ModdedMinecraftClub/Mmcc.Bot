@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +10,6 @@ using Mmcc.Bot.Polychat.Models.Settings;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
-using Remora.Discord.Core;
 
 namespace Mmcc.Bot.Polychat.MessageHandlers;
 

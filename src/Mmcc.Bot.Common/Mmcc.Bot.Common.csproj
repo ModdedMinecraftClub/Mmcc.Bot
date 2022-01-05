@@ -9,8 +9,8 @@
     <ItemGroup>
         <PackageReference Include="FluentValidation" Version="10.3.3" />
         <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.20.0" />
-        <PackageReference Include="Remora.Commands" Version="7.1.1" />
-        <PackageReference Include="Remora.Discord.API" Version="39.0.1" />
+        <PackageReference Include="Remora.Commands" Version="7.2.0" />
+        <PackageReference Include="Remora.Discord.API" Version="48.0.1" />
         <PackageReference Include="BetterSsmp" Version="0.0.3" />
     </ItemGroup>
 </Project>
