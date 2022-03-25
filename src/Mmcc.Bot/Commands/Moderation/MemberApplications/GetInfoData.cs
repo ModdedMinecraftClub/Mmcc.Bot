@@ -5,7 +5,7 @@ using FluentValidation;
 using MediatR;
 using Mmcc.Bot.Common.Models.Settings;
 using Remora.Discord.API.Abstractions.Rest;
-using Remora.Discord.Core;
+using Remora.Rest.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.Commands.Moderation.MemberApplications;

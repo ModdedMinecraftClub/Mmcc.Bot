@@ -17,22 +17,13 @@ using Remora.Results;
 
 namespace Mmcc.Bot.Middleware;
 
-/// <summary>
-/// Service that handles notifying the user that the command has failed.
-/// </summary>
 public class ErrorNotificationMiddleware : IPostExecutionEvent
 {
     private readonly ILogger<ErrorNotificationMiddleware> _logger;
     private readonly IDiscordRestChannelAPI _channelApi;
     private readonly IColourPalette _colourPalette;
     private readonly DiscordSettings _discordSettings;
-
-    /// <summary>
-    /// Instantiates a new instance of <see cref="ErrorNotificationMiddleware"/>.
-    /// </summary>
-    /// <param name="logger">The logger.</param>
-    /// <param name="channelApi">The channel API.</param>
-    /// <param name="colourPalette">The colour palette.</param>
+    
     public ErrorNotificationMiddleware(
         ILogger<ErrorNotificationMiddleware> logger,
         IDiscordRestChannelAPI channelApi,
@@ -46,7 +37,6 @@ public class ErrorNotificationMiddleware : IPostExecutionEvent
         _discordSettings = discordSettings;
     }
 
-    /// <inheritdoc />
     public async Task<Result> AfterExecutionAsync(
         ICommandContext context,
         IResult executionResult,

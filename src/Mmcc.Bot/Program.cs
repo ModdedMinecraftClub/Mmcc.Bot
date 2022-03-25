@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,13 +20,10 @@ using Mmcc.Bot.Middleware;
 using Mmcc.Bot.Mojang;
 using Mmcc.Bot.Polychat;
 using Mmcc.Bot.RemoraAbstractions;
+using Mmcc.Bot.Setup;
 using Remora.Discord.Caching.Extensions;
 using Remora.Discord.Hosting.Extensions;
 using Serilog;
-using Serilog.Core;
-using Serilog.Events;
-using Serilog.Formatting.Compact;
-using Serilog.Sinks.SystemConsole.Themes;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureLogging((context, builder) =>
@@ -51,6 +47,8 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddValidatorsFromAssemblyContaining<GetExpiredActions>();
         services.AddValidatorsFromAssemblyContaining<DiscordSettings>();
         services.AddValidatorsFromAssemblyContaining<MySqlSettingsValidator>();
+        
+        services.AddAppInsights(hostContext);
 
         // MediatR;
         services.AddMediatR(typeof(CreateFromDiscordMessage), typeof(TcpRequest<>));
@@ -68,35 +66,15 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddBotGatewayEventResponders();
         services.AddDiscordCaching();
         services.AddBotBackgroundServices();
+
+        services.AddHangfire();
     })
     .AddDiscordService(provider =>
     {
         var discordConfig = provider.GetRequiredService<DiscordSettings>();
         return discordConfig.Token;
     })
-    .UseSerilog((_, provider, loggerConfiguration) =>
-    {
-        var isDevelopment = provider.GetRequiredService<IHostEnvironment>().IsDevelopment();
-
-        loggerConfiguration
-            .MinimumLevel.Information()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-            .MinimumLevel.Override("System.Net.Http.HttpClient",
-                isDevelopment ? LogEventLevel.Information : LogEventLevel.Warning)
-            .Enrich.FromLogContext()
-            .WriteTo.Console(
-                outputTemplate: "[{Timestamp:dd/MM/yyyy HH:mm:ss:fff} {Level:u3}] {Message:lj}{NewLine}{Exception}",
-                theme: isDevelopment ? null : AnsiConsoleTheme.Literate
-            )
-            .WriteTo.File(
-                new CompactJsonFormatter(),
-                Path.Combine("logs", "log.clef"),
-                rollingInterval: RollingInterval.Day,
-                retainedFileCountLimit: 14,
-                levelSwitch: new LoggingLevelSwitch(LogEventLevel.Warning)
-            );
-    })
+    .UseSerilog(LoggerSetup.ConfigureLogger)
     .UseDefaultServiceProvider(options => options.ValidateScopes = true)
     .Build();
 

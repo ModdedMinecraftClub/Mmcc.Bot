@@ -10,7 +10,7 @@ using Mmcc.Bot.Database.Entities;
 using Mmcc.Bot.Polychat;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.API.Abstractions.Rest;
-using Remora.Discord.Core;
+using Remora.Rest.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.Commands.Moderation.MemberApplications;

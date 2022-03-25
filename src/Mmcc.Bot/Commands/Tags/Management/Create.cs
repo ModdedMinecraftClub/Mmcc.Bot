@@ -5,7 +5,7 @@ using FluentValidation;
 using MediatR;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Entities;
-using Remora.Discord.Core;
+using Remora.Rest.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.Commands.Tags.Management;

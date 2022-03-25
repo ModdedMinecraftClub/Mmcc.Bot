@@ -5,18 +5,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Commands.Moderation.Bans;
 using Mmcc.Bot.Common.Extensions.Database.Entities;
 using Mmcc.Bot.Common.Extensions.Remora.Discord.API.Abstractions.Rest;
+using Mmcc.Bot.Common.Hosting;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Models.Settings;
 using Mmcc.Bot.Database.Entities;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Results;
-using Remora.Discord.Core;
+using Remora.Rest.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.Hosting.Moderation;
@@ -24,7 +24,7 @@ namespace Mmcc.Bot.Hosting.Moderation;
 /// <summary>
 /// Timed background service that deactivates moderation actions once they have expired.
 /// </summary>
-public class ModerationBackgroundService : BackgroundService
+public class ModerationBackgroundService : TimedBackgroundService<ModerationBackgroundService>
 {
     private readonly IServiceProvider _sp;
     private readonly ILogger<ModerationBackgroundService> _logger;
@@ -32,15 +32,13 @@ public class ModerationBackgroundService : BackgroundService
     private readonly DiscordSettings _discordSettings;
 
     private const int TimeBetweenIterationsInMillis = 2 * 60 * 1000;
-
-    /// <summary>
-    /// Instantiates a new instance of the <see cref="ModerationBackgroundService"/> class.
-    /// </summary>
-    /// <param name="sp">The service provider.</param>
-    /// <param name="logger">The logger.</param>
-    /// <param name="colourPalette">The colour palette.</param>
-    /// <param name="discordSettings">The Discord settings.</param>
-    public ModerationBackgroundService(IServiceProvider sp, ILogger<ModerationBackgroundService> logger, IColourPalette colourPalette, DiscordSettings discordSettings)
+    
+    public ModerationBackgroundService(
+        IServiceProvider sp,
+        ILogger<ModerationBackgroundService> logger,
+        IColourPalette colourPalette,
+        DiscordSettings discordSettings
+    ) : base(TimeBetweenIterationsInMillis, logger)
     {
         _sp = sp;
         _logger = logger;
@@ -48,24 +46,9 @@ public class ModerationBackgroundService : BackgroundService
         _discordSettings = discordSettings;
     }
 
-    /// <inheritdoc />
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task OnExecute(CancellationToken ct)
     {
-        _logger.LogInformation("Starting {service}...", nameof(ModerationBackgroundService));
-        _logger.LogInformation("Started {service}...", nameof(ModerationBackgroundService));
-            
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            await RunIterationAsync(stoppingToken);
-            await Task.Delay(TimeBetweenIterationsInMillis, stoppingToken);
-        }
-
-        _logger.LogInformation("Stopped {service}...", nameof(ModerationBackgroundService));
-    }
-
-    private async Task RunIterationAsync(CancellationToken ct)
-    {
-        _logger.LogDebug("Running an iteration of the {service} timed background service...",
+        _logger.LogDebug("Running an iteration of the {Service} timed background service...",
             nameof(ModerationBackgroundService));
             
         using var scope = _sp.CreateScope();
@@ -78,7 +61,7 @@ public class ModerationBackgroundService : BackgroundService
         if (!getAllPendingResult.IsSuccess)
         {
             _logger.LogError(
-                "An error has occurred while running an iteration of the {service} timed background service:\n{error}",
+                "An error has occurred while running an iteration of the {Service} timed background service:\n{Error}",
                 nameof(ModerationBackgroundService),
                 getAllPendingResult.Error
             );
@@ -94,7 +77,7 @@ public class ModerationBackgroundService : BackgroundService
             if (!getLogsChannel.IsSuccess)
             {
                 _logger.LogError(
-                    "An error has occurred while running an iteration of the {service} timed background service:\n{error}",
+                    "An error has occurred while running an iteration of the {Service} timed background service:\n{Error}",
                     nameof(ModerationBackgroundService),
                     getLogsChannel.Error
                 );
@@ -111,7 +94,7 @@ public class ModerationBackgroundService : BackgroundService
             if (!unbanResult.IsSuccess)
             {
                 _logger.LogError(
-                    "An error has occurred while running an iteration of the {service} timed background service:\n{error}",
+                    "An error has occurred while running an iteration of the {Service} timed background service:\n{Error}",
                     nameof(ModerationBackgroundService),
                     unbanResult.Error
                 );
@@ -148,9 +131,9 @@ public class ModerationBackgroundService : BackgroundService
             if (!sendNotificationResult.IsSuccess)
             {
                 _logger.LogWarning(
-                    "Successfully deactivated expired moderation action with ID: {id} but failed to send a notification to the logs channel." +
+                    "Successfully deactivated expired moderation action with ID: {Id} but failed to send a notification to the logs channel." +
                     "It may be because the bot doesn't have permissions in that channel or has since been removed from the guild. This warning can in most cases be ignored." +
-                    "The error was:\n{error}",
+                    "The error was:\n{Error}",
                     ma.ModerationActionId,
                     sendNotificationResult.Error
                 );
@@ -158,10 +141,10 @@ public class ModerationBackgroundService : BackgroundService
             }
 
             _logger.LogInformation(
-                "Successfully deactivated expired moderation action with ID: {id}.", ma.ModerationActionId);
+                "Successfully deactivated expired moderation action with ID: {Id}", ma.ModerationActionId);
         }
 
-        _logger.LogDebug("Completed an iteration of the {service} timed background service.",
+        _logger.LogDebug("Completed an iteration of the {Service} timed background service",
             nameof(ModerationBackgroundService));
     }
 }

@@ -3,8 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.RemoraAbstractions.Services;
-using Remora.Discord.API.Objects;
-using Remora.Discord.Core;
+using Remora.Rest.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.EventResponders.Buttons;

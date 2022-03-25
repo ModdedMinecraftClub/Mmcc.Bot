@@ -13,7 +13,7 @@ using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Errors;
 using Remora.Discord.API.Objects;
-using Remora.Discord.Core;
+using Remora.Rest.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.Commands.Moderation.Bans;

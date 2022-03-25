@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Mmcc.Bot.Caching;
 using Mmcc.Bot.Caching.Entities;
-using Mmcc.Bot.Common.Extensions.Caching;
 using Mmcc.Bot.Common.Statics;
 using Mmcc.Bot.EventResponders.Buttons;
 using Mmcc.Bot.RemoraAbstractions.Services;
@@ -15,7 +14,7 @@ using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
-using Remora.Discord.Core;
+using Remora.Rest.Core;
 using Remora.Results;
 
 namespace Mmcc.Bot.Commands.Core;
