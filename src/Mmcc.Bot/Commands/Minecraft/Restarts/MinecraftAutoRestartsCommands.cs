@@ -72,6 +72,25 @@ public class MinecraftAutoRestartsCommands : CommandGroup
         };
     }
 
+    [Command("stop", "s")]
+    [Description("Stops a restart job (i.e. stops all future restarts with that ID)")]
+    public async Task<IResult> Stop(string serverId) =>
+        await _mediator.Send(new Stop.Command(serverId)) switch
+        {
+            {IsSuccess: true} =>
+                await _responder.Respond(new Embed
+                {
+                    Title = "Recurring restart has been scheduled successfully.",
+                    Thumbnail = EmbedProperties.MmccLogoThumbnail,
+                    Colour = _colourPalette.Green,
+                    Fields = new EmbedField[]
+                    {
+                        new("Server ID", $"`{serverId}`")
+                    }
+                }),
+            {IsSuccess: false} res => res
+        };
+
     [Command("scheduled", "view", "s", "v")]
     [Description("Views all scheduled recurring restarts.")]
     public async Task<IResult> Scheduled()

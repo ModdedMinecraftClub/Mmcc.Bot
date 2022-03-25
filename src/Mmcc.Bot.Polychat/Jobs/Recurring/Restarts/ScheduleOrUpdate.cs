@@ -2,10 +2,9 @@ using System.Linq;
 using Hangfire;
 using Hangfire.Storage;
 using MediatR;
-using Mmcc.Bot.Polychat.Jobs.Recurring.Restarts;
 using Remora.Results;
 
-namespace Mmcc.Bot.Commands.Minecraft.Restarts;
+namespace Mmcc.Bot.Polychat.Jobs.Recurring.Restarts;
 
 public class ScheduleOrUpdate
 {
