@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Polychat.Abstractions;
 using Mmcc.Bot.Polychat.Models.Settings;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.API.Abstractions.Rest;
-using Remora.Discord.API.Objects;
 
 namespace Mmcc.Bot.Polychat.MessageHandlers;
 
@@ -21,7 +18,6 @@ public class HandlePlayerStatusChangedMessage
         private readonly IPolychatService _polychatService;
         private readonly PolychatSettings _polychatSettings;
         private readonly IDiscordRestChannelAPI _channelApi;
-        private readonly IColourPalette _colourPalette;
 
         public Handler(IPolychatService polychatService, PolychatSettings polychatSettings, IDiscordRestChannelAPI channelApi)
         {
@@ -64,8 +60,7 @@ public class HandlePlayerStatusChangedMessage
             _polychatService.AddOrUpdateOnlineServer(sanitisedId, server);
             await _polychatService.ForwardMessage(sanitisedId, request.Message);
 
-            var messageStr = new PolychatChatMessageString(
-                sanitisedId,
+            var messageStr = new PolychatChatMessageString(sanitisedId,
                 $"{request.Message.PlayerUsername} has {request.Message.NewPlayerStatus.ToString().ToLower()} the game.");
             var getChatChannelResult =
                 await _channelApi.GetChannelAsync(new(_polychatSettings.ChatChannelId), cancellationToken);
@@ -74,11 +69,9 @@ public class HandlePlayerStatusChangedMessage
             {
                 throw new Exception(getChatChannelResult.Error.Message);
             }
-                
-            var sendMessageResult = await _channelApi.CreateMessageAsync(
-                new(_polychatSettings.ChatChannelId),
-                messageStr.ToDiscordFormattedString(),
-                ct: cancellationToken);
+
+            var sendMessageResult = await _channelApi.CreateMessageAsync(new(_polychatSettings.ChatChannelId),
+                messageStr.ToDiscordFormattedString(), ct: cancellationToken);
                     
             if (!sendMessageResult.IsSuccess)
             {
