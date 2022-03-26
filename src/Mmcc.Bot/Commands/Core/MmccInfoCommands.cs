@@ -61,8 +61,7 @@ public class MmccInfoCommands : CommandGroup
         return await _channelApi.CreateMessageAsync(
             channelID: _context.ChannelID,
             content: "Useful links",
-            components: new(components),
-            messageReference: new MessageReference(_context.MessageID, FailIfNotExists: false)
+            components: new(components)
         );
     }
 
