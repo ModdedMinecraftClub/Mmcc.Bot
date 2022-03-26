@@ -13,8 +13,7 @@ public class Stop
     {
         protected override Result Handle(Command request)
         {
-            var (serverId) = request;
-            var jobId = AutoServerRestartJob.CreateJobId(serverId);
+            var jobId = AutoServerRestartJob.CreateJobId(request.ServerId);
 
             try
             {
