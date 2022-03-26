@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,12 +23,11 @@ public class HandlePlayerStatusChangedMessage
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly IColourPalette _colourPalette;
 
-        public Handler(IPolychatService polychatService, PolychatSettings polychatSettings, IDiscordRestChannelAPI channelApi, IColourPalette colourPalette)
+        public Handler(IPolychatService polychatService, PolychatSettings polychatSettings, IDiscordRestChannelAPI channelApi)
         {
             _polychatService = polychatService;
             _polychatSettings = polychatSettings;
             _channelApi = channelApi;
-            _colourPalette = colourPalette;
         }
 
         protected override async Task Handle(TcpRequest<ServerPlayerStatusChangedEvent> request, CancellationToken cancellationToken)
@@ -67,26 +67,19 @@ public class HandlePlayerStatusChangedMessage
             var messageStr = new PolychatChatMessageString(
                 sanitisedId,
                 $"{request.Message.PlayerUsername} has {request.Message.NewPlayerStatus.ToString().ToLower()} the game.");
-            
-            var getChatChannelResult = await _channelApi.GetChannelAsync(new(_polychatSettings.ChatChannelId), cancellationToken);
-            
+            var getChatChannelResult =
+                await _channelApi.GetChannelAsync(new(_polychatSettings.ChatChannelId), cancellationToken);
+                
             if (!getChatChannelResult.IsSuccess)
             {
                 throw new Exception(getChatChannelResult.Error.Message);
             }
-            
-            var colour = request.Message.NewPlayerStatus switch
-            {
-                ServerPlayerStatusChangedEvent.Types.PlayerStatus.Joined => _colourPalette.Green,
-                ServerPlayerStatusChangedEvent.Types.PlayerStatus.Left => _colourPalette.Black,
-                _ => _colourPalette.Gray
-            };
-            var embed = new Embed(messageStr.ToSanitisedString(), Colour: colour);
+                
             var sendMessageResult = await _channelApi.CreateMessageAsync(
                 new(_polychatSettings.ChatChannelId),
-                embeds: new[] {embed},
+                messageStr.ToDiscordFormattedString(),
                 ct: cancellationToken);
-            
+                    
             if (!sendMessageResult.IsSuccess)
             {
                 throw new Exception(getChatChannelResult.Error?.Message ?? "Could not forward message to Discord.");
