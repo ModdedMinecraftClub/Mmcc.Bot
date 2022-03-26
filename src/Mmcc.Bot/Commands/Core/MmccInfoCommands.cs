@@ -46,7 +46,7 @@ public class MmccInfoCommands : CommandGroup
     [Description("Shows useful MMCC links")]
     public async Task<IResult> Mmcc()
     {
-        var usefulLinks = new List<IMessageComponent>
+        var components = new List<IMessageComponent>
         {
             new ActionRowComponent(new List<ButtonComponent>
             {
@@ -58,7 +58,12 @@ public class MmccInfoCommands : CommandGroup
             })
         };
 
-        return await _responder.RespondWithComponents(usefulLinks, "Useful links");
+        return await _channelApi.CreateMessageAsync(
+            channelID: _context.ChannelID,
+            content: "Useful links",
+            components: new(components),
+            messageReference: new MessageReference(_context.MessageID, FailIfNotExists: false)
+        );
     }
 
 #if DEBUG
