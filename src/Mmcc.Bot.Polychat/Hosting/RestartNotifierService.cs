@@ -42,7 +42,12 @@ public class RestartNotifierService : TimedBackgroundService<RestartNotifierServ
                 return;
             }
 
-            await _mediator.Send(new Notify.Command(server, job.NextExecution!.Value - DateTime.UtcNow), ct);
+            var timeUntilRestart = job.NextExecution!.Value - DateTime.UtcNow;
+
+            if (timeUntilRestart >= TimeSpan.Zero)
+            {
+                await _mediator.Send(new Notify.Command(server, timeUntilRestart), ct);
+            }
         }
     }
 }

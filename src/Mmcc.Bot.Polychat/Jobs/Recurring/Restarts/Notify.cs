@@ -22,10 +22,11 @@ public class Notify
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             var (serverToNotify, timeUntilRestart) = request;
-            var timespanString = timeUntilRestart > TimeSpan.FromMinutes(1)
-                ? timeUntilRestart.ToString()
+            var timespanString = timeUntilRestart >= TimeSpan.FromMinutes(1)
+                ? timeUntilRestart.ToString("mm\\:ss") + "m"
                 : $"{timeUntilRestart.TotalSeconds}s";
             var protoMsgContent = $"§d[AutoRestart] §rServer restarting in {timespanString}.";
+            
             var protoMsg = new ChatMessage
             {
                 ServerId = "Discord",
