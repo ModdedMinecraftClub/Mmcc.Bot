@@ -85,7 +85,7 @@ try
 {
     Log.Information("Starting the host...");
     
-    if (host.Services.GetRequiredService<IConfiguration>().GetValue<bool>("migrate"))
+    if (host.Services.GetRequiredService<IConfiguration>().GetValue<bool>(BotCommandLineArgs.Migrate))
     {
         Log.Information("Migrating the database...");
 
