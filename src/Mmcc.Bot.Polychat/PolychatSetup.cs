@@ -21,10 +21,7 @@ public static class PolychatSetup
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     /// <param name="ssmpConfig">The Ssmp config - <see cref="SsmpOptions"/>.</param>
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddPolychat(
-        this IServiceCollection services,
-        IConfigurationSection ssmpConfig
-    )
+    public static IServiceCollection AddPolychat(this IServiceCollection services, IConfigurationSection ssmpConfig)
     {
         services.AddValidatorsFromAssemblyContaining<PolychatSettings>();
             
