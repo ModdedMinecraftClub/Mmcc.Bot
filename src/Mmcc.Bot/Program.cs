@@ -1,6 +1,7 @@
 using System;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,7 @@ using Mmcc.Bot.Behaviours;
 using Mmcc.Bot.Caching;
 using Mmcc.Bot.Commands;
 using Mmcc.Bot.Common.Extensions;
+using Mmcc.Bot.Common.Extensions.Hosting;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Models.Settings;
 using Mmcc.Bot.Database;
@@ -83,9 +85,13 @@ try
 {
     Log.Information("Starting the host...");
     
-    if (EnvironmentExtensions.IsDocker())
+    if (host.Services.GetRequiredService<IConfiguration>().GetValue<bool>("migrate"))
     {
-        await DockerSetup.SetupDocker(host);
+        Log.Information("Migrating the database...");
+
+        await host.Migrate();
+        
+        Log.Information("Database migrated successfully");
     }
     
     await host.RunAsync();

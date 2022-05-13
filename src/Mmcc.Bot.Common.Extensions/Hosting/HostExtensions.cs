@@ -3,21 +3,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Mmcc.Bot.Database;
-using Serilog;
 
-namespace Mmcc.Bot.Setup;
+namespace Mmcc.Bot.Common.Extensions.Hosting;
 
-public static class DockerSetup
+public static class HostExtensions
 {
-    public static async Task SetupDocker(IHost host)
+    public static async Task Migrate(this IHost host)
     {
-        Log.Information("Detected Docker, migrating the database...");
-
         using var scope = host.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<BotContext>().Database;
 
         await db.MigrateAsync();
-        
-        Log.Information("Database migrated successfully");
     }
 }

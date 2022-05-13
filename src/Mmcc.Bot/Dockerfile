@@ -26,4 +26,4 @@ FROM build as publish
 FROM base as final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT [ "dotnet", "Mmcc.Bot.dll" ]
+ENTRYPOINT [ "dotnet", "Mmcc.Bot.dll", "--migrate", "True" ]
