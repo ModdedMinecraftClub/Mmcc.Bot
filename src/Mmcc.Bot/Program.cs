@@ -8,6 +8,7 @@ using Mmcc.Bot;
 using Mmcc.Bot.Behaviours;
 using Mmcc.Bot.Caching;
 using Mmcc.Bot.Commands;
+using Mmcc.Bot.Common.Extensions;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Models.Settings;
 using Mmcc.Bot.Database;
@@ -81,6 +82,12 @@ var host = Host.CreateDefaultBuilder(args)
 try
 {
     Log.Information("Starting the host...");
+    
+    if (EnvironmentExtensions.IsDocker())
+    {
+        await DockerSetup.SetupDocker(host);
+    }
+    
     await host.RunAsync();
 }
 catch (Exception e)
