@@ -9,7 +9,6 @@ using Mmcc.Bot;
 using Mmcc.Bot.Behaviours;
 using Mmcc.Bot.Caching;
 using Mmcc.Bot.Commands;
-using Mmcc.Bot.Common.Extensions;
 using Mmcc.Bot.Common.Extensions.Hosting;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Models.Settings;
