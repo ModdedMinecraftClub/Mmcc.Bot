@@ -8,7 +8,7 @@ using Remora.Discord.API.Abstractions.Gateway.Events;
 using Remora.Discord.Gateway.Responders;
 using Remora.Results;
 
-namespace Mmcc.Bot.Polychat;
+namespace Mmcc.Bot.Polychat.Responders;
 
 public class DiscordChatMessageForwarder : IResponder<IMessageCreate>
 {

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Mmcc.Bot.Polychat.Hosting;
 using Mmcc.Bot.Polychat.Models.Settings;
+using Mmcc.Bot.Polychat.Responders;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.Gateway.Extensions;
 using Ssmp;
