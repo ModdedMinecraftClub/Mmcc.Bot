@@ -2,7 +2,7 @@
 using MediatR;
 using Ssmp;
 
-namespace Mmcc.Bot.Polychat;
+namespace Mmcc.Bot.Polychat.Networking;
 
 /// <summary>
 /// Represents a request coming from a TCP client.

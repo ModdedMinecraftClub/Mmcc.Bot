@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Polychat.Abstractions;
 using Mmcc.Bot.Polychat.Models.Settings;
+using Mmcc.Bot.Polychat.Networking;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.API.Abstractions.Rest;
 

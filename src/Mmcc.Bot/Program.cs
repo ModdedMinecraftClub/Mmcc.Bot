@@ -21,6 +21,7 @@ using Mmcc.Bot.Hosting.Moderation;
 using Mmcc.Bot.Middleware;
 using Mmcc.Bot.Mojang;
 using Mmcc.Bot.Polychat;
+using Mmcc.Bot.Polychat.Networking;
 using Mmcc.Bot.RemoraAbstractions;
 using Mmcc.Bot.Setup;
 using Remora.Discord.Caching.Extensions;
