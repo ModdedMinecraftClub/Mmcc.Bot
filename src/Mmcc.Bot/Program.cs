@@ -84,8 +84,10 @@ var host = Host.CreateDefaultBuilder(args)
 try
 {
     Log.Information("Starting the host...");
+
+    var shouldMigrate = host.Services.GetRequiredService<IConfiguration>().GetValue<bool>(BotCommandLineArgs.Migrate);
     
-    if (host.Services.GetRequiredService<IConfiguration>().GetValue<bool>(BotCommandLineArgs.Migrate))
+    if (shouldMigrate)
     {
         Log.Information("Migrating the database...");
 
