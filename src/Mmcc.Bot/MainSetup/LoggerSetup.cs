@@ -10,7 +10,7 @@ using Serilog.Events;
 using Serilog.Formatting.Compact;
 using Serilog.Sinks.SystemConsole.Themes;
 
-namespace Mmcc.Bot.Setup;
+namespace Mmcc.Bot.MainSetup;
 
 public static class LoggerSetup
 {

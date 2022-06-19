@@ -2,11 +2,11 @@ using System;
 using Hangfire;
 using Hangfire.Storage.MySql;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Database.Settings;
 using Mmcc.Bot.Polychat.Jobs;
-using Microsoft.Extensions.Logging;
 
-namespace Mmcc.Bot.Setup;
+namespace Mmcc.Bot.MainSetup;
 
 public static class HangfireSetup
 {
