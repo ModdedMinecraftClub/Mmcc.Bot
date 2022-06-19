@@ -6,7 +6,7 @@ using Mmcc.Bot.Common.Models.Settings;
 using Mmcc.Bot.Middleware;
 using Remora.Discord.Commands.Services;
 
-namespace Mmcc.Bot.MainSetup;
+namespace Mmcc.Bot.CoreSetup;
 
 public static class AppInsightsSetup
 {

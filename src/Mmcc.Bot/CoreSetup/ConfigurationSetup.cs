@@ -7,7 +7,7 @@ using Mmcc.Bot.Polychat.Models.Settings;
 using Remora.Discord.API.Abstractions.Gateway.Commands;
 using Remora.Discord.Gateway;
 
-namespace Mmcc.Bot.MainSetup;
+namespace Mmcc.Bot.CoreSetup;
 
 /// <summary>
 /// Extension methods to register bot config with the service collection.

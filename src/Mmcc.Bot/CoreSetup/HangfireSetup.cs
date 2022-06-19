@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Database.Settings;
 using Mmcc.Bot.Polychat.Jobs;
 
-namespace Mmcc.Bot.MainSetup;
+namespace Mmcc.Bot.CoreSetup;
 
 public static class HangfireSetup
 {
