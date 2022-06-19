@@ -15,6 +15,9 @@ public record PolychatRequest<T>(
     T Message
 ) : IPolychatRequest where T : IMessage<T>;
 
+/// <summary>
+/// Hacky interface for making <see cref="IRequestResolver"/> work.
+/// </summary>
 public interface IPolychatRequest : IRequest
 {
     public ConnectedClient ConnectedClient { get; init; }
