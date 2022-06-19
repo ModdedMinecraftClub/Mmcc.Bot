@@ -2,15 +2,20 @@
 using MediatR;
 using Ssmp;
 
-namespace Mmcc.Bot.Polychat;
+namespace Mmcc.Bot.Polychat.Networking;
 
 /// <summary>
-/// Represents a request coming from a TCP client.
+/// Represents a request coming from a Polychat client.
 /// </summary>
 /// <param name="ConnectedClient">Request's author.</param>
 /// <param name="Message">Request's body.</param>
 /// <typeparam name="T">Request message type.</typeparam>
-public record TcpRequest<T>(
+public record PolychatRequest<T>(
     ConnectedClient ConnectedClient,
     T Message
-) : IRequest where T : IMessage<T>;
+) : IPolychatRequest, IRequest where T : IMessage<T>;
+
+public interface IPolychatRequest
+{
+    public ConnectedClient ConnectedClient { get; init; }
+}

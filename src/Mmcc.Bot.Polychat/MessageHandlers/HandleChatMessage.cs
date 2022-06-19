@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Polychat.Abstractions;
 using Mmcc.Bot.Polychat.Models.Settings;
+using Mmcc.Bot.Polychat.Networking;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.API.Abstractions.Rest;
 
@@ -11,7 +12,7 @@ namespace Mmcc.Bot.Polychat.MessageHandlers;
 
 public class HandleChatMessage
 {
-    public class Handler : AsyncRequestHandler<TcpRequest<ChatMessage>>
+    public class Handler : AsyncRequestHandler<PolychatRequest<ChatMessage>>
     {
         private readonly IPolychatService _polychatService;
         private readonly IDiscordRestChannelAPI _channelApi;
@@ -24,7 +25,7 @@ public class HandleChatMessage
             _polychatSettings = polychatSettings;
         }
             
-        protected override async Task Handle(TcpRequest<ChatMessage> request, CancellationToken cancellationToken)
+        protected override async Task Handle(PolychatRequest<ChatMessage> request, CancellationToken cancellationToken)
         {
             var protoMessage = request.Message;
             var id = new PolychatServerIdString(protoMessage.ServerId);

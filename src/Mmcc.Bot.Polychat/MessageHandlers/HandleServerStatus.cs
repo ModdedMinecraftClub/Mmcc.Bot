@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Polychat.Abstractions;
 using Mmcc.Bot.Polychat.Models.Settings;
+using Mmcc.Bot.Polychat.Networking;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
@@ -20,7 +21,7 @@ namespace Mmcc.Bot.Polychat.MessageHandlers;
 /// </summary>
 public class HandleServerStatus
 {
-    public class Handler : AsyncRequestHandler<TcpRequest<ServerStatus>>
+    public class Handler : AsyncRequestHandler<PolychatRequest<ServerStatus>>
     {
         private readonly IPolychatService _polychatService;
         private readonly IDiscordRestChannelAPI _channelApi;
@@ -43,7 +44,7 @@ public class HandleServerStatus
             _colourPalette = colourPalette;
         }
 
-        protected override async Task Handle(TcpRequest<ServerStatus> request, CancellationToken cancellationToken)
+        protected override async Task Handle(PolychatRequest<ServerStatus> request, CancellationToken cancellationToken)
         {
             var msg = request.Message;
             var serverId = new PolychatServerIdString(msg.ServerId);

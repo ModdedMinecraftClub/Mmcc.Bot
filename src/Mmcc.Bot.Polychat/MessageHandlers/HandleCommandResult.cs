@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot.Common.Models.Colours;
+using Mmcc.Bot.Polychat.Networking;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Rest.Core;
@@ -15,7 +16,7 @@ namespace Mmcc.Bot.Polychat.MessageHandlers;
 
 public class HandleCommandResult
 {
-    public class CommandResultHandler : AsyncRequestHandler<TcpRequest<GenericCommandResult>>
+    public class CommandResultHandler : AsyncRequestHandler<PolychatRequest<GenericCommandResult>>
     {
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly ILogger<CommandResultHandler> _logger;
@@ -28,7 +29,7 @@ public class HandleCommandResult
             _colourPalette = colourPalette;
         }
 
-        protected override async Task Handle(TcpRequest<GenericCommandResult> request, CancellationToken cancellationToken)
+        protected override async Task Handle(PolychatRequest<GenericCommandResult> request, CancellationToken cancellationToken)
         {
             var msg = request.Message;
             // we want an exception if failed, as the handler can't proceed if failed, hence Parse instead of TryParse;

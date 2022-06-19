@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Polychat.Abstractions;
 using Mmcc.Bot.Polychat.Models.Settings;
+using Mmcc.Bot.Polychat.Networking;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.API.Abstractions.Rest;
 
@@ -13,7 +14,7 @@ namespace Mmcc.Bot.Polychat.MessageHandlers;
 
 public class HandlePlayerStatusChangedMessage
 {
-    public class Handler : AsyncRequestHandler<TcpRequest<ServerPlayerStatusChangedEvent>>
+    public class Handler : AsyncRequestHandler<PolychatRequest<ServerPlayerStatusChangedEvent>>
     {
         private readonly IPolychatService _polychatService;
         private readonly PolychatSettings _polychatSettings;
@@ -26,7 +27,7 @@ public class HandlePlayerStatusChangedMessage
             _channelApi = channelApi;
         }
 
-        protected override async Task Handle(TcpRequest<ServerPlayerStatusChangedEvent> request, CancellationToken cancellationToken)
+        protected override async Task Handle(PolychatRequest<ServerPlayerStatusChangedEvent> request, CancellationToken cancellationToken)
         {
             var serverId = new PolychatServerIdString(request.Message.NewPlayersOnline.ServerId);
             var sanitisedId = serverId.ToSanitisedUppercase();

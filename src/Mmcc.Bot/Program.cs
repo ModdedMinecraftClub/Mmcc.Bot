@@ -9,7 +9,6 @@ using Mmcc.Bot;
 using Mmcc.Bot.Behaviours;
 using Mmcc.Bot.Caching;
 using Mmcc.Bot.Commands;
-using Mmcc.Bot.Common.Extensions;
 using Mmcc.Bot.Common.Extensions.Hosting;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Models.Settings;
@@ -22,6 +21,7 @@ using Mmcc.Bot.Hosting.Moderation;
 using Mmcc.Bot.Middleware;
 using Mmcc.Bot.Mojang;
 using Mmcc.Bot.Polychat;
+using Mmcc.Bot.Polychat.Networking;
 using Mmcc.Bot.RemoraAbstractions;
 using Mmcc.Bot.Setup;
 using Remora.Discord.Caching.Extensions;
@@ -54,7 +54,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddAppInsights(hostContext);
 
         // MediatR;
-        services.AddMediatR(typeof(CreateFromDiscordMessage), typeof(TcpRequest<>));
+        services.AddMediatR(typeof(CreateFromDiscordMessage), typeof(PolychatRequest<>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 
         // Mmcc.Bot.X projects;
