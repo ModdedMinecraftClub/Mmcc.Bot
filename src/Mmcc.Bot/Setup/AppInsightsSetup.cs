@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Mmcc.Bot.Common.Extensions.Microsoft.Extensions.DependencyInjection;
 using Mmcc.Bot.Common.Models.Settings;
+using Mmcc.Bot.Middleware;
+using Remora.Discord.Commands.Services;
 
 namespace Mmcc.Bot.Setup;
 
@@ -17,24 +19,12 @@ public static class AppInsightsSetup
         var azureLoggingEnabled = azureConfig.GetValue<bool>("Enabled");
         var instrumentationKey = azureConfig.GetValue<string>("InstrumentationKey");
 
-        if (!azureLoggingEnabled)
+        if (azureLoggingEnabled)
         {
-            services.AddApplicationInsightsTelemetryWorkerService(o =>
-            {
-                o.InstrumentationKey = instrumentationKey;
-                o.EnableDiagnosticsTelemetryModule = false;
-                o.EnableDependencyTrackingTelemetryModule = false;
-                o.EnableEventCounterCollectionModule = false;
-                o.EnablePerformanceCounterCollectionModule = false;
-                o.EnableAppServicesHeartbeatTelemetryModule = false;
-                o.EnableAzureInstanceMetadataTelemetryModule = false;
-            });
-        }
-        else
-        {
+            services.AddScoped<IPostExecutionEvent, TelemetryMiddleware>();
             services.AddApplicationInsightsTelemetryWorkerService(instrumentationKey);
         }
-        
+
         return services;
     }
 }
