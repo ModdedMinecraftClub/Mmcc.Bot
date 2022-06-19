@@ -21,7 +21,7 @@ namespace Mmcc.Bot.Polychat.MessageHandlers;
 /// </summary>
 public class HandleServerStatus
 {
-    public class Handler : AsyncRequestHandler<TcpRequest<ServerStatus>>
+    public class Handler : AsyncRequestHandler<PolychatRequest<ServerStatus>>
     {
         private readonly IPolychatService _polychatService;
         private readonly IDiscordRestChannelAPI _channelApi;
@@ -44,7 +44,7 @@ public class HandleServerStatus
             _colourPalette = colourPalette;
         }
 
-        protected override async Task Handle(TcpRequest<ServerStatus> request, CancellationToken cancellationToken)
+        protected override async Task Handle(PolychatRequest<ServerStatus> request, CancellationToken cancellationToken)
         {
             var msg = request.Message;
             var serverId = new PolychatServerIdString(msg.ServerId);

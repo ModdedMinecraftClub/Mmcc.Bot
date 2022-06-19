@@ -54,7 +54,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddAppInsights(hostContext);
 
         // MediatR;
-        services.AddMediatR(typeof(CreateFromDiscordMessage), typeof(TcpRequest<>));
+        services.AddMediatR(typeof(CreateFromDiscordMessage), typeof(PolychatRequest<>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 
         // Mmcc.Bot.X projects;

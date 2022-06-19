@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Mmcc.Bot.Polychat.Hosting;
 using Mmcc.Bot.Polychat.Models.Settings;
+using Mmcc.Bot.Polychat.Networking;
 using Mmcc.Bot.Polychat.Responders;
 using Mmcc.Bot.Polychat.Services;
 using Remora.Discord.Gateway.Extensions;
@@ -29,8 +30,11 @@ public static class PolychatSetup
         services.AddScoped<IDiscordSanitiserService, DiscordSanitiserService>();
         services.AddSingleton<IPolychatService, PolychatService>();
             
-        services.AddSsmp<SsmpHandler>(ssmpConfig);
-            
+        services.AddSsmp<TcpMessageHandler>(ssmpConfig);
+        services.AddScoped<PolychatMessageContext>();
+        services.AddScoped<IRequestResolver, RequestResolver>();
+        services.AddScoped<IScopedAsyncPolychatMessageHandler, ScopedAsyncPolychatMessageHandler>();
+        
         services.AddResponder<DiscordChatMessageForwarder>();
             
         services.AddHostedService<BroadcastsHostedService>();

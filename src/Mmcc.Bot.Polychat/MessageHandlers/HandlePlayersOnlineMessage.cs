@@ -9,7 +9,7 @@ namespace Mmcc.Bot.Polychat.MessageHandlers;
 
 public class HandlePlayersOnlineMessage
 {
-    public class Handler : RequestHandler<TcpRequest<ServerPlayersOnline>>
+    public class Handler : RequestHandler<PolychatRequest<ServerPlayersOnline>>
     {
         private readonly IPolychatService _polychatService;
 
@@ -18,7 +18,7 @@ public class HandlePlayersOnlineMessage
             _polychatService = polychatService;
         }
 
-        protected override void Handle(TcpRequest<ServerPlayersOnline> request)
+        protected override void Handle(PolychatRequest<ServerPlayersOnline> request)
         {
             var serverId = new PolychatServerIdString(request.Message.ServerId);
             var sanitisedId = serverId.ToSanitisedUppercase();

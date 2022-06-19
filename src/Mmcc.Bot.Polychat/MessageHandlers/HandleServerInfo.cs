@@ -12,7 +12,7 @@ namespace Mmcc.Bot.Polychat.MessageHandlers;
 /// </summary>
 public class HandleServerInfo
 {
-    public class Handler : RequestHandler<TcpRequest<ServerInfo>>
+    public class Handler : RequestHandler<PolychatRequest<ServerInfo>>
     {
         private readonly ILogger<HandleServerInfo> _logger;
         private readonly IPolychatService _polychatService;
@@ -23,7 +23,7 @@ public class HandleServerInfo
             _polychatService = polychatService;
         }
 
-        protected override void Handle(TcpRequest<ServerInfo> request)
+        protected override void Handle(PolychatRequest<ServerInfo> request)
         {
             var onlineServer = new OnlineServer(request.Message, request.ConnectedClient);
             var id = new PolychatServerIdString(request.Message.ServerId);
