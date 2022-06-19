@@ -16,7 +16,6 @@ public static class MiddlewareSetup
     public static IServiceCollection AddBotMiddlewares(this IServiceCollection services)
     {
         services.AddScoped<IPostExecutionEvent, ErrorNotificationMiddleware>();
-        services.AddScoped<IPostExecutionEvent, TelemetryMiddleware>();
 
         return services;
     }
