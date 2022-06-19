@@ -8,7 +8,7 @@ using Remora.Results;
 namespace Mmcc.Bot.Polychat.Networking;
 
 /// <summary>
-/// Asynchronous coped handler for Polychat messages.
+/// Asynchronous handler for Polychat messages.
 /// </summary>
 ///
 /// <remarks>
