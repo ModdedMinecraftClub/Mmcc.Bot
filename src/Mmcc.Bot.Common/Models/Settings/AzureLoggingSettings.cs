@@ -13,7 +13,7 @@ public class AzureLoggingSettingsValidator : AbstractValidator<AzureLoggingSetti
     public AzureLoggingSettingsValidator()
     {
         RuleFor(s => s.Enabled)
-            .NotEmpty();
+            .NotNull();
 
         RuleFor(s => s.InstrumentationKey)
             .NotEmpty().When(s => s.Enabled);
