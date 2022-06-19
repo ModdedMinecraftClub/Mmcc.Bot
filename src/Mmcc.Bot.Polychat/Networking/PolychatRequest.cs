@@ -13,9 +13,9 @@ namespace Mmcc.Bot.Polychat.Networking;
 public record PolychatRequest<T>(
     ConnectedClient ConnectedClient,
     T Message
-) : IPolychatRequest, IRequest where T : IMessage<T>;
+) : IPolychatRequest where T : IMessage<T>;
 
-public interface IPolychatRequest
+public interface IPolychatRequest : IRequest
 {
     public ConnectedClient ConnectedClient { get; init; }
 }
