@@ -9,27 +9,27 @@ namespace Mmcc.Bot.Common.Hosting;
 /// <summary>
 /// Represents a timed background service
 /// </summary>
-public abstract class TimedBackgroundService<TLogger> : BackgroundService
+public abstract class TimedBackgroundService<TLogger> : BackgroundService, IDisposable
 {
     private readonly ILogger<TLogger> _logger;
-    private readonly int _timeBetweenIterationsInMillis;
+    private readonly PeriodicTimer _timer;
 
     /// <summary>
     /// Instantiates a new instance of <see cref="TimedBackgroundService{TLogger}"/>.
     /// </summary>
-    /// <param name="timeBetweenIterationsInMillis">Time between each iteration of <see cref="OnExecute"/> is ran.</param>
+    /// <param name="periodBetweenIterations"><see cref="TimeSpan"/> between each iteration of <see cref="OnExecute"/> is run.</param>
     /// <param name="logger">The logger.</param>
-    protected TimedBackgroundService(int timeBetweenIterationsInMillis, ILogger<TLogger> logger)
+    protected TimedBackgroundService(TimeSpan periodBetweenIterations, ILogger<TLogger> logger)
     {
-        _timeBetweenIterationsInMillis = timeBetweenIterationsInMillis;
         _logger = logger;
+        _timer = new(periodBetweenIterations);
     }
 
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
         _logger.LogInformation("Started service: {Service}", typeof(TLogger).ToString());
         
-        while (!ct.IsCancellationRequested)
+        while (await _timer.WaitForNextTickAsync(ct) && !ct.IsCancellationRequested)
         {
             try
             {
@@ -39,8 +39,6 @@ public abstract class TimedBackgroundService<TLogger> : BackgroundService
             {
                 _logger.LogError(e, "An exception has occurred while running {Service}", typeof(TLogger).ToString());
             }
-            
-            await Task.Delay(_timeBetweenIterationsInMillis, ct);
         }
     }
 
@@ -50,4 +48,10 @@ public abstract class TimedBackgroundService<TLogger> : BackgroundService
     /// <param name="ct">A <see cref="CancellationToken"/>.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     protected abstract Task OnExecute(CancellationToken ct);
+
+    public override void Dispose()
+    {
+        _timer.Dispose();
+        base.Dispose();
+    }
 }
