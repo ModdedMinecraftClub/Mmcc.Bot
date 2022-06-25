@@ -9,8 +9,8 @@ namespace Mmcc.Bot.Generators
     [Generator]
     public class RequestResolverGenerator : ISourceGenerator
     {
-        public void Initialize(GeneratorInitializationContext context) =>
-            context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
+        public void Initialize(GeneratorInitializationContext context)
+            => context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
 
         public void Execute(GeneratorExecutionContext context)
         {
@@ -27,8 +27,8 @@ namespace Mmcc.Bot.Generators
         {
             private INamedTypeSymbol? _protoMessageInterfaceSymbol;
             
-            public SyntaxReceiver() =>
-                PolychatMessageClasses = new();
+            public SyntaxReceiver()
+                => PolychatMessageClasses = new();
             
             public INamedTypeSymbol? PolychatRequestInterfaceSymbol { get; private set; }
 
