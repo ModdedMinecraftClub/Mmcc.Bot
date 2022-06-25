@@ -65,7 +65,7 @@ public class ScopedAsyncPolychatMessageHandler : IScopedAsyncPolychatMessageHand
             }
             
             return Result.FromError(
-                new UnknownMessageType($"Could not find a matching request type for '{_msgContext.RawTypeUrl}'"));
+                new UnknownMessageTypeError($"Could not find a matching request type for '{_msgContext.RawTypeUrl}'"));
         }
 
         await _mediator.Send(req);
