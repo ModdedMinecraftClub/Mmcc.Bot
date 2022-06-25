@@ -56,7 +56,8 @@ public class BroadcastsBackgroundService : BackgroundService
             return;
         }
         
-        _timer = new PeriodicTimer(_periodBetweenIterations);
+        _timer = new(_periodBetweenIterations);
+        
         _logger.LogInformation("Started {Service}...", nameof(BroadcastsBackgroundService));
         
         while (await _timer.WaitForNextTickAsync(ct) && !ct.IsCancellationRequested)
