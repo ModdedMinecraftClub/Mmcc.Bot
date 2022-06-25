@@ -9,19 +9,19 @@ using Mmcc.Bot.Polychat.Services;
 
 namespace Mmcc.Bot.Polychat.Hosting;
 
-public class RestartNotifierService : TimedBackgroundService<RestartNotifierService>
+public class RestartNotifierBackgroundService : TimedBackgroundService<RestartNotifierBackgroundService>
 {
-    private const int TimeBetweenIterationsInMillis = 30 * 1000;
-
-    private readonly ILogger<RestartNotifierService> _logger;
+    private readonly ILogger<RestartNotifierBackgroundService> _logger;
     private readonly IMediator _mediator;
     private readonly IPolychatService _ps;
 
-    public RestartNotifierService(
-        ILogger<RestartNotifierService> logger,
+    private static readonly TimeSpan TimeBetweenIterations = TimeSpan.FromSeconds(30);
+
+    public RestartNotifierBackgroundService(
+        ILogger<RestartNotifierBackgroundService> logger,
         IMediator mediator,
         IPolychatService ps
-    ) : base(TimeBetweenIterationsInMillis, logger)
+    ) : base(TimeBetweenIterations, logger)
     {
         _mediator = mediator;
         _ps = ps;
