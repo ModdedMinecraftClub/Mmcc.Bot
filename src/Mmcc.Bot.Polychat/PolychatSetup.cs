@@ -38,7 +38,7 @@ public static class PolychatSetup
         services.AddResponder<DiscordChatMessageForwarder>();
             
         services.AddHostedService<BroadcastsHostedService>();
-        services.AddHostedService<RestartNotifierService>();
+        services.AddHostedService<RestartNotifierBackgroundService>();
 
         return services;
     }
