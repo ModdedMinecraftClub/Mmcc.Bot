@@ -81,7 +81,7 @@ public class BroadcastsBackgroundService : BackgroundService
 
     private async ValueTask Broadcast()
     {
-        var msg = _broadcastMessages![_broadcastMessagesIndex]!;
+        var msg = _broadcastMessages![_broadcastMessagesIndex];
         var proto = new ChatMessage
         {
             ServerId = _id!,
