@@ -85,7 +85,7 @@ try
 {
     Log.Information("Starting the host...");
 
-    var shouldMigrate = host.Services.GetRequiredService<CommandLineArguments>().ShouldMigrate;
+    var shouldMigrate = host.Services.GetService<CommandLineArguments>()?.ShouldMigrate ?? false;
     
     if (shouldMigrate)
     {
