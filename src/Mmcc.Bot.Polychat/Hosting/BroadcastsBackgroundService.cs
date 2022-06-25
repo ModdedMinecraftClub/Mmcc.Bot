@@ -65,7 +65,7 @@ public class BroadcastsBackgroundService : BackgroundService
         }
     }
     
-    private async Task OnExecute()
+    private async ValueTask OnExecute()
     {
         try
         {
