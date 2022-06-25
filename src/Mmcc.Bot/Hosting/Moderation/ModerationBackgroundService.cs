@@ -30,15 +30,15 @@ public class ModerationBackgroundService : TimedBackgroundService<ModerationBack
     private readonly ILogger<ModerationBackgroundService> _logger;
     private readonly IColourPalette _colourPalette;
     private readonly DiscordSettings _discordSettings;
-
-    private const int TimeBetweenIterationsInMillis = 2 * 60 * 1000;
+    
+    private static readonly TimeSpan TimeBetweenIterations = TimeSpan.FromMinutes(2);
     
     public ModerationBackgroundService(
         IServiceProvider sp,
         ILogger<ModerationBackgroundService> logger,
         IColourPalette colourPalette,
         DiscordSettings discordSettings
-    ) : base(TimeBetweenIterationsInMillis, logger)
+    ) : base(TimeBetweenIterations, logger)
     {
         _sp = sp;
         _logger = logger;
