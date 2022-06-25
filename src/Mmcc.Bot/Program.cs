@@ -85,7 +85,7 @@ try
 {
     Log.Information("Starting the host...");
 
-    var shouldMigrate = host.Services.GetRequiredService<IConfiguration>().GetValue<bool>(BotCommandLineArgs.Migrate);
+    var shouldMigrate = host.Services.GetRequiredService<CommandLineArguments>().ShouldMigrate;
     
     if (shouldMigrate)
     {
@@ -100,7 +100,7 @@ try
 }
 catch (Exception e)
 {
-    Log.Fatal(e, "Host terminated unexpectedly.");
+    Log.Fatal(e, "Host terminated unexpectedly");
 }
 finally
 {

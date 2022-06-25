@@ -25,6 +25,10 @@ public static class ConfigurationSetup
         HostBuilderContext hostContext
     )
     {
+        // add command line args config;
+        services.AddSingleton<CommandLineArguments>();
+        
+        // add JSON (appsettings.json/appsettings.Development.json) config;
         services.AddConfigWithValidation<MySqlSettings, MySqlSettingsValidator>(
             hostContext.Configuration.GetSection("MySql"));
         services.AddConfigWithValidation<DiscordSettings, DiscordSettingsValidator>(
@@ -32,6 +36,7 @@ public static class ConfigurationSetup
         services.AddConfigWithValidation<PolychatSettings, PolychatSettingsValidator>(
             hostContext.Configuration.GetSection("Polychat"));
 
+        // configure Discord gateway;
         services.Configure<DiscordGatewayClientOptions>(options =>
         {
             options.Intents =
