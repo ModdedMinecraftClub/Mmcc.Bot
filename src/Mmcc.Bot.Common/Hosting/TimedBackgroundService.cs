@@ -9,7 +9,7 @@ namespace Mmcc.Bot.Common.Hosting;
 /// <summary>
 /// Represents a timed background service
 /// </summary>
-public abstract class TimedBackgroundService<TLogger> : BackgroundService, IDisposable
+public abstract class TimedBackgroundService<TLogger> : BackgroundService
 {
     private readonly ILogger<TLogger> _logger;
     private readonly PeriodicTimer _timer;
