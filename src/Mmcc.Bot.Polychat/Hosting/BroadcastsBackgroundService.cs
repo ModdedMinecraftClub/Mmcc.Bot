@@ -92,4 +92,10 @@ public class BroadcastsBackgroundService : BackgroundService
             
         await _ps.BroadcastMessage(proto);
     }
+
+    public override void Dispose()
+    {
+        _timer?.Dispose();
+        base.Dispose();
+    }
 }

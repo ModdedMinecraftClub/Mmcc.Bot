@@ -48,4 +48,10 @@ public abstract class TimedBackgroundService<TLogger> : BackgroundService
     /// <param name="ct">A <see cref="CancellationToken"/>.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     protected abstract Task OnExecute(CancellationToken ct);
+
+    public override void Dispose()
+    {
+        _timer.Dispose();
+        base.Dispose();
+    }
 }
