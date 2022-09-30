@@ -115,7 +115,7 @@ public class MemberApplicationsCommands : CommandGroup
         await _mediator.Send(new GetById.Query
             {
                 ApplicationId = id,
-                GuildId = _context.Message.GuildID.Value
+                GuildId = _context.GuildID.Value
             }) switch
             {
                 { IsSuccess: true, Entity: { } e } =>
@@ -134,7 +134,7 @@ public class MemberApplicationsCommands : CommandGroup
     [Command("next", "n")]
     [Description("Views the next pending application in the queue")]
     public async Task<IResult> ViewNextPending() =>
-        await _mediator.Send(new GetNextPending.Query { GuildId = _context.Message.GuildID.Value }) switch
+        await _mediator.Send(new GetNextPending.Query { GuildId = _context.GuildID.Value }) switch
         {
             { IsSuccess: true, Entity: { } e } =>
                 await _responder.Respond(e.GetEmbed(_colourPalette)),
@@ -168,7 +168,7 @@ public class MemberApplicationsCommands : CommandGroup
 
         return await _mediator.Send(new GetByStatus.Query
             {
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 ApplicationStatus = ApplicationStatus.Pending,
                 Limit = 25,
                 SortByDescending = false
@@ -202,7 +202,7 @@ public class MemberApplicationsCommands : CommandGroup
 
         return await _mediator.Send(new GetByStatus.Query
             {
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 ApplicationStatus = ApplicationStatus.Approved,
                 Limit = 10,
                 SortByDescending = true
@@ -236,7 +236,7 @@ public class MemberApplicationsCommands : CommandGroup
 
         return await _mediator.Send(new GetByStatus.Query
             {
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 ApplicationStatus = ApplicationStatus.Rejected,
                 Limit = 10,
                 SortByDescending = true
@@ -265,7 +265,7 @@ public class MemberApplicationsCommands : CommandGroup
     [RequireUserGuildPermission(DiscordPermission.BanMembers)]
     public async Task<IResult> Approve(int id, string serverPrefix, List<string> ignsList)
     {
-        var getMembersChannelResult = await _guildApi.FindGuildChannelByName(_context.Message.GuildID.Value,
+        var getMembersChannelResult = await _guildApi.FindGuildChannelByName(_context.GuildID.Value,
             _discordSettings.ChannelNames.MemberApps);
         if (!getMembersChannelResult.IsSuccess)
         {
@@ -275,7 +275,7 @@ public class MemberApplicationsCommands : CommandGroup
         var commandResult = await _mediator.Send(new ApproveAutomatically.Command
         {
             Id = id,
-            GuildId = _context.Message.GuildID.Value,
+            GuildId = _context.GuildID.Value,
             ChannelId = _context.ChannelID,
             ServerPrefix = serverPrefix,
             Igns = ignsList
@@ -327,7 +327,7 @@ public class MemberApplicationsCommands : CommandGroup
     [RequireUserGuildPermission(DiscordPermission.BanMembers)]
     public async Task<IResult> Reject(int id, [Greedy] string reason)
     {
-        var getMembersChannelResult = await _guildApi.FindGuildChannelByName(_context.Message.GuildID.Value,
+        var getMembersChannelResult = await _guildApi.FindGuildChannelByName(_context.GuildID.Value,
             _discordSettings.ChannelNames.MemberApps);
         if (!getMembersChannelResult.IsSuccess)
         {
@@ -335,7 +335,7 @@ public class MemberApplicationsCommands : CommandGroup
         }
 
         var rejectCommandResult = await _mediator.Send(new Reject.Command
-            {Id = id, GuildId = _context.Message.GuildID.Value});
+            {Id = id, GuildId = _context.GuildID.Value});
         if (!rejectCommandResult.IsSuccess)
         {
             return rejectCommandResult;

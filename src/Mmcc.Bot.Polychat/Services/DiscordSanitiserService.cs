@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Mmcc.Bot.Polychat.Abstractions;
+using Remora.Discord.API.Abstractions.Gateway.Events;
 using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Rest.Core;
@@ -64,10 +65,14 @@ public class DiscordSanitiserService : IDiscordSanitiserService
     public async Task<string> SanitiseMessageContent(IMessage message)
     {
         var s = message.Content;
-            
-        s = SanitiseUsernameAndNicknameMentions(s, message.Mentions);
-        s = await SanitiseChannelMentions(s, message.GuildID);
-        s = await SanitiseRoleMentions(s, message.GuildID);
+
+        if (message is IMessageCreate msgCreateEv)
+        {
+            s = SanitiseUsernameAndNicknameMentions(s, msgCreateEv.Mentions);
+            s = await SanitiseChannelMentions(s, msgCreateEv.GuildID);
+            s = await SanitiseRoleMentions(s, msgCreateEv.GuildID);
+        }
+        
         s = SanitiseStandardEmoji(s);
         s = SanitiseCustomEmoji(s);
         s = s.Replace("️", " ");

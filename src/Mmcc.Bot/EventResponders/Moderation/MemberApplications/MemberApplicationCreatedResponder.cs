@@ -68,7 +68,7 @@ public class MemberApplicationCreatedResponder : IResponder<IMessageCreate>
         }
             
         // return if the message isn't in #member-apps;
-        if (!channelName.Value.Equals(_discordSettings.ChannelNames.MemberApps))
+        if (!channelName.Value!.Equals(_discordSettings.ChannelNames.MemberApps))
         {
             return Result.FromSuccess();
         }

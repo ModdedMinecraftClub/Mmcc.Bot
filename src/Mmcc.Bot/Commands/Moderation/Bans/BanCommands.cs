@@ -68,7 +68,7 @@ public class BanCommands : CommandGroup
     public async Task<IResult> BanDiscord(IUser user, ExpiryDate expiryDate, [Greedy] string reason) =>
         await _mediator.Send(new BanModerationAction.Command
             {
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 ChannelId = _context.ChannelID,
                 UserDiscordId = user.ID,
                 Reason = reason,
@@ -100,7 +100,7 @@ public class BanCommands : CommandGroup
     public async Task<IResult> BanIg(string ign, ExpiryDate expiryDate, [Greedy] string reason) =>
         await _mediator.Send(new BanModerationAction.Command
             {
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 ChannelId = _context.ChannelID,
                 UserIgn = ign,
                 Reason = reason,
@@ -133,7 +133,7 @@ public class BanCommands : CommandGroup
         [Greedy] string reason) =>
         await _mediator.Send(new BanModerationAction.Command
             {
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 ChannelId = _context.ChannelID,
                 UserIgn = ign,
                 Reason = reason,

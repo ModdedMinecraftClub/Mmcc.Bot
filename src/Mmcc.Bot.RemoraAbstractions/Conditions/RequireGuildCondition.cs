@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
 using Remora.Commands.Conditions;
-using Remora.Commands.Results;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
 
@@ -27,10 +26,9 @@ public class RequireGuildCondition : ICondition<RequireGuildAttribute>
     /// <inheritdoc />
     public ValueTask<Result> CheckAsync(RequireGuildAttribute attribute, CancellationToken ct)
     {
-        var guild = _context.Message.GuildID;
+        var guild = _context.GuildID;
         return new(!guild.HasValue
-            ? new ConditionNotSatisfiedError(
-                "Command that requires to be executed within a guild was executed outside of one")
+            ? new InvalidOperationError("Command that requires to be executed within a guild was executed outside of one")
             : Result.FromSuccess());
     }
 }

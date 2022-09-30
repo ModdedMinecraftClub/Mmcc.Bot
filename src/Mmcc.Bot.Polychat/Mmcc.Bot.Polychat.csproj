@@ -8,19 +8,19 @@
 
     <ItemGroup>
         <PackageReference Include="EmojiOne.NETStandard" Version="4.0.1" />
-        <PackageReference Include="FluentValidation" Version="10.3.3" />
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.3.3" />
-        <PackageReference Include="Google.Protobuf" Version="3.18.1" />
-        <PackageReference Include="Grpc.Tools" Version="2.41.0">
+        <PackageReference Include="FluentValidation" Version="11.2.2" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.2.2" />
+        <PackageReference Include="Google.Protobuf" Version="3.21.7" />
+        <PackageReference Include="Grpc.Tools" Version="2.49.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Hangfire" Version="1.7.28" />
-        <PackageReference Include="MediatR" Version="9.0.0" />
-        <PackageReference Include="Microsoft.ApplicationInsights" Version="2.20.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+        <PackageReference Include="MediatR" Version="10.0.1" />
+        <PackageReference Include="Microsoft.ApplicationInsights" Version="2.21.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0-rc.1.22426.10" />
         <PackageReference Include="BetterSsmp" Version="0.0.3" />
-        <PackageReference Include="Remora.Discord" Version="2022.3.0" />
+        <PackageReference Include="Remora.Discord" Version="2022.48.0" />
     </ItemGroup>
 
     <ItemGroup>

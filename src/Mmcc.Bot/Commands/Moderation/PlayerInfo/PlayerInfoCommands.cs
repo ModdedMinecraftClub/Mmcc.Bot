@@ -86,7 +86,7 @@ public class PlayerInfoCommands : CommandGroup
 
         fields.Add(user.GetEmbedField());
             
-        var getGuildMemberResult = await _guildApi.GetGuildMemberAsync(_context.Message.GuildID.Value, user.ID);
+        var getGuildMemberResult = await _guildApi.GetGuildMemberAsync(_context.GuildID.Value, user.ID);
         if (getGuildMemberResult.IsSuccess)
         {
             var guildMember = getGuildMemberResult.Entity;
@@ -110,7 +110,7 @@ public class PlayerInfoCommands : CommandGroup
         }
 
         var queryResult =
-            await _mediator.Send(new GetByDiscordId.Query(_context.Message.GuildID.Value, user.ID.Value));
+            await _mediator.Send(new GetByDiscordId.Query(_context.GuildID.Value, user.ID.Value));
             
         if (queryResult.IsSuccess)
         {
@@ -150,7 +150,7 @@ public class PlayerInfoCommands : CommandGroup
             Thumbnail = EmbedProperties.MmccLogoThumbnail
         };
         var fields = new List<EmbedField>();
-        var queryResult = await _mediator.Send(new GetByIgn.Query(_context.Message.GuildID.Value, ign));
+        var queryResult = await _mediator.Send(new GetByIgn.Query(_context.GuildID.Value, ign));
         var getUuid = await _mojangApi.GetPlayerUuidInfo(ign);
             
         if (getUuid.IsSuccess && getUuid.Entity is not null)

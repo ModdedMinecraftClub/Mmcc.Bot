@@ -52,43 +52,27 @@ public class GuildCreatedResponder : IResponder<IGuildCreate>
             .Select(p => p.GetValue(_discordSettings.ChannelNames) as string)
             .Where(s => s is not null)
             .ToList()!;
-            
-        if (!channels.HasValue)
+
+
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+        foreach (var requiredChannel in requiredChannels)
         {
-            foreach (var requiredChannel in requiredChannels)
+            // ReSharper disable once InvertIf
+            if (channels.FirstOrDefault(c => c.Name.HasValue && c.Name.Value!.Equals(requiredChannel)) is null)
             {
-                var createChannelResult = await _guildApi.CreateGuildChannelAsync(ev.ID, requiredChannel, ChannelType.GuildText, ct :ct);
+                var createChannelResult =
+                    await _guildApi.CreateGuildChannelAsync(ev.ID, requiredChannel, ChannelType.GuildText, ct: ct);
 
                 if (!createChannelResult.IsSuccess)
                 {
-                    return new SetupError("Failed to create required channels.");    
+                    return new SetupError("Failed to create required channels.");
                 }
-                    
+
                 _logger.LogInformation(
                     $"Created required channel \"{requiredChannel}\" in guild with ID: \"{ev.ID}\" and Name: \"{ev.Name}\"");
             }
         }
-        else
-        {
-            // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-            foreach (var requiredChannel in requiredChannels)
-            {
-                // ReSharper disable once InvertIf
-                if (channels.Value.FirstOrDefault(c => c.Name.Value.Equals(requiredChannel)) is null)
-                {
-                    var createChannelResult = await _guildApi.CreateGuildChannelAsync(ev.ID, requiredChannel, ChannelType.GuildText, ct :ct);
 
-                    if (!createChannelResult.IsSuccess)
-                    {
-                        return new SetupError("Failed to create required channels.");    
-                    }
-                        
-                    _logger.LogInformation(
-                        $"Created required channel \"{requiredChannel}\" in guild with ID: \"{ev.ID}\" and Name: \"{ev.Name}\"");
-                }
-            }
-        }
-            
         _logger.LogInformation($"Successfully set up guild with ID: \"{ev.ID}\" and Name: \"{ev.Name}\"");
         return Result.FromSuccess();
     }

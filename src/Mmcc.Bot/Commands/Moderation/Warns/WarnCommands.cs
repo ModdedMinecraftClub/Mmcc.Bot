@@ -59,7 +59,7 @@ public class WarnCommands : CommandGroup
         await _mediator.Send(new Warn.Command
             {
                 UserDiscordId = user.ID,
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 Reason = reason,
                 UserIgn = null
             }) switch
@@ -80,7 +80,7 @@ public class WarnCommands : CommandGroup
         await _mediator.Send(new Warn.Command
             {
                 UserIgn = ign,
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 Reason = reason,
                 UserDiscordId = null
             }) switch
@@ -105,7 +105,7 @@ public class WarnCommands : CommandGroup
                 {
                     UserDiscordId = discordUser.ID,
                     UserIgn = ign,
-                    GuildId = _context.Message.GuildID.Value,
+                    GuildId = _context.GuildID.Value,
                     Reason = reason
                 }
             ) switch

@@ -45,7 +45,8 @@ public static class ConfigurationSetup
                 | GatewayIntents.GuildMembers
                 | GatewayIntents.GuildBans
                 | GatewayIntents.GuildMessages
-                | GatewayIntents.GuildMessageReactions;
+                | GatewayIntents.GuildMessageReactions
+                | GatewayIntents.MessageContents;
         });
 
         return services;

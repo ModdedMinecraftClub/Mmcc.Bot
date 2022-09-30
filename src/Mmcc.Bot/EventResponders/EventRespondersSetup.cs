@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Mmcc.Bot.EventResponders.Buttons;
 using Mmcc.Bot.EventResponders.Feedback;
 using Mmcc.Bot.EventResponders.Guilds;
 using Mmcc.Bot.EventResponders.Moderation.MemberApplications;
@@ -27,7 +26,6 @@ public static class EventRespondersSetup
         services.AddResponder<FeedbackAddressedResponder>();
         services.AddResponder<MemberApplicationCreatedResponder>();
         services.AddResponder<MemberApplicationUpdatedResponder>();
-        services.AddResponder<ButtonInteractionCreateResponder>();
 
         return services;
     }

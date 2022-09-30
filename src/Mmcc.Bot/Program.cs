@@ -35,6 +35,7 @@ var host = Host.CreateDefaultBuilder(args)
             builder.AddDebug();
         }
     })
+    .AddDiscordService(provider => provider.GetRequiredService<DiscordSettings>().Token)
     .ConfigureServices((hostContext, services) =>
     {
         // config;
@@ -70,11 +71,6 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddBotBackgroundServices();
 
         services.AddHangfire();
-    })
-    .AddDiscordService(provider =>
-    {
-        var discordConfig = provider.GetRequiredService<DiscordSettings>();
-        return discordConfig.Token;
     })
     .UseSerilog(LoggerSetup.ConfigureLogger)
     .UseDefaultServiceProvider(options => options.ValidateScopes = true)
