@@ -21,7 +21,7 @@ public class DesignTimeBotContextFactory : IDesignTimeDbContextFactory<BotContex
         var optionsBuilder = new DbContextOptionsBuilder<BotContext>();
         var boundConfig = config.GetSection("MySql").Get<MySqlSettings>();
         var connString =
-            $"Server={boundConfig.ServerIp};Port={boundConfig.Port};Database={boundConfig.DatabaseName};Uid={boundConfig.Username};Pwd={boundConfig.Password};Allow User Variables=True";
+            $"Server={boundConfig!.ServerIp};Port={boundConfig.Port};Database={boundConfig.DatabaseName};Uid={boundConfig.Username};Pwd={boundConfig.Password};Allow User Variables=True";
         optionsBuilder.UseMySql(
             connString,
             ServerVersion.Parse("10.4.11-mariadb"),

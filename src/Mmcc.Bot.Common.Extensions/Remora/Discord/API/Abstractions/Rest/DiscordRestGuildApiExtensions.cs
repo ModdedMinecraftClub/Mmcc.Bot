@@ -33,7 +33,7 @@ namespace Mmcc.Bot.Common.Extensions.Remora.Discord.API.Abstractions.Rest
             var guildChannels = getGuildChannelsResult.Entity;
             var channel = guildChannels
                 .Where(c => c.Name.HasValue)
-                .FirstOrDefault(c => c.Name.Value.Equals(channelName));
+                .FirstOrDefault(c => c.Name.Value!.Equals(channelName));
             if (channel is null)
             {
                 return new NotFoundError(
