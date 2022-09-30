@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Mmcc.Bot.Commands.Core;
+using Mmcc.Bot.Commands.Core.Help;
 using Mmcc.Bot.Commands.Diagnostics;
+using Mmcc.Bot.Commands.Guilds;
 using Mmcc.Bot.Commands.Minecraft;
 using Mmcc.Bot.Commands.Minecraft.Restarts;
 using Mmcc.Bot.Commands.Moderation;
@@ -27,55 +29,30 @@ public static class CommandsSetup
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddBotCommands(this IServiceCollection services)
     {
-        // core commands;
-        //services.AddCommandGroup<HelpCommands>();
-        //services.AddCommandGroup<GuildCommands>();
-        services.AddCommandGroup<MmccInfoCommands>();
-                    
-        // tags;
-        services.AddCommandGroup<TagsManagementCommands>();
-        services.AddCommandGroup<TagsUsageCommands>();
-
-        // diagnostics;
-        services.AddCommandGroup<DiagnosticsCommands>();
-                    
-        // in game;
-        services.AddCommandGroup<MinecraftServersCommands>();
-        services.AddCommandGroup<MinecraftAutoRestartsCommands>();
-        
-        // member apps;
-        services.AddCommandGroup<MemberApplicationsCommands>();
-
-        // moderation;
-        services.AddCommandGroup<GeneralModerationCommands>();
-        services.AddCommandGroup<PlayerInfoCommands>();
-        services.AddCommandGroup<BanCommands>();
-        services.AddCommandGroup<WarnCommands>();
-        
         services.AddDiscordCommands();
 
-        /*services.AddCommandTree()
-    // add core commands;
-    .WithCommandGroup<HelpCommands>()
-    .WithCommandGroup<GuildCommands>()
-    .WithCommandGroup<MmccInfoCommands>()
-    // add tags;
-    .WithCommandGroup<TagsManagementCommands>()
-    .WithCommandGroup<TagsUsageCommands>()
-    // add diagnostics;
-    .WithCommandGroup<DiagnosticsCommands>()
-    // add in-game;
-    .WithCommandGroup<MinecraftServersCommands>()
-    .WithCommandGroup<MinecraftAutoRestartsCommands>()
-    // add member apps;
-    .WithCommandGroup<MemberApplicationsCommands>()
-    // add moderation;
-    .WithCommandGroup<GeneralModerationCommands>()
-    .WithCommandGroup<PlayerInfoCommands>()
-    .WithCommandGroup<BanCommands>()
-    .WithCommandGroup<WarnCommands>()
-    // and build it;
-    .Finish();*/
+        services.AddCommandTree()
+            // add core commands;
+            .WithCommandGroup<HelpCommands>()
+            .WithCommandGroup<GuildCommands>()
+            .WithCommandGroup<MmccInfoCommands>()
+            // add tags;
+            .WithCommandGroup<TagsManagementCommands>()
+            .WithCommandGroup<TagsUsageCommands>()
+            // add diagnostics;
+            .WithCommandGroup<DiagnosticsCommands>()
+            // add in-game;
+            .WithCommandGroup<MinecraftServersCommands>()
+            .WithCommandGroup<MinecraftAutoRestartsCommands>()
+            // add member apps;
+            .WithCommandGroup<MemberApplicationsCommands>()
+            // add moderation;
+            .WithCommandGroup<GeneralModerationCommands>()
+            .WithCommandGroup<PlayerInfoCommands>()
+            .WithCommandGroup<BanCommands>()
+            .WithCommandGroup<WarnCommands>()
+            // and build it;
+            .Finish();
         
         return services;
     }
