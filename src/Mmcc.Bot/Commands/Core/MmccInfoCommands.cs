@@ -8,6 +8,7 @@ using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
+using Remora.Discord.Interactivity;
 using Remora.Rest.Core;
 using Remora.Results;
 
@@ -46,4 +47,29 @@ public class MmccInfoCommands : CommandGroup
             components: new(components)
         );
     }
+    
+#if DEBUG
+    [Command("demo")]
+    public async Task<IResult> Demo()
+    {
+        var components = new List<ActionRowComponent>
+        {
+            new(new List<ButtonComponent>
+            {
+                new
+                (
+                    ButtonComponentStyle.Primary,
+                    Label: "Click me!",
+                    CustomID: CustomIDHelpers.CreateButtonID("approve-btn")
+                )
+            })
+        };
+        
+        return await _channelApi.CreateMessageAsync(
+            channelID: _context.ChannelID,
+            content: "DEMO",
+            components: new(components)
+        );
+    }
+#endif
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
-using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
@@ -26,7 +26,7 @@ public class GuildCommands : CommandGroup
     private readonly MessageContext _context;
     private readonly IColourPalette _colourPalette;
     private readonly IMediator _mediator;
-    private readonly ICommandResponder _responder;
+    private readonly CommandMessageResponder _responder;
 
     /// <summary>
     /// Instantiates a new instance of <see cref="GuildCommands"/> class.
@@ -39,7 +39,7 @@ public class GuildCommands : CommandGroup
         MessageContext context,
         IColourPalette colourPalette,
         IMediator mediator,
-        ICommandResponder responder
+        CommandMessageResponder responder
     )
     {
         _context = context;

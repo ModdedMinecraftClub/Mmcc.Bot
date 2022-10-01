@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Mmcc.Bot;
 using Mmcc.Bot.Behaviours;
-using Mmcc.Bot.Caching;
 using Mmcc.Bot.Commands;
 using Mmcc.Bot.Common.Extensions.Hosting;
 using Mmcc.Bot.Common.Models.Colours;
@@ -18,6 +17,8 @@ using Mmcc.Bot.EventResponders;
 using Mmcc.Bot.EventResponders.Moderation.MemberApplications;
 using Mmcc.Bot.Hosting;
 using Mmcc.Bot.Hosting.Moderation;
+using Mmcc.Bot.InMemoryStore.Stores;
+using Mmcc.Bot.Interactions;
 using Mmcc.Bot.Middleware;
 using Mmcc.Bot.Mojang;
 using Mmcc.Bot.Polychat;
@@ -42,6 +43,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.ConfigureBot(hostContext);
 
         // db;
+        services.AddInMemoryStores();
         services.AddBotDatabaseContext();
 
         services.AddSingleton<IColourPalette, TailwindColourPalette>();
@@ -58,7 +60,6 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 
         // Mmcc.Bot.X projects;
-        services.AddMmccCaching();
         services.AddMojangApi();
         services.AddPolychat(hostContext.Configuration.GetSection("Ssmp"));
 
@@ -66,6 +67,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddRemoraAbstractions();
         services.AddBotMiddlewares();
         services.AddBotCommands();
+        services.AddInteractions();
         services.AddBotGatewayEventResponders();
         services.AddDiscordCaching();
         services.AddBotBackgroundServices();

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Threading.Tasks;
 using MediatR;
-using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.Commands.Contexts;
@@ -16,7 +16,7 @@ public class TagsUsageCommands : CommandGroup
 {
     private readonly MessageContext _context;
     private readonly IMediator _mediator;
-    private readonly ICommandResponder _responder;
+    private readonly CommandMessageResponder _responder;
 
     /// <summary>
     /// Instantiates a new instance of <see cref="TagsUsageCommands"/>.
@@ -27,7 +27,7 @@ public class TagsUsageCommands : CommandGroup
     public TagsUsageCommands(
         MessageContext context,
         IMediator mediator,
-        ICommandResponder responder
+        CommandMessageResponder responder
     )
     {
         _context = context;

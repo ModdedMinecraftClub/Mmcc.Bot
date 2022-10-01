@@ -11,7 +11,7 @@ using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Statics;
 using Mmcc.Bot.Mojang;
 using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
-using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API;
@@ -37,7 +37,7 @@ public class PlayerInfoCommands : CommandGroup
     private readonly IColourPalette _colourPalette;
     private readonly IMojangApiService _mojangApi;
     private readonly IDiscordRestGuildAPI _guildApi;
-    private readonly ICommandResponder _responder;
+    private readonly CommandMessageResponder _responder;
 
     /// <summary>
     /// Instantiates a new instance of <see cref="PlayerInfoCommands"/>.
@@ -54,7 +54,7 @@ public class PlayerInfoCommands : CommandGroup
         IColourPalette colourPalette,
         IMojangApiService mojangApi,
         IDiscordRestGuildAPI guildApi,
-        ICommandResponder responder
+        CommandMessageResponder responder
     )
     {
         _context = context;

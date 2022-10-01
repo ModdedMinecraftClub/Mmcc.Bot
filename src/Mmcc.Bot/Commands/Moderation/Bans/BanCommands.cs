@@ -5,7 +5,7 @@ using MediatR;
 using Mmcc.Bot.Common.Models;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
-using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
@@ -28,7 +28,7 @@ public class BanCommands : CommandGroup
     private readonly MessageContext _context;
     private readonly IMediator _mediator;
     private readonly Embed _embedBase;
-    private readonly ICommandResponder _responder;
+    private readonly CommandMessageResponder _responder;
 
     /// <summary>
     /// Instantiates a new instance of <see cref="BanCommands"/> class.
@@ -41,7 +41,7 @@ public class BanCommands : CommandGroup
         MessageContext context,
         IMediator mediator,
         IColourPalette colourPalette,
-        ICommandResponder responder
+        CommandMessageResponder responder
     )
     {
         _context = context;

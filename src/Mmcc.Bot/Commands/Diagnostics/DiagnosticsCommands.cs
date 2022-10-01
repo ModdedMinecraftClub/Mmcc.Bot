@@ -8,7 +8,7 @@ using MediatR;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Statics;
 using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
-using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
@@ -26,7 +26,7 @@ public class DiagnosticsCommands : CommandGroup
 {
     private readonly IColourPalette _colourPalette;
     private readonly IMediator _mediator;
-    private readonly ICommandResponder _responder;
+    private readonly CommandMessageResponder _responder;
 
     private readonly Dictionary<string, string> _resourcesToCheck = new()
     {
@@ -44,7 +44,7 @@ public class DiagnosticsCommands : CommandGroup
     public DiagnosticsCommands(
         IColourPalette colourPalette,
         IMediator mediator,
-        ICommandResponder responder
+        CommandMessageResponder responder
     )
     {
         _colourPalette = colourPalette;

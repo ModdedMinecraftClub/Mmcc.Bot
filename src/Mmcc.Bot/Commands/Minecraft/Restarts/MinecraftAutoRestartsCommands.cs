@@ -7,7 +7,7 @@ using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Statics;
 using Mmcc.Bot.Polychat.Jobs.Recurring.Restarts;
 using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
-using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Mmcc.Bot.RemoraAbstractions.Timestamps;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
@@ -23,11 +23,11 @@ public class MinecraftAutoRestartsCommands : CommandGroup
 {
     private readonly IMediator _mediator;
     private readonly IColourPalette _colourPalette;
-    private readonly ICommandResponder _responder;
+    private readonly CommandMessageResponder _responder;
 
     public MinecraftAutoRestartsCommands(IMediator mediator,
         IColourPalette colourPalette,
-        ICommandResponder responder
+        CommandMessageResponder responder
     )
     {
         _mediator = mediator;

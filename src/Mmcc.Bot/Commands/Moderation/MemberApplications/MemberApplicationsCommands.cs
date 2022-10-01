@@ -1,23 +1,28 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using Mmcc.Bot.Common.Errors;
 using Mmcc.Bot.Common.Extensions.Database.Entities;
 using Mmcc.Bot.Common.Extensions.Remora.Discord.API.Abstractions.Rest;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Models.Settings;
 using Mmcc.Bot.Common.Statics;
 using Mmcc.Bot.Database.Entities;
+using Mmcc.Bot.InMemoryStore.Stores;
 using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
-using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
+using Mmcc.Bot.RemoraAbstractions.UI;
+using Mmcc.Bot.RemoraAbstractions.UI.Extensions;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
+using Remora.Discord.Interactivity;
 using Remora.Rest.Core;
 using Remora.Results;
 
@@ -37,7 +42,8 @@ public class MemberApplicationsCommands : CommandGroup
     private readonly IColourPalette _colourPalette;
     private readonly DiscordSettings _discordSettings;
     private readonly IDiscordRestGuildAPI _guildApi;
-    private readonly ICommandResponder _responder;
+    private readonly CommandMessageResponder _responder;
+    private readonly IMessageMemberAppContextStore _memberAppContextStore;
 
     /// <summary>
     /// Instantiates a new instance of <see cref="MemberApplicationsCommands"/>.
@@ -49,6 +55,7 @@ public class MemberApplicationsCommands : CommandGroup
     /// <param name="discordSettings">The Discord settings.</param>
     /// <param name="guildApi">The guild API.</param>
     /// <param name="responder">The command responder.</param>
+    /// <param name="memberAppContextStore">The app context store.</param>
     public MemberApplicationsCommands(
         MessageContext context,
         IDiscordRestChannelAPI channelApi,
@@ -56,7 +63,8 @@ public class MemberApplicationsCommands : CommandGroup
         IColourPalette colourPalette,
         DiscordSettings discordSettings,
         IDiscordRestGuildAPI guildApi,
-        ICommandResponder responder
+        CommandMessageResponder responder,
+        IMessageMemberAppContextStore memberAppContextStore
     )
     {
         _context = context;
@@ -66,6 +74,7 @@ public class MemberApplicationsCommands : CommandGroup
         _discordSettings = discordSettings;
         _guildApi = guildApi;
         _responder = responder;
+        _memberAppContextStore = memberAppContextStore;
     }
 
     [Command("info")]
@@ -111,21 +120,33 @@ public class MemberApplicationsCommands : CommandGroup
     /// <returns>Result of the operation.</returns>
     [Command("view", "v")]
     [Description("Views a member application by ID.")]
-    public async Task<IResult> View(int id) =>
-        await _mediator.Send(new GetById.Query
-            {
-                ApplicationId = id,
-                GuildId = _context.GuildID.Value
-            }) switch
-            {
-                { IsSuccess: true, Entity: { } e } =>
-                    await _responder.Respond(e.GetEmbed(_colourPalette)),
+    public async Task<IResult> View(int id)
+    {
+        var getResult = await _mediator.Send(new GetById.Query
+        {
+            ApplicationId = id,
+            GuildId = _context.GuildID.Value
+        });
 
-                { IsSuccess: true } =>
-                    Result.FromError(new NotFoundError($"Application with ID `{id}` could not be found.")),
+        if (getResult is {IsSuccess: true, Entity: { } app})
+        {
+            _memberAppContextStore.Add(_context.MessageID.Value, app.MemberApplicationId);
+            
+            var approveButton = new ButtonComponent
+            (
+                ButtonComponentStyle.Success,
+                Label: "Approve",
+                CustomID: CustomIDHelpers.CreateButtonID("approve-btn")
+            );
+            var actionRows = ActionRowUtils.CreateActionRowWithComponents(approveButton).AsList();
 
-                { IsSuccess: false } res => res
-            };
+            return await _responder.RespondWithComponents(actionRows, new(), app.GetEmbed(_colourPalette));
+        }
+
+        return getResult is {IsSuccess: true}
+            ? Result.FromError(new NotFoundError($"Application with ID `{id}` could not be found."))
+            : getResult;
+    }
 
     /// <summary>
     /// Views the next pending application in the queue.

@@ -2,6 +2,7 @@
 using Mmcc.Bot.RemoraAbstractions.Conditions;
 using Mmcc.Bot.RemoraAbstractions.Parsers;
 using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Remora.Commands.Extensions;
 
 namespace Mmcc.Bot.RemoraAbstractions;
@@ -21,9 +22,12 @@ public static class AbstractionsSetup
         services.AddScoped<IHelpService, HelpService>();
         services.AddScoped<IDmSender, DmSender>();
         services.AddScoped<IDiscordPermissionsService, DiscordPermissionsService>();
-        services.AddScoped<ICommandResponder, CommandResponder>();
-        services.AddScoped<IInteractionResponder, InteractionResponder>();
-            
+        services.AddScoped<IInteractionHelperService, InteractionHelperService>();
+        services.AddScoped<IErrorProcessingService, ErrorProcessingService>();
+
+        services.AddScoped<InteractionMessageResponder>();
+        services.AddScoped<CommandMessageResponder>();
+
         services.AddCondition<RequireGuildCondition>();
         services.AddCondition<RequireUserGuildPermissionCondition>();
 

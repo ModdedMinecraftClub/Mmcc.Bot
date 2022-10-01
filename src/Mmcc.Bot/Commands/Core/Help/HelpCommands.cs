@@ -3,9 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.Commands.Contexts;
+using Remora.Discord.Gateway.Responders;
 using Remora.Results;
 
 namespace Mmcc.Bot.Commands.Core.Help;
@@ -16,7 +18,7 @@ namespace Mmcc.Bot.Commands.Core.Help;
 public class HelpCommands : CommandGroup
 {
     private readonly MessageContext _context;
-    private readonly ICommandResponder _responder;
+    private readonly CommandMessageResponder _responder;
     private readonly IDmSender _dmSender;
     private readonly IMediator _mediator;
 
@@ -29,7 +31,7 @@ public class HelpCommands : CommandGroup
     /// <param name="mediator">The mediator.</param>
     public HelpCommands(
         MessageContext context,
-        ICommandResponder responder,
+        CommandMessageResponder responder,
         IDmSender dmSender,
         IMediator mediator 
     )
