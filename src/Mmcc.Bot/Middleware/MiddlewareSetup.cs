@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Mmcc.Bot.RemoraAbstractions.Services.Interactions;
 using Remora.Discord.Commands.Services;
 
 namespace Mmcc.Bot.Middleware;
@@ -16,6 +17,7 @@ public static class MiddlewareSetup
     public static IServiceCollection AddBotMiddlewares(this IServiceCollection services)
     {
         services.AddScoped<IPostExecutionEvent, ErrorNotificationMiddleware>();
+        services.AddScoped<IInteractionPostExecutionEvent, InteractionErrorNotificationMiddleware>();
 
         return services;
     }

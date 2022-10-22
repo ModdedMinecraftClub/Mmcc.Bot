@@ -9,6 +9,7 @@ using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Models.Settings;
 using Mmcc.Bot.Common.Statics;
 using Mmcc.Bot.InMemoryStore.Stores;
+using Mmcc.Bot.RemoraAbstractions.Conditions.InteractionSpecific;
 using Mmcc.Bot.RemoraAbstractions.Services;
 using Mmcc.Bot.RemoraAbstractions.UI;
 using Remora.Discord.API.Abstractions.Objects;
@@ -32,7 +33,6 @@ public class MemberApplicationsInteractions : InteractionGroup
     private readonly DiscordSettings _discordSettings;
     private readonly IMediator _mediator;
     private readonly IColourPalette _colourPalette;
-    private readonly IErrorProcessingService _errorProcessingService;
 
     public MemberApplicationsInteractions(
         InteractionContext context,
@@ -42,8 +42,7 @@ public class MemberApplicationsInteractions : InteractionGroup
         IMessageMemberAppContextStore memberAppContextStore,
         DiscordSettings discordSettings,
         IMediator mediator,
-        IColourPalette colourPalette,
-        IErrorProcessingService errorProcessingService
+        IColourPalette colourPalette
     )
     {
         _channelApi = channelApi;
@@ -53,12 +52,13 @@ public class MemberApplicationsInteractions : InteractionGroup
         _discordSettings = discordSettings;
         _mediator = mediator;
         _colourPalette = colourPalette;
-        _errorProcessingService = errorProcessingService;
         _context = context;
     }
 
     [Button("approve-btn")]
     [SuppressInteractionResponse(true)]
+    [InteractionRequireGuild]
+    [InteractionRequireUserGuildPermission(DiscordPermission.BanMembers)]
     public async Task<Result> OnApproveButtonPressed()
     {
         var serverPrefixInput = FluentTextInputBuilder
@@ -77,16 +77,17 @@ public class MemberApplicationsInteractions : InteractionGroup
 
         var modal = FluentCallbackModalBuilder
             .WithId("approve")
-            .HasTitle($"Approve member application")
+            .HasTitle("Approve member application")
             .WithActionRowFromTextInputs(serverPrefixInput, ignsListInput)
             .Build();
 
-        var res = await _interactionHelperService.RespondWithModal(modal);
-        return res;
+        return await _interactionHelperService.RespondWithModal(modal);
     }
 
     [Modal("approve")]
     [SuppressInteractionResponse(true)]
+    [InteractionRequireGuild]
+    [InteractionRequireUserGuildPermission(DiscordPermission.BanMembers)]
     public async Task<Result> OnApproveModal(string serverPrefix, string igns)
     {
         var notificationResult = await _interactionHelperService.NotifyDeferredMessageIsComing();
@@ -94,13 +95,15 @@ public class MemberApplicationsInteractions : InteractionGroup
         {
             return notificationResult;
         }
+        
+        return Result.FromError(new GenericError("Hi"));
 
         var ignsList = igns.Split(' ').ToList();
 
         var approveResult = await ApproveMemberApplication(serverPrefix, ignsList);
         if (!approveResult.IsSuccess)
         {
-            return await _interactionHelperService.SendErrorNotification(approveResult.Error);
+            return Result.FromError(approveResult);
         }
 
         var sendSuccessEmbed = await _interactionHelperService.SendFollowup(approveResult.Entity);

@@ -36,8 +36,4 @@
       <ProjectReference Include="..\Mmcc.Bot.RemoraAbstractions\Mmcc.Bot.RemoraAbstractions.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Services" />
-    </ItemGroup>
-
 </Project>

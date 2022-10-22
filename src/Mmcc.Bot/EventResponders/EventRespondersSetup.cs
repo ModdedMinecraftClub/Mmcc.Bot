@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Mmcc.Bot.EventResponders.Feedback;
 using Mmcc.Bot.EventResponders.Guilds;
+using Mmcc.Bot.EventResponders.Interactions;
 using Mmcc.Bot.EventResponders.Moderation.MemberApplications;
 using Mmcc.Bot.EventResponders.Users;
 using Remora.Discord.Gateway.Extensions;
+using Remora.Discord.Interactivity;
+using Remora.Extensions.Options.Immutable;
 
 namespace Mmcc.Bot.EventResponders;
 
@@ -26,6 +29,9 @@ public static class EventRespondersSetup
         services.AddResponder<FeedbackAddressedResponder>();
         services.AddResponder<MemberApplicationCreatedResponder>();
         services.AddResponder<MemberApplicationUpdatedResponder>();
+        
+        services.AddResponder<InteractivityResponder>();
+        services.Configure(() => new InteractivityResponderOptions());
 
         return services;
     }

@@ -1,6 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Mmcc.Bot.Interactions.Moderation.MemberApplications;
+using Remora.Discord.Gateway.Extensions;
+using Remora.Discord.Interactivity;
 using Remora.Discord.Interactivity.Extensions;
+using Remora.Extensions.Options.Immutable;
+
+using InteractivityResponder = Mmcc.Bot.EventResponders.Interactions.InteractivityResponder;
 
 namespace Mmcc.Bot.Interactions;
 
@@ -16,10 +21,12 @@ public static class InteractionsSetup
     /// <returns>The <see cref="IServiceCollection"/>.</returns>
     public static IServiceCollection AddInteractions(this IServiceCollection services)
     {
-        services.AddInteractivity();
-
-        services.AddInteractionGroup<MemberApplicationsInteractions>();
+        //services.AddInteractivity(); <= default Remora interactivity. We don't use because we have a custom pipeline
         
+        services.AddMemoryCache();
+        
+        services.AddInteractionGroup<MemberApplicationsInteractions>();
+
         return services;
     }
 }

@@ -1,12 +1,32 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
 using Mmcc.Bot.RemoraAbstractions.Services;
 using Remora.Commands.Conditions;
+using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.Commands.Contexts;
 using Remora.Results;
 
-namespace Mmcc.Bot.RemoraAbstractions.Conditions;
+namespace Mmcc.Bot.RemoraAbstractions.Conditions.CommandSpecific;
+
+/// <summary>
+/// Marks a command as requiring the requesting user to have a particular permission within the guild. 
+/// </summary>
+public class RequireUserGuildPermissionAttribute : ConditionAttribute
+{
+    /// <summary>
+    /// Gets the permission.
+    /// </summary>
+    public DiscordPermission Permission { get; }
+        
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RequireUserGuildPermissionAttribute"/> class.
+    /// </summary>
+    /// <param name="permission">The permission.</param>
+    public RequireUserGuildPermissionAttribute(DiscordPermission permission)
+    {
+        Permission = permission;
+    }
+}
 
 /// <summary>
 /// Checks required Guild permissions before allowing execution.
@@ -30,8 +50,8 @@ public class RequireUserGuildPermissionCondition : ICondition<RequireUserGuildPe
     }
 
     /// <inheritdoc />
-    public async ValueTask<Result> CheckAsync(RequireUserGuildPermissionAttribute attribute, CancellationToken ct) =>
-        await _permissionsService.CheckHasRequiredPermission(
+    public async ValueTask<Result> CheckAsync(RequireUserGuildPermissionAttribute attribute, CancellationToken ct)
+        => await _permissionsService.CheckHasRequiredPermission(
             attribute.Permission,
             _context.ChannelID,
             _context.User, ct

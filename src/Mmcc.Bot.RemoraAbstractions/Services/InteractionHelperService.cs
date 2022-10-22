@@ -16,7 +16,6 @@ public interface IInteractionHelperService
     Task<Result> RespondWithModal(InteractionModalCallbackData modalCallbackData);
     Task<Result> SendFollowup(params Embed[] embeds);
     Task<Result> SendFollowup(string msg);
-    Task<Result> SendErrorNotification(IResultError err);
 }
 
 public class InteractionHelperService : IInteractionHelperService
@@ -69,15 +68,5 @@ public class InteractionHelperService : IInteractionHelperService
         return res.IsSuccess
             ? Result.FromSuccess()
             : Result.FromError(res);
-    }
-
-    public async Task<Result> SendErrorNotification(IResultError err)
-    {
-        var errorEmbed = _errorProcessingService.GetErrorEmbed(err);
-
-        var sendErrorEmbed = await SendFollowup(errorEmbed);
-        return !sendErrorEmbed.IsSuccess
-            ? Result.FromError(sendErrorEmbed.Error)
-            : Result.FromSuccess();
     }
 }
