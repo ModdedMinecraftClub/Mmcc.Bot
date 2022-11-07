@@ -65,7 +65,7 @@ public class HelpService : IHelpService
         var category = _cmdTreeWalker.GetGroupNodeByPath(pathToCategory);
         if (category is null)
             return Result<Embed>.FromError(
-                new NotFoundError($"No category matches {Markdown.InlineCode(string.Join(" ", category))}")
+                new NotFoundError($"No category matches {Markdown.InlineCode(string.Join(" ", pathToCategory))}")
             );
 
         var formattedPath = GetFormattedPathForCategory(category);
