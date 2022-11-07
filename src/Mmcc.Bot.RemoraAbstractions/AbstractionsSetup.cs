@@ -28,6 +28,7 @@ public static class AbstractionsSetup
 
         services.AddScoped<InteractionMessageResponder>();
         services.AddScoped<CommandMessageResponder>();
+        services.AddScoped<CommandTreeWalker>();
 
         services.AddCondition<RequireGuildCondition>();
         services.AddCondition<RequireUserGuildPermissionCondition>();

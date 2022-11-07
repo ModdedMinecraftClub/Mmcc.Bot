@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Mmcc.Bot.Common.Statics;
+using Mmcc.Bot.RemoraAbstractions.Services;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
@@ -18,11 +20,13 @@ public class MmccInfoCommands : CommandGroup
 {
     private readonly IDiscordRestChannelAPI _channelApi;
     private readonly MessageContext _context;
+    private readonly HelpService _helpService;
 
-    public MmccInfoCommands(IDiscordRestChannelAPI channelApi, MessageContext context)
+    public MmccInfoCommands(IDiscordRestChannelAPI channelApi, MessageContext context, HelpService helpService)
     {
         _channelApi = channelApi;
         _context = context;
+        _helpService = helpService;
     }
 
     [Command("mmcc")]

@@ -95,8 +95,6 @@ public class MemberApplicationsInteractions : InteractionGroup
         {
             return notificationResult;
         }
-        
-        return Result.FromError(new GenericError("Hi"));
 
         var ignsList = igns.Split(' ').ToList();
 

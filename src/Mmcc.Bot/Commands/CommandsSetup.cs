@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Mmcc.Bot.Commands.Core;
-using Mmcc.Bot.Commands.Core.Help;
 using Mmcc.Bot.Commands.Diagnostics;
 using Mmcc.Bot.Commands.Guilds;
 using Mmcc.Bot.Commands.Minecraft;
