@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Mmcc.Bot.RemoraAbstractions.Conditions;
+using Mmcc.Bot.RemoraAbstractions.Conditions.CommandSpecific;
+using Mmcc.Bot.RemoraAbstractions.Conditions.InteractionSpecific;
 using Mmcc.Bot.RemoraAbstractions.Parsers;
 using Mmcc.Bot.RemoraAbstractions.Services;
 using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
@@ -30,6 +31,9 @@ public static class AbstractionsSetup
 
         services.AddCondition<RequireGuildCondition>();
         services.AddCondition<RequireUserGuildPermissionCondition>();
+
+        services.AddCondition<InteractionRequireGuildCondition>();
+        services.AddCondition<InteractionRequireUserGuildPermissionCondition>();
 
         services.AddParser<TimeSpanParser>();
         services.AddParser<ExpiryDateParser>();
