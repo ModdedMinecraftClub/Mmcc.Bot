@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Mmcc.Bot.Common.Extensions.System;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Models.Settings;
 using Mmcc.Bot.Common.Statics;
+using Mmcc.Bot.RemoraAbstractions.Conditions.CommandSpecific;
 using Remora.Commands.Trees.Nodes;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Extensions.Formatting;
@@ -95,14 +98,21 @@ public class HelpService : IHelpService
     private EmbedField GetEmbedFieldForCommand(CommandNode cmd)
     {
         var cmdDescription = cmd.Shape.Description;
-        
         var cmdArgs = cmd.Shape.Parameters;
         var cmdArgsFormatted = string.Join(" ", cmdArgs.Select(x => $"<{x.HintName}>"));
-
-        var aliasesFormatted = string.Join(", ", cmd.Aliases.Select(x => $"\"{x}\""));
         
         var fieldName = $"{CommandIcon} {cmd.Key} {cmdArgsFormatted}";
-        var fieldDescription = $"{Markdown.Underline("Aliases:")} {aliasesFormatted}\n{cmdDescription}";
+        
+        var fieldDescAliasesLine = cmd.Aliases.Any()
+            ? $"{Markdown.Underline("Aliases:")} {string.Join(", ", cmd.Aliases.Select(x => x.DoubleQuotes()))}\n"
+            : "";
+        
+        var requiredPermission = cmd.CommandMethod.GetCustomAttribute(typeof(RequireUserGuildPermissionAttribute));
+        var requiredPermissionLine = requiredPermission is RequireUserGuildPermissionAttribute r
+            ? $"{Markdown.Underline("Required user permission:")} {r.Permission}\n"
+            : "";
+        
+        var fieldDescription = $"{fieldDescAliasesLine}{requiredPermissionLine}{cmdDescription}";
 
         return new EmbedField(fieldName, fieldDescription, false);
     }

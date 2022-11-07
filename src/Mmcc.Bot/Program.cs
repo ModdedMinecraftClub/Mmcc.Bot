@@ -23,6 +23,7 @@ using Mmcc.Bot.Middleware;
 using Mmcc.Bot.Mojang;
 using Mmcc.Bot.Polychat;
 using Mmcc.Bot.Polychat.Networking;
+using Mmcc.Bot.Providers;
 using Mmcc.Bot.RemoraAbstractions;
 using Remora.Discord.Caching.Extensions;
 using Remora.Discord.Hosting.Extensions;
@@ -63,6 +64,8 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddMojangApi();
         services.AddPolychat(hostContext.Configuration.GetSection("Ssmp"));
 
+        services.AddProviders();
+        
         // Remora.Discord bot setup;
         services.AddRemoraAbstractions();
         services.AddBotMiddlewares();
