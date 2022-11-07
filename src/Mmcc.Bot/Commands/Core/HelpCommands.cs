@@ -16,9 +16,9 @@ namespace Mmcc.Bot.Commands.Core;
 public class HelpCommands : CommandGroup
 {
     private readonly CommandMessageResponder _responder;
-    private readonly HelpService _helpService;
+    private readonly IHelpService _helpService;
     
-    public HelpCommands(CommandMessageResponder responder, HelpService helpService)
+    public HelpCommands(CommandMessageResponder responder, IHelpService helpService)
     {
         _responder = responder;
         _helpService = helpService;
