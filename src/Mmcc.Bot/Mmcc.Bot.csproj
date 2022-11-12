@@ -4,7 +4,7 @@
         <TargetFramework>net7.0</TargetFramework>
         <UserSecretsId>dotnet-Mmcc.Bot-4BA5AD38-B3B4-456A-853F-080768D88F42</UserSecretsId>
         <Nullable>enable</Nullable>
-        <LangVersion>10</LangVersion>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>

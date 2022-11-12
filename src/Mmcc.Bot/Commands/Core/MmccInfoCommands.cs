@@ -51,7 +51,10 @@ public class MmccInfoCommands : CommandGroup
             components: new(components)
         );
     }
-    
+
+    public record WebsiteButton() : ButtonComponent(ButtonComponentStyle.Link, "Website",
+        new PartialEmoji(new Snowflake(863798570602856469)), URL: MmccUrls.Website);
+
 #if DEBUG
     [Command("demo")]
     public async Task<IResult> Demo()
