@@ -4,6 +4,7 @@ using Mmcc.Bot.Commands.Diagnostics;
 using Mmcc.Bot.Commands.Guilds;
 using Mmcc.Bot.Commands.Minecraft;
 using Mmcc.Bot.Commands.Minecraft.Restarts;
+using Mmcc.Bot.Commands.MmccInfo;
 using Mmcc.Bot.Commands.Moderation;
 using Mmcc.Bot.Commands.Moderation.Bans;
 using Mmcc.Bot.Commands.Moderation.MemberApplications;

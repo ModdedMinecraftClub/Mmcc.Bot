@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Mmcc.Bot.Generators
+namespace Mmcc.Bot.Generators.PolychatRequestResolverGenerator
 {
     [Generator]
     public class RequestResolverGenerator : ISourceGenerator

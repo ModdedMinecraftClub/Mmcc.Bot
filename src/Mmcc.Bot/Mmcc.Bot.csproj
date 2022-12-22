@@ -34,6 +34,9 @@
       <ProjectReference Include="..\Mmcc.Bot.Mojang\Mmcc.Bot.Mojang.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Polychat\Mmcc.Bot.Polychat.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.RemoraAbstractions\Mmcc.Bot.RemoraAbstractions.csproj" />
+
+      <ProjectReference Include="C:\Users\lukas\Documents\projects\Porbeagle\Porbeagle\Porbeagle.csproj" />
+      <ProjectReference Include="C:\Users\lukas\Documents\projects\Porbeagle\Porbeagle.SourceGenerators\Porbeagle.SourceGenerators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
     </ItemGroup>
 
 </Project>

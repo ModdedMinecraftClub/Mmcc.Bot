@@ -25,6 +25,7 @@ using Mmcc.Bot.Polychat;
 using Mmcc.Bot.Polychat.Networking;
 using Mmcc.Bot.Providers;
 using Mmcc.Bot.RemoraAbstractions;
+using Porbeagle;
 using Remora.Discord.Caching.Extensions;
 using Remora.Discord.Hosting.Extensions;
 using Serilog;
@@ -74,6 +75,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddBotGatewayEventResponders();
         services.AddDiscordCaching();
         services.AddBotBackgroundServices();
+        services.AddScoped<IContextAwareViewManager, MessageStyleViewManager>();
 
         services.AddHangfire();
     })

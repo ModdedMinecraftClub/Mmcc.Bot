@@ -1,7 +1,6 @@
-﻿using System.Linq;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 
-namespace Mmcc.Bot.Generators
+namespace Mmcc.Bot.Generators.PolychatRequestResolverGenerator
 {
     /// <summary>
     /// Represents a base class to be inherited by template generators.
