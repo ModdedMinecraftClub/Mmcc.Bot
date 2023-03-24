@@ -62,7 +62,6 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 
         // Mmcc.Bot.X projects;
-        services.AddMojangApi();
         services.AddPolychat(hostContext.Configuration.GetSection("Ssmp"));
 
         services.AddProviders();

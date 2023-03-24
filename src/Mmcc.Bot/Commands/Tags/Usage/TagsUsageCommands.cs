@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Threading.Tasks;
 using MediatR;
+using Mmcc.Bot.Database.Entities;
+using Mmcc.Bot.Notifications.Moderation;
 using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
@@ -50,5 +52,16 @@ public class TagsUsageCommands : CommandGroup
                 
             {IsSuccess: false} res => res
         };
+    }
+    
+    [Command("tester")]
+    [Description("Sends a given tag.")]
+    public async Task<IResult> SendTagg(string tagName)
+    {
+        await _mediator.Publish(
+            new ModerationActionExpiredNotification(new ModerationAction(ModerationActionType.Ban, 0, true, "asas", 0,
+                null, "fasdfdsafsd")));
+
+        return Result.FromSuccess();
     }
 }

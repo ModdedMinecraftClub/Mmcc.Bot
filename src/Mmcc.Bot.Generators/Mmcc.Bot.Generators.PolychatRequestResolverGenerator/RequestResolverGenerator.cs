@@ -77,20 +77,21 @@ namespace Mmcc.Bot.Generators.PolychatRequestResolverGenerator
             
             private string AnnotateMsgType(string type) => $"global::{MSG_NAMESPACE}.{type}";
 
-            protected override string FillInStub(string generatedFiller)
-                => $@"// auto-generated
-namespace {GENERATED_NAMESPACE};
-
-#pragma warning disable CS0612 // type is obsolete
-public partial class {GENERATED_CLASS}
-{{
-    public {AnnotateTypeWithGlobal(_polychatRequestInterfaceSymbol)}? Resolve()
-    {{
-{string.Join("\n", generatedFiller.Split('\n').Select(s => Indent(s, 2)))}
-    }}
-}}
-#pragma warning restore CS0612
-";
+            protected override string FillInStub(string generatedFiller) =>
+                $$"""
+                // auto-generated
+                namespace {{GENERATED_NAMESPACE}};
+                
+                #pragma warning disable CS0612 // type is obsolete
+                public partial class {{GENERATED_CLASS}}
+                {
+                    public {{AnnotateTypeWithGlobal(_polychatRequestInterfaceSymbol)}}? Resolve()
+                    {
+                {{string.Join("\n", generatedFiller.Split('\n').Select(s => Indent(s, 2)))}}
+                    }
+                }
+                #pragma warning restore CS0612
+                """;
 
             protected override string GenerateFiller()
             {
@@ -113,13 +114,13 @@ public partial class {GENERATED_CLASS}
                 return sb.ToString();
             }
 
-            private static string GenerateNoClassesStub()
-                => new StringBuilder()
-                    .AppendLine("// no Polychat classes found;")
-                    .AppendLine("// once classes are added to the Polychat project generated code will go here;")
-                    .AppendLine()
-                    .AppendLine("return null;")
-                    .ToString();
+            private static string GenerateNoClassesStub() => 
+                """
+                // no Polychat classes found;
+                // once classes are added to the Polychat project generated code will go here;
+                
+                return null;
+                """;
 
             private string GenerateIfForMsgClass(string messageType)
                 => new StringBuilder()

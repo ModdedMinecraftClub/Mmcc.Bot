@@ -29,6 +29,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Mmcc.Bot.Common.Extensions\Mmcc.Bot.Common.Extensions.csproj" />
+      <ProjectReference Include="..\Mmcc.Bot.Common.UI\Mmcc.Bot.Common.UI.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Common\Mmcc.Bot.Common.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.InMemoryStore\Mmcc.Bot.InMemoryStore.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Mojang\Mmcc.Bot.Mojang.csproj" />

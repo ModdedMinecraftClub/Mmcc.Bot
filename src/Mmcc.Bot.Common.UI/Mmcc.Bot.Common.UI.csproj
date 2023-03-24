@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Mmcc.Bot.Common.Extensions\Mmcc.Bot.Common.Extensions.csproj" />
+      <ProjectReference Include="..\Mmcc.Bot.Common\Mmcc.Bot.Common.csproj" />
+    </ItemGroup>
+
+</Project>

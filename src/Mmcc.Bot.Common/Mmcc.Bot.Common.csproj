@@ -10,6 +10,11 @@
         <PackageReference Include="FluentValidation" Version="11.2.2" />
         <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
         <PackageReference Include="Remora.Discord" Version="2022.48.0" />
+        <PackageReference Include="MediatR" Version="10.0.1" />
         <PackageReference Include="BetterSsmp" Version="0.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Mmcc.Bot.Database\Mmcc.Bot.Database.csproj" />
     </ItemGroup>
 </Project>

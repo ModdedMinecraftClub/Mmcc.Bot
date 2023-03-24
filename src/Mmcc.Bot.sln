@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mmcc.Bot.Generators", "Mmcc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Generators.PolychatRequestResolverGenerator", "Mmcc.Bot.Generators\Mmcc.Bot.Generators.PolychatRequestResolverGenerator\Mmcc.Bot.Generators.PolychatRequestResolverGenerator.csproj", "{9FDC16C5-DBB4-4B53-9894-A3FDD5351922}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mmcc.Bot.Common.UI", "Mmcc.Bot.Common.UI\Mmcc.Bot.Common.UI.csproj", "{95A40405-B933-4C00-B13E-CA7B7362F160}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{9FDC16C5-DBB4-4B53-9894-A3FDD5351922}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FDC16C5-DBB4-4B53-9894-A3FDD5351922}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FDC16C5-DBB4-4B53-9894-A3FDD5351922}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95A40405-B933-4C00-B13E-CA7B7362F160}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95A40405-B933-4C00-B13E-CA7B7362F160}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95A40405-B933-4C00-B13E-CA7B7362F160}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95A40405-B933-4C00-B13E-CA7B7362F160}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,5 +84,6 @@ Global
 		{A11CD52A-365B-4E2F-AF61-3352C6D52032} = {194115DD-FBE6-4E5C-9DED-28F15B9011B6}
 		{10014CD6-C13A-4245-A218-498066327B53} = {194115DD-FBE6-4E5C-9DED-28F15B9011B6}
 		{9FDC16C5-DBB4-4B53-9894-A3FDD5351922} = {A6ABA01C-861E-414D-B6D4-4AEE8A843490}
+		{95A40405-B933-4C00-B13E-CA7B7362F160} = {194115DD-FBE6-4E5C-9DED-28F15B9011B6}
 	EndGlobalSection
 EndGlobal
