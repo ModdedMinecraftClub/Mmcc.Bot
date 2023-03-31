@@ -108,8 +108,7 @@ public class GeneralModerationCommands : CommandGroup
             
         Result<ModerationAction> deactivateResult = getAppResult.Entity.ModerationActionType switch
         {
-            ModerationActionType.Ban => await _mediator.Send(new Unban.Command
-                { ModerationAction = getAppResult.Entity, ChannelId = _context.ChannelID }),
+            ModerationActionType.Ban => await _mediator.Send(new Unban.Command { ModerationAction = getAppResult.Entity }),
 
             _ => Result<ModerationAction>.FromError(new UnsupportedFeatureError("Unsupported moderation type."))
         };
