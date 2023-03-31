@@ -8,7 +8,7 @@ namespace Mmcc.Bot.Common.UI.Embeds;
 
 public record NotificationEmbed : Embed
 {
-    public NotificationEmbed(Notification context) : base(
+    public NotificationEmbed(IMmccNotification context) : base(
         Title: context.Title,
         Description: context.Description ?? new Optional<string>(),
         Timestamp: context.Timestamp ?? new Optional<DateTimeOffset>(),

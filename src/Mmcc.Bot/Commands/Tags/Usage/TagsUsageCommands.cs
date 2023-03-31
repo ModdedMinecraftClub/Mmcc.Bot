@@ -58,9 +58,9 @@ public class TagsUsageCommands : CommandGroup
     [Description("Sends a given tag.")]
     public async Task<IResult> SendTagg(string tagName)
     {
-        await _mediator.Publish(
-            new ModerationActionExpiredNotification(new ModerationAction(ModerationActionType.Ban, 0, true, "asas", 0,
-                null, "fasdfdsafsd")));
+        await _mediator.Publish(new ModerationActionExpiredNotification(new ModerationAction(ModerationActionType.Ban,
+            0, true, "asas", 0,
+            null, "fasdfdsafsd")));
 
         return Result.FromSuccess();
     }

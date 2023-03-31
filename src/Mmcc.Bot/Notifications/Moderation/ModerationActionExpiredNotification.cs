@@ -1,34 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
 using Mmcc.Bot.Common.Extensions.Database.Entities;
 using Mmcc.Bot.Common.Models;
 using Mmcc.Bot.Database.Entities;
+using Remora.Rest.Core;
 
 namespace Mmcc.Bot.Notifications.Moderation;
 
-public record ModerationActionExpiredNotification : Notification
+public record ModerationActionExpiredNotification(
+    string Title,
+    string? Description,
+    DateTimeOffset? Timestamp,
+    IReadOnlyList<KeyValuePair<string, string>>? CustomProperties,
+    Snowflake TargetGuildId
+) : IMmccNotification, IDiscordNotifiable
 {
-    public ModerationActionExpiredNotification(ModerationAction ma) : base(
-        $"Moderation action with ID: {ma.ModerationActionId} has expired.",
-        "Moderation action has expired and has therefore been deactivated.",
-        DateTimeOffset.UtcNow,
-        new List<KeyValuePair<string, string>>
-        {
-            new("Action type", ma.ModerationActionType.ToStringWithEmoji()),
-            new("User info", ma.GetUserDataDisplayString())
-        }
-    )
+    public ModerationActionExpiredNotification(ModerationAction ma)
+        : this(
+            Title: $"Moderation action with ID: {ma.ModerationActionId} has expired.",
+            Description: "Moderation action has expired and has therefore been deactivated.",
+            Timestamp: DateTimeOffset.UtcNow,
+            TargetGuildId: new(ma.GuildId),
+            CustomProperties: new List<KeyValuePair<string, string>>
+            {
+                new("Action type", ma.ModerationActionType.ToStringWithEmoji()),
+                new("User info", ma.GetUserDataDisplayString())
+            }
+        )
     {
-    }
-}
-
-public class DiscordNotificationHandler : INotificationHandler<ModerationActionExpiredNotification>
-{
-    public async Task Handle(ModerationActionExpiredNotification notification, CancellationToken cancellationToken)
-    {
-        Console.WriteLine("a");
     }
 }

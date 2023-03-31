@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Mmcc.Bot;
 using Mmcc.Bot.Behaviours;
 using Mmcc.Bot.Commands;
+using Mmcc.Bot.Common;
 using Mmcc.Bot.Common.Extensions.Hosting;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Models.Settings;
@@ -20,7 +22,7 @@ using Mmcc.Bot.Hosting.Moderation;
 using Mmcc.Bot.InMemoryStore.Stores;
 using Mmcc.Bot.Interactions;
 using Mmcc.Bot.Middleware;
-using Mmcc.Bot.Mojang;
+using Mmcc.Bot.Notifications;
 using Mmcc.Bot.Polychat;
 using Mmcc.Bot.Polychat.Networking;
 using Mmcc.Bot.Providers;
@@ -58,8 +60,13 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddAppInsights(hostContext);
 
         // MediatR;
-        services.AddMediatR(typeof(CreateFromDiscordMessage), typeof(PolychatRequest<>));
+        services.AddMediatR(new [] { typeof(CreateFromDiscordMessage), typeof(PolychatRequest<>) }, cfg =>
+        {
+            cfg.WithEvaluator(t => t.GetCustomAttribute<ExcludeFromMediatrAssemblyScanAttribute>() is null);
+        });
+        
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+        services.AddTransient(typeof(INotificationHandler<>), typeof(DiscordNotificationHandler<>));
 
         // Mmcc.Bot.X projects;
         services.AddPolychat(hostContext.Configuration.GetSection("Ssmp"));
