@@ -30,34 +30,26 @@ public class GetInviteLink
                 .NotNull();
         }
     }
-
-    /// <inheritdoc />
+    
     public class Handler : IRequestHandler<Query, Result<string>>
     {
         private readonly IDiscordRestGuildAPI _guildApi;
-
-        /// <summary>
-        /// Instantiates a new instance of <see cref="Handler"/> class.
-        /// </summary>
-        /// <param name="guildApi">The guild API.</param>
+        
         public Handler(IDiscordRestGuildAPI guildApi)
         {
             _guildApi = guildApi;
         }
-
-        /// <inheritdoc />
+        
         public async Task<Result<string>> Handle(Query request, CancellationToken cancellationToken)
         {
             var getGuildInvitesResult = await _guildApi.GetGuildInvitesAsync(request.GuildId, cancellationToken);
-
             if (!getGuildInvitesResult.IsSuccess)
             {
                 return Result<string>.FromError(getGuildInvitesResult);
             }
 
             var invites = getGuildInvitesResult.Entity;
-
-            if (invites is null || !invites.Any())
+            if (!invites.Any())
             {
                 return new NotFoundError(
                     "Could not find an active invite link. Administrators should create an invite link in Discord guild settings that does not expire.");

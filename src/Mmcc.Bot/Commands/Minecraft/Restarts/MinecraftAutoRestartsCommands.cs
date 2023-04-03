@@ -98,9 +98,9 @@ public class MinecraftAutoRestartsCommands : CommandGroup
     {
         var res = await _mediator.Send(new GetAllScheduled.Query());
 
-        return res.Count switch
+        return res switch
         {
-            > 0 => await _responder.Respond(new Embed
+            [_, ..] => await _responder.Respond(new Embed
             {
                 Title = "Scheduled recurring restarts",
                 Thumbnail = EmbedProperties.MmccLogoThumbnail,

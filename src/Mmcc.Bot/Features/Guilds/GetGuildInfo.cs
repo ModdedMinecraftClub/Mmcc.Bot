@@ -45,22 +45,16 @@ public class GetGuildInfo
         IList<IRole> GuildRoles,
         Uri? GuildIconUrl
     );
-
-    /// <inheritdoc />
+    
     public class Handler : IRequestHandler<Query, Result<QueryResult>>
     {
         private readonly IDiscordRestGuildAPI _guildApi;
-
-        /// <summary>
-        /// Instantiates a new instance of <see cref="Handler"/> class.
-        /// </summary>
-        /// <param name="guildApi">The guild API.</param>
+        
         public Handler(IDiscordRestGuildAPI guildApi)
         {
             _guildApi = guildApi;
         }
-
-        /// <inheritdoc />
+        
         public async Task<Result<QueryResult>> Handle(Query request, CancellationToken cancellationToken)
         {
             var getGuildInfoResult = await _guildApi.GetGuildAsync(request.GuildId, ct: cancellationToken);
@@ -70,11 +64,7 @@ public class GetGuildInfo
             }
 
             var guildInfo = getGuildInfoResult.Entity;
-            if (guildInfo is null)
-            {
-                return new NotFoundError("Guild not found.");
-            }
-
+            
             Uri? iconUrl;
             if (guildInfo.Icon is not null)
             {
