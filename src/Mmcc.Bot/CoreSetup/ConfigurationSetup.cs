@@ -25,6 +25,8 @@ public static class ConfigurationSetup
         HostBuilderContext hostContext
     )
     {
+        services.AddScoped<IDiagnosticsSettings, DiagnosticsSettings>();
+        
         // add command line args config;
         services.AddSingleton<CommandLineArguments>();
         

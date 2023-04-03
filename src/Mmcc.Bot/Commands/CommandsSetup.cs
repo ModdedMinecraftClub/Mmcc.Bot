@@ -1,7 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Mmcc.Bot.Commands.Core;
-using Mmcc.Bot.Commands.Diagnostics;
-using Mmcc.Bot.Commands.Guilds;
 using Mmcc.Bot.Commands.Minecraft;
 using Mmcc.Bot.Commands.Minecraft.Restarts;
 using Mmcc.Bot.Commands.MmccInfo;
@@ -12,6 +9,9 @@ using Mmcc.Bot.Commands.Moderation.PlayerInfo;
 using Mmcc.Bot.Commands.Moderation.Warns;
 using Mmcc.Bot.Commands.Tags.Management;
 using Mmcc.Bot.Commands.Tags.Usage;
+using Mmcc.Bot.Features.Diagnostics;
+using Mmcc.Bot.Features.Guilds;
+using Mmcc.Bot.Features.Help;
 using Remora.Commands.Extensions;
 using Remora.Discord.Commands.Extensions;
 

@@ -8,7 +8,7 @@ using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Results;
 
-namespace Mmcc.Bot.Commands.Core;
+namespace Mmcc.Bot.Features.Help;
 
 /// <summary>
 /// Help commands.

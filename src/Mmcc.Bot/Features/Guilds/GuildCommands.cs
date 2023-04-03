@@ -1,26 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Common.Models.Colours;
-using Mmcc.Bot.RemoraAbstractions.Conditions;
+using Mmcc.Bot.Features.Guilds.Views;
 using Mmcc.Bot.RemoraAbstractions.Conditions.CommandSpecific;
 using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
+using Porbeagle;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
-using Remora.Discord.API.Abstractions.Objects;
-using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
-using Remora.Rest.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Commands.Guilds;
+namespace Mmcc.Bot.Features.Guilds;
 
-/// <summary>
-/// Core commands.
-/// </summary>
 [RequireGuild]
 public class GuildCommands : CommandGroup
 {
@@ -28,25 +20,21 @@ public class GuildCommands : CommandGroup
     private readonly IColourPalette _colourPalette;
     private readonly IMediator _mediator;
     private readonly CommandMessageResponder _responder;
-
-    /// <summary>
-    /// Instantiates a new instance of <see cref="GuildCommands"/> class.
-    /// </summary>
-    /// <param name="context">The message context.</param>
-    /// <param name="colourPalette">The colour palette.</param>
-    /// <param name="mediator">The mediator.</param>
-    /// <param name="responder">The command responder.</param>
+    private readonly IContextAwareViewManager _viewManager;
+    
     public GuildCommands(
         MessageContext context,
         IColourPalette colourPalette,
         IMediator mediator,
-        CommandMessageResponder responder
+        CommandMessageResponder responder, 
+        IContextAwareViewManager viewManager
     )
     {
         _context = context;
         _colourPalette = colourPalette;
         _mediator = mediator;
         _responder = responder;
+        _viewManager = viewManager;
     }
 
     [Command("guild")]
@@ -54,29 +42,13 @@ public class GuildCommands : CommandGroup
     public async Task<IResult> GuildInfo() =>
         await _mediator.Send(new GetGuildInfo.Query(_context.GuildID.Value)) switch
         {
-            { IsSuccess: true, Entity: { } e } =>
-                await _responder.Respond(new Embed
-                {
-                    Title = "Guild info",
-                    Description = "Information about the current guild.",
-                    Fields = new List<EmbedField>
-                    {
-                        new("Name", e.GuildName, false),
-                        new("Owner", $"<@{e.GuildOwnerId}>"),
-                        new("Max members", e.GuildMaxMembers.ToString() ?? "Unavailable", false),
-                        new("Available roles", string.Join(", ", e.GuildRoles.Select(r => $"<@&{r.ID}>")))
-                    },
-                    Timestamp = DateTimeOffset.UtcNow,
-                    Colour = _colourPalette.Blue,
-                    Thumbnail = e.GuildIconUrl is null
-                        ? new Optional<IEmbedThumbnail>()
-                        : new EmbedThumbnail(e.GuildIconUrl.ToString())
-                }),
+            { IsSuccess: true, Entity: { } guildInfo } =>
+                await _viewManager.RespondWithView(new GuildInfoView(guildInfo)),
 
             { IsSuccess: true } =>
                 Result.FromError(new NotFoundError($"Guild with ID: {_context.GuildID.Value} not found")),
 
-            { IsSuccess: false } res => res,
+            { IsSuccess: false } res => res
         };
 
     [Command("invite")]

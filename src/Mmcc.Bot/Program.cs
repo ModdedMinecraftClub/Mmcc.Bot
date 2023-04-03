@@ -50,7 +50,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddInMemoryStores();
         services.AddBotDatabaseContext();
 
-        services.AddSingleton<IColourPalette, TailwindColourPalette>();
+        services.AddSingleton<IColourPalette>();
 
         // FluentValidation;
         services.AddValidatorsFromAssemblyContaining<GetExpiredActions>();

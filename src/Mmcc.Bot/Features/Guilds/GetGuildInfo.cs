@@ -11,7 +11,7 @@ using Remora.Discord.API.Abstractions.Rest;
 using Remora.Rest.Core;
 using Remora.Results;
 
-namespace Mmcc.Bot.Commands.Guilds;
+namespace Mmcc.Bot.Features.Guilds;
 
 /// <summary>
 /// Gets guild info.

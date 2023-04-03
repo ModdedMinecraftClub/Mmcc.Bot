@@ -3,12 +3,12 @@ using System.IO;
 using System.Linq;
 using MediatR;
 
-namespace Mmcc.Bot.Commands.Diagnostics;
+namespace Mmcc.Bot.Features.Diagnostics;
 
 /// <summary>
-/// Query to get drives.
+/// Gets the drives diagnostics.
 /// </summary>
-public class GetDrives
+public class GetDrivesDiagnostics
 {
     /// <summary>
     /// Query to get drives.
@@ -18,7 +18,7 @@ public class GetDrives
     }
         
     /// <summary>
-    /// Result of the drive query.
+    /// Drive diagnostics.
     /// </summary>
     public class QueryResult
     {
@@ -30,11 +30,9 @@ public class GetDrives
         public double PercentageUsed { get; set; }
         public float GigabytesTotalSize { get; set; }
     }
-        
-    /// <inheritdoc />
+    
     public class Handler : RequestHandler<Query, IList<QueryResult>>
     {
-        /// <inheritdoc />
         protected override IList<QueryResult> Handle(Query request)
         {
             var allDrives = DriveInfo.GetDrives();
