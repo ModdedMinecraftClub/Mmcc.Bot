@@ -1,23 +1,31 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using Mmcc.Bot.Common.Errors;
 using Mmcc.Bot.Common.Extensions.Database.Entities;
 using Mmcc.Bot.Common.Extensions.Remora.Discord.API.Abstractions.Rest;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Models.Settings;
 using Mmcc.Bot.Common.Statics;
+using Mmcc.Bot.CommonEmbedProviders;
 using Mmcc.Bot.Database.Entities;
-using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
-using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.InMemoryStore.Stores;
+using Mmcc.Bot.Providers.CommonEmbedFieldsProviders;
+using Mmcc.Bot.RemoraAbstractions.Conditions;
+using Mmcc.Bot.RemoraAbstractions.Conditions.CommandSpecific;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
+using Mmcc.Bot.RemoraAbstractions.UI;
+using Mmcc.Bot.RemoraAbstractions.UI.Extensions;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
 using Remora.Discord.Commands.Contexts;
+using Remora.Discord.Interactivity;
 using Remora.Rest.Core;
 using Remora.Results;
 
@@ -37,18 +45,12 @@ public class MemberApplicationsCommands : CommandGroup
     private readonly IColourPalette _colourPalette;
     private readonly DiscordSettings _discordSettings;
     private readonly IDiscordRestGuildAPI _guildApi;
-    private readonly ICommandResponder _responder;
+    private readonly CommandMessageResponder _responder;
+    private readonly IMessageMemberAppContextStore _memberAppContextStore;
 
-    /// <summary>
-    /// Instantiates a new instance of <see cref="MemberApplicationsCommands"/>.
-    /// </summary>
-    /// <param name="context">The message context.</param>
-    /// <param name="channelApi">The channel API.</param>
-    /// <param name="mediator">The mediator.</param>
-    /// <param name="colourPalette">The colour palette.</param>
-    /// <param name="discordSettings">The Discord settings.</param>
-    /// <param name="guildApi">The guild API.</param>
-    /// <param name="responder">The command responder.</param>
+    private readonly ICommonEmbedProvider<MemberApplication> _memberAppEmbedProvider;
+    private readonly ICommonEmbedFieldsProvider<IEnumerable<MemberApplication>> _memberAppsEmbedFieldsProvider;
+
     public MemberApplicationsCommands(
         MessageContext context,
         IDiscordRestChannelAPI channelApi,
@@ -56,7 +58,10 @@ public class MemberApplicationsCommands : CommandGroup
         IColourPalette colourPalette,
         DiscordSettings discordSettings,
         IDiscordRestGuildAPI guildApi,
-        ICommandResponder responder
+        CommandMessageResponder responder,
+        IMessageMemberAppContextStore memberAppContextStore, 
+        ICommonEmbedProvider<MemberApplication> memberAppEmbedProvider, 
+        ICommonEmbedFieldsProvider<IEnumerable<MemberApplication>> memberAppsEmbedFieldsProvider
     )
     {
         _context = context;
@@ -66,6 +71,9 @@ public class MemberApplicationsCommands : CommandGroup
         _discordSettings = discordSettings;
         _guildApi = guildApi;
         _responder = responder;
+        _memberAppContextStore = memberAppContextStore;
+        _memberAppEmbedProvider = memberAppEmbedProvider;
+        _memberAppsEmbedFieldsProvider = memberAppsEmbedFieldsProvider;
     }
 
     [Command("info")]
@@ -111,21 +119,33 @@ public class MemberApplicationsCommands : CommandGroup
     /// <returns>Result of the operation.</returns>
     [Command("view", "v")]
     [Description("Views a member application by ID.")]
-    public async Task<IResult> View(int id) =>
-        await _mediator.Send(new GetById.Query
-            {
-                ApplicationId = id,
-                GuildId = _context.Message.GuildID.Value
-            }) switch
-            {
-                { IsSuccess: true, Entity: { } e } =>
-                    await _responder.Respond(e.GetEmbed(_colourPalette)),
+    public async Task<IResult> View(int id)
+    {
+        var getResult = await _mediator.Send(new GetById.Query
+        {
+            ApplicationId = id,
+            GuildId = _context.GuildID.Value
+        });
 
-                { IsSuccess: true } =>
-                    Result.FromError(new NotFoundError($"Application with ID `{id}` could not be found.")),
+        if (getResult is {IsSuccess: true, Entity: { } app})
+        {
+            _memberAppContextStore.Add(_context.MessageID.Value, app.MemberApplicationId);
+            
+            var approveButton = new ButtonComponent
+            (
+                ButtonComponentStyle.Success,
+                Label: "Approve",
+                CustomID: CustomIDHelpers.CreateButtonID("approve-btn")
+            );
+            var actionRows = ActionRowUtils.CreateActionRowWithComponents(approveButton).AsList();
 
-                { IsSuccess: false } res => res
-            };
+            return await _responder.RespondWithComponents(actionRows, new(), _memberAppEmbedProvider.GetEmbed(app));
+        }
+
+        return getResult is {IsSuccess: true}
+            ? Result.FromError(new NotFoundError($"Application with ID `{id}` could not be found."))
+            : getResult;
+    }
 
     /// <summary>
     /// Views the next pending application in the queue.
@@ -134,10 +154,10 @@ public class MemberApplicationsCommands : CommandGroup
     [Command("next", "n")]
     [Description("Views the next pending application in the queue")]
     public async Task<IResult> ViewNextPending() =>
-        await _mediator.Send(new GetNextPending.Query { GuildId = _context.Message.GuildID.Value }) switch
+        await _mediator.Send(new GetNextPending.Query { GuildId = _context.GuildID.Value }) switch
         {
             { IsSuccess: true, Entity: { } e } =>
-                await _responder.Respond(e.GetEmbed(_colourPalette)),
+                await _responder.Respond(_memberAppEmbedProvider.GetEmbed(e)),
 
             { IsSuccess: true } =>
                 await _responder.Respond(new Embed
@@ -168,7 +188,7 @@ public class MemberApplicationsCommands : CommandGroup
 
         return await _mediator.Send(new GetByStatus.Query
             {
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 ApplicationStatus = ApplicationStatus.Pending,
                 Limit = 25,
                 SortByDescending = false
@@ -178,7 +198,7 @@ public class MemberApplicationsCommands : CommandGroup
                     await _responder.Respond(
                         !e.Any()
                             ? embedBase with { Description = "There are no pending applications at the moment." }
-                            : embedBase with { Fields = e.GetEmbedFields().ToList() }
+                            : embedBase with { Fields = _memberAppsEmbedFieldsProvider.GetEmbedFields(e).ToList() }
                     ),
 
                 { IsSuccess: false } res => res
@@ -202,7 +222,7 @@ public class MemberApplicationsCommands : CommandGroup
 
         return await _mediator.Send(new GetByStatus.Query
             {
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 ApplicationStatus = ApplicationStatus.Approved,
                 Limit = 10,
                 SortByDescending = true
@@ -212,7 +232,7 @@ public class MemberApplicationsCommands : CommandGroup
                     await _responder.Respond(
                         !e.Any()
                             ? embedBase with { Description = "You have not approved any applications yet." }
-                            : embedBase with { Fields = e.GetEmbedFields().ToList() }
+                            : embedBase with { Fields = _memberAppsEmbedFieldsProvider.GetEmbedFields(e).ToList() }
                     ),
 
                 { IsSuccess: false } res => res
@@ -236,7 +256,7 @@ public class MemberApplicationsCommands : CommandGroup
 
         return await _mediator.Send(new GetByStatus.Query
             {
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 ApplicationStatus = ApplicationStatus.Rejected,
                 Limit = 10,
                 SortByDescending = true
@@ -246,7 +266,7 @@ public class MemberApplicationsCommands : CommandGroup
                     await _responder.Respond(
                         !e.Any()
                             ? embedBase with { Description = "You have not rejected any applications yet." }
-                            : embedBase with { Fields = e.GetEmbedFields().ToList() }
+                            : embedBase with { Fields = _memberAppsEmbedFieldsProvider.GetEmbedFields(e).ToList() }
                     ),
 
                 { IsSuccess: false } res => res
@@ -265,7 +285,7 @@ public class MemberApplicationsCommands : CommandGroup
     [RequireUserGuildPermission(DiscordPermission.BanMembers)]
     public async Task<IResult> Approve(int id, string serverPrefix, List<string> ignsList)
     {
-        var getMembersChannelResult = await _guildApi.FindGuildChannelByName(_context.Message.GuildID.Value,
+        var getMembersChannelResult = await _guildApi.FindGuildChannelByName(_context.GuildID.Value,
             _discordSettings.ChannelNames.MemberApps);
         if (!getMembersChannelResult.IsSuccess)
         {
@@ -275,7 +295,7 @@ public class MemberApplicationsCommands : CommandGroup
         var commandResult = await _mediator.Send(new ApproveAutomatically.Command
         {
             Id = id,
-            GuildId = _context.Message.GuildID.Value,
+            GuildId = _context.GuildID.Value,
             ChannelId = _context.ChannelID,
             ServerPrefix = serverPrefix,
             Igns = ignsList
@@ -327,7 +347,7 @@ public class MemberApplicationsCommands : CommandGroup
     [RequireUserGuildPermission(DiscordPermission.BanMembers)]
     public async Task<IResult> Reject(int id, [Greedy] string reason)
     {
-        var getMembersChannelResult = await _guildApi.FindGuildChannelByName(_context.Message.GuildID.Value,
+        var getMembersChannelResult = await _guildApi.FindGuildChannelByName(_context.GuildID.Value,
             _discordSettings.ChannelNames.MemberApps);
         if (!getMembersChannelResult.IsSuccess)
         {
@@ -335,7 +355,7 @@ public class MemberApplicationsCommands : CommandGroup
         }
 
         var rejectCommandResult = await _mediator.Send(new Reject.Command
-            {Id = id, GuildId = _context.Message.GuildID.Value});
+            {Id = id, GuildId = _context.GuildID.Value});
         if (!rejectCommandResult.IsSuccess)
         {
             return rejectCommandResult;

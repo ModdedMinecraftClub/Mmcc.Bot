@@ -29,6 +29,22 @@ namespace Mmcc.Bot.Common.Extensions.Database.Entities
             return new[] {warningsField, mutesField, bansField};
         }
 
+        public static string GetUserDataDisplayString(this ModerationAction ma)
+            => ma switch
+            {
+                { UserDiscordId: { } dId, UserIgn: { } ign } =>
+                    $$"""
+                    Discord user: <@{{dId}}>
+                    IGN: `{{ign}}`
+                    """,
+
+                { UserDiscordId: { } dId } => $"Discord user: <@{dId}>",
+
+                { UserIgn: { } ign } => $"IGN: `{ign}`",
+
+                _ => "No Discord ID/IGN data."
+            };
+
         private static EmbedField GetEmbedFieldForActionsOfType(this IEnumerable<ModerationAction> moderationActions, ModerationActionType type, bool showAssociatedDiscord, bool showAssociatedIgn)
         {
             var list = moderationActions.Where(ma => ma.ModerationActionType == type).ToList();

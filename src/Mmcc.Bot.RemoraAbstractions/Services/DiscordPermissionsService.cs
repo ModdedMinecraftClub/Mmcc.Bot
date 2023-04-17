@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Remora.Commands.Results;
 using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Abstractions.Rest;
 using Remora.Discord.API.Objects;
@@ -65,8 +64,7 @@ public class DiscordPermissionsService : IDiscordPermissionsService
         var channel = getChannel.Entity;
         if (!channel.GuildID.HasValue)
         {
-            return new ConditionNotSatisfiedError(
-                "Command requires a guild permission but was executed outside of a guild.");
+            return new InvalidOperationError("Command requires a guild permission but was executed outside of a guild.");
         }
 
         var guildId = channel.GuildID.Value;
@@ -135,8 +133,7 @@ public class DiscordPermissionsService : IDiscordPermissionsService
 
         var hasPermission = computedPermissions.HasPermission(permission);
         return !hasPermission
-            ? new ConditionNotSatisfiedError(
-                $"Guild User requesting the command does not have the required {permission.ToString()} permission")
+            ? new InvalidOperationError($"Guild User requesting the command does not have the required {permission.ToString()} permission")
             : Result.FromSuccess();
     }
 }

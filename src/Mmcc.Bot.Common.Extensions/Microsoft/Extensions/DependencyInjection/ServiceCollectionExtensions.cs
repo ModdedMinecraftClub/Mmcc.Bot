@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using System;
+using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -33,6 +34,11 @@ namespace Mmcc.Bot.Common.Extensions.Microsoft.Extensions.DependencyInjection
             where TValidator : AbstractValidator<TConfig>, new()
         {
             var config = configurationSection.Get<TConfig>();
+            if (config is null)
+            {
+                throw new Exception($"Could not match a configuration section to {typeof(TConfig)}");
+            }
+            
             var validator = new TValidator();
             
             validator.ValidateAndThrow(config);

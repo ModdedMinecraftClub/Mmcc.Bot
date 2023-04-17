@@ -3,8 +3,9 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Common.Models.Colours;
-using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
-using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.RemoraAbstractions.Conditions;
+using Mmcc.Bot.RemoraAbstractions.Conditions.CommandSpecific;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
@@ -26,7 +27,7 @@ public class WarnCommands : CommandGroup
     private readonly MessageContext _context;
     private readonly IMediator _mediator;
     private readonly Embed _embedBase;
-    private readonly ICommandResponder _responder;
+    private readonly CommandMessageResponder _responder;
 
     /// <summary>
     /// Instantiates a new instance of <see cref="WarnCommands"/> class.
@@ -39,7 +40,7 @@ public class WarnCommands : CommandGroup
         MessageContext context,
         IMediator mediator,
         IColourPalette colourPalette,
-        ICommandResponder responder
+        CommandMessageResponder responder
     )
     {
         _context = context;
@@ -59,7 +60,7 @@ public class WarnCommands : CommandGroup
         await _mediator.Send(new Warn.Command
             {
                 UserDiscordId = user.ID,
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 Reason = reason,
                 UserIgn = null
             }) switch
@@ -80,7 +81,7 @@ public class WarnCommands : CommandGroup
         await _mediator.Send(new Warn.Command
             {
                 UserIgn = ign,
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 Reason = reason,
                 UserDiscordId = null
             }) switch
@@ -105,7 +106,7 @@ public class WarnCommands : CommandGroup
                 {
                     UserDiscordId = discordUser.ID,
                     UserIgn = ign,
-                    GuildId = _context.Message.GuildID.Value,
+                    GuildId = _context.GuildID.Value,
                     Reason = reason
                 }
             ) switch

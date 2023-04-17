@@ -10,8 +10,9 @@ using Mmcc.Bot.Common.Extensions.Remora.Discord.API.Abstractions.Objects;
 using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Statics;
 using Mmcc.Bot.Mojang;
-using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
-using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.RemoraAbstractions.Conditions;
+using Mmcc.Bot.RemoraAbstractions.Conditions.CommandSpecific;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API;
@@ -37,7 +38,7 @@ public class PlayerInfoCommands : CommandGroup
     private readonly IColourPalette _colourPalette;
     private readonly IMojangApiService _mojangApi;
     private readonly IDiscordRestGuildAPI _guildApi;
-    private readonly ICommandResponder _responder;
+    private readonly CommandMessageResponder _responder;
 
     /// <summary>
     /// Instantiates a new instance of <see cref="PlayerInfoCommands"/>.
@@ -54,7 +55,7 @@ public class PlayerInfoCommands : CommandGroup
         IColourPalette colourPalette,
         IMojangApiService mojangApi,
         IDiscordRestGuildAPI guildApi,
-        ICommandResponder responder
+        CommandMessageResponder responder
     )
     {
         _context = context;
@@ -86,7 +87,7 @@ public class PlayerInfoCommands : CommandGroup
 
         fields.Add(user.GetEmbedField());
             
-        var getGuildMemberResult = await _guildApi.GetGuildMemberAsync(_context.Message.GuildID.Value, user.ID);
+        var getGuildMemberResult = await _guildApi.GetGuildMemberAsync(_context.GuildID.Value, user.ID);
         if (getGuildMemberResult.IsSuccess)
         {
             var guildMember = getGuildMemberResult.Entity;
@@ -110,7 +111,7 @@ public class PlayerInfoCommands : CommandGroup
         }
 
         var queryResult =
-            await _mediator.Send(new GetByDiscordId.Query(_context.Message.GuildID.Value, user.ID.Value));
+            await _mediator.Send(new GetByDiscordId.Query(_context.GuildID.Value, user.ID.Value));
             
         if (queryResult.IsSuccess)
         {
@@ -150,7 +151,7 @@ public class PlayerInfoCommands : CommandGroup
             Thumbnail = EmbedProperties.MmccLogoThumbnail
         };
         var fields = new List<EmbedField>();
-        var queryResult = await _mediator.Send(new GetByIgn.Query(_context.Message.GuildID.Value, ign));
+        var queryResult = await _mediator.Send(new GetByIgn.Query(_context.GuildID.Value, ign));
         var getUuid = await _mojangApi.GetPlayerUuidInfo(ign);
             
         if (getUuid.IsSuccess && getUuid.Entity is not null)

@@ -1,118 +1,141 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Reflection;
+using Mmcc.Bot.Common.Extensions.System;
 using Mmcc.Bot.Common.Models.Colours;
+using Mmcc.Bot.Common.Models.Settings;
 using Mmcc.Bot.Common.Statics;
+using Mmcc.Bot.RemoraAbstractions.Conditions.CommandSpecific;
 using Remora.Commands.Trees.Nodes;
 using Remora.Discord.API.Objects;
+using Remora.Discord.Extensions.Formatting;
+using Remora.Results;
 
 namespace Mmcc.Bot.RemoraAbstractions.Services;
 
-/// <summary>
-/// Service for obtaining help embeds.
-/// </summary>
 public interface IHelpService
 {
-    /// <summary>
-    /// Traverses a command tree and produces help embeds.
-    /// </summary>
-    /// <param name="nodes">The nodes to traverse.</param>
-    /// <param name="embeds">The embeds output.</param>
-    void TraverseAndGetHelpEmbeds(IList<IChildNode> nodes, IList<Embed> embeds);
+    Embed GetHelpForAll();
+    Result<Embed> GetHelpForCategory(List<string> pathToCategory);
 }
-    
-/// <inheritdoc />
+
 public class HelpService : IHelpService
 {
+    private const string CategoryIcon = ":file_folder:";
+    private const string CommandIcon = "❯";
+    
     private readonly IColourPalette _colourPalette;
+    private readonly DiscordSettings _discordSettings;
+    private readonly CommandTreeWalker _cmdTreeWalker;
 
-    /// <summary>
-    /// Instantiates a new instance of <see cref="HelpService"/>.
-    /// </summary>
-    /// <param name="colourPalette">The colour palette.</param>
-    public HelpService(IColourPalette colourPalette)
+    public HelpService(
+        IColourPalette colourPalette,
+        CommandTreeWalker cmdTreeWalker,
+        DiscordSettings discordSettings
+    )
     {
         _colourPalette = colourPalette;
+        _cmdTreeWalker = cmdTreeWalker;
+        _discordSettings = discordSettings;
     }
 
-    /// <inheritdoc />
-    public void TraverseAndGetHelpEmbeds(IList<IChildNode> nodes, IList<Embed> embeds)
+    public Embed GetHelpForAll()
     {
-        var orphans = nodes
-            .OfType<CommandNode>()
-            .ToList();
-        var normals = nodes
-            .OfType<GroupNode>()
-            .ToList();
-        var fields = new List<EmbedField>();
-            
-        foreach (var orphan in orphans)
+        var categoryEmbedFields = new List<EmbedField>();
+        _cmdTreeWalker.PreOrderTraverseParentNodes(node =>
         {
-            var nameString = new StringBuilder();
-            var orphanParams = orphan.Shape.Parameters;
+            if (node is not GroupNode groupNode)
+                return;
 
-            if (orphanParams.Any())
-            {
-                var paramsString = new StringBuilder();
+            var embedFieldForCategory = GetEmbedFieldForCategory(groupNode);
+            categoryEmbedFields.Add(embedFieldForCategory);
+        });
 
-                for (var i = 0; i < orphanParams.Count; i++)
-                {
-                    paramsString.Append(i != orphanParams.Count - 1
-                        ? $"<{orphanParams[i].HintName}> "
-                        : $"<{orphanParams[i].HintName}>");
-                }
-
-                nameString.AppendLine($"❯ {orphan.Key} {paramsString}");
-            }
-            else
-            {
-                nameString.AppendLine($"❯ {orphan.Key}");
-            }
-
-            var fieldValueSb = new StringBuilder();
-            if (orphan.Aliases.Any())
-            {
-                fieldValueSb.Append("**Aliases:** ");
-                for (var i = 0; i < orphan.Aliases.Count; i++)
-                {
-                    fieldValueSb.Append(i != orphan.Aliases.Count - 1
-                        ? $"\"{orphan.Aliases[i]}\", "
-                        : $"\"{orphan.Aliases[i]}\"");
-                }
-            }
-            fieldValueSb.Append("\n" + orphan.Shape.Description);
-                
-            fields.Add(new EmbedField(nameString.ToString(), $"{fieldValueSb}", false));
-        }
-            
-        var parent = orphans.FirstOrDefault()?.Parent;
-        var embed = parent switch
+        var helpEmbed = new Embed
         {
-            GroupNode g => new Embed
-            {
-                // what the fuck??
-                Title = $":arrow_right: {g.Description} " +
-                        $"[`!{g.Key}`{(g.Aliases.Any() ? "/" + string.Join("/", g.Aliases.Select(a => $"`!{a}`")) : "")}]",
-                Description = $"Usage: `!{g.Key} <command name> <params>`."
-            },
-            _ => new Embed
-            {
-                Title = ":arrow_right: General commands [`!`]",
-                Description = "Usage: `!<command name> <params>`."
-            }
-        };
-        embed = embed with
-        {
-            Fields = fields,
+            Title = ":information_source: Help",
+            Description = "Shows available categories. To see commands for a given category use `!help <categoryName>`.",
+            Fields = categoryEmbedFields,
             Colour = _colourPalette.Blue,
             Thumbnail = EmbedProperties.MmccLogoThumbnail
         };
-            
-        embeds.Add(embed);
 
-        foreach (var normal in normals)
+        return helpEmbed;
+    }
+
+    public Result<Embed> GetHelpForCategory(List<string> pathToCategory)
+    {
+        var category = _cmdTreeWalker.GetGroupNodeByPath(pathToCategory);
+        if (category is null)
+            return Result<Embed>.FromError(
+                new NotFoundError($"No category matches {Markdown.InlineCode(string.Join(" ", pathToCategory))}")
+            );
+
+        var formattedPath = GetFormattedPathForCategory(category);
+        
+        var embedTitle = $"{CategoryIcon} {category.Description} [{formattedPath}]";
+        var embedDescription = $"Usage: {formattedPath[..^1]} <command name> <params>`";
+        var embedFields = GetCommandsEmbedFieldsForCategory(category);
+
+        var embed = new Embed
         {
-            TraverseAndGetHelpEmbeds(normal.Children.ToList(), embeds);
-        }
+            Title = embedTitle,
+            Description = embedDescription,
+            Fields = embedFields,
+            Colour = _colourPalette.Blue,
+            Thumbnail = EmbedProperties.MmccLogoThumbnail
+        };
+        
+        return embed;
+    }
+
+    private List<EmbedField> GetCommandsEmbedFieldsForCategory(GroupNode category)
+        => category.Children
+            .OfType<CommandNode>()
+            .Select(GetEmbedFieldForCommand)
+            .ToList();
+
+    private EmbedField GetEmbedFieldForCommand(CommandNode cmd)
+    {
+        var cmdDescription = cmd.Shape.Description;
+        var cmdArgs = cmd.Shape.Parameters;
+        var cmdArgsFormatted = string.Join(" ", cmdArgs.Select(x => $"<{x.HintName}>"));
+        
+        var fieldName = $"{CommandIcon} {cmd.Key} {cmdArgsFormatted}";
+        
+        var fieldDescAliasesLine = cmd.Aliases.Any()
+            ? $"{Markdown.Underline("Aliases:")} {string.Join(", ", cmd.Aliases.Select(x => x.DoubleQuotes()))}\n"
+            : "";
+        
+        var requiredPermission = cmd.CommandMethod.GetCustomAttribute(typeof(RequireUserGuildPermissionAttribute));
+        var requiredPermissionLine = requiredPermission is RequireUserGuildPermissionAttribute r
+            ? $"{Markdown.Underline("Required user permission:")} {r.Permission}\n"
+            : "";
+        
+        var fieldDescription = $"{fieldDescAliasesLine}{requiredPermissionLine}{cmdDescription}";
+
+        return new EmbedField(fieldName, fieldDescription, false);
+    }
+
+    private EmbedField GetEmbedFieldForCategory(GroupNode category)
+    {
+        var formattedPath = GetFormattedPathForCategory(category);
+        var fullHelpCmd = $"!help {formattedPath}";
+        
+        var fieldName = $"{CategoryIcon} {category.Description} [{formattedPath}]";
+        var fieldDesc = $"Full help: {Markdown.InlineCode(fullHelpCmd)}";
+
+        return new EmbedField(fieldName, fieldDesc, false);
+    }
+
+    private string GetFormattedPathForCategory(GroupNode category)
+    {
+        var prefix = _discordSettings.Prefix;
+        var path = category.Parent is GroupNode
+            ? string.Join(" ", _cmdTreeWalker.CollectPath(category))
+            : category.Key;
+        var formattedPath = Markdown.InlineCode($"{prefix}{path}");
+
+        return formattedPath;
     }
 }

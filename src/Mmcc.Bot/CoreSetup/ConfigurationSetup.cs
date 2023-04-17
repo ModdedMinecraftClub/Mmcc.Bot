@@ -25,6 +25,8 @@ public static class ConfigurationSetup
         HostBuilderContext hostContext
     )
     {
+        services.AddScoped<IDiagnosticsSettings, DiagnosticsSettings>();
+        
         // add command line args config;
         services.AddSingleton<CommandLineArguments>();
         
@@ -45,7 +47,8 @@ public static class ConfigurationSetup
                 | GatewayIntents.GuildMembers
                 | GatewayIntents.GuildBans
                 | GatewayIntents.GuildMessages
-                | GatewayIntents.GuildMessageReactions;
+                | GatewayIntents.GuildMessageReactions
+                | GatewayIntents.MessageContents;
         });
 
         return services;

@@ -9,8 +9,9 @@ using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Statics;
 using Mmcc.Bot.Polychat.MessageSenders;
 using Mmcc.Bot.Polychat.Services;
-using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
-using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.RemoraAbstractions.Conditions;
+using Mmcc.Bot.RemoraAbstractions.Conditions.CommandSpecific;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
@@ -32,7 +33,7 @@ public class MinecraftServersCommands : CommandGroup
     private readonly IMediator _mediator;
     private readonly IColourPalette _colourPalette;
     private readonly IPolychatService _polychatService;
-    private readonly ICommandResponder _responder;
+    private readonly CommandMessageResponder _responder;
 
     /// <summary>
     /// Instantiates a new instance of <see cref="MinecraftServersCommands"/> class.
@@ -47,7 +48,7 @@ public class MinecraftServersCommands : CommandGroup
         IMediator mediator,
         IColourPalette colourPalette,
         IPolychatService polychatService,
-        ICommandResponder responder
+        CommandMessageResponder responder
     )
     {
         _context = context;

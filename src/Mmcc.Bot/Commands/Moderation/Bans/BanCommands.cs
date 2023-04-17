@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Common.Models;
 using Mmcc.Bot.Common.Models.Colours;
-using Mmcc.Bot.RemoraAbstractions.Conditions.Attributes;
-using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.RemoraAbstractions.Conditions;
+using Mmcc.Bot.RemoraAbstractions.Conditions.CommandSpecific;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Discord.API.Abstractions.Objects;
@@ -28,7 +29,7 @@ public class BanCommands : CommandGroup
     private readonly MessageContext _context;
     private readonly IMediator _mediator;
     private readonly Embed _embedBase;
-    private readonly ICommandResponder _responder;
+    private readonly CommandMessageResponder _responder;
 
     /// <summary>
     /// Instantiates a new instance of <see cref="BanCommands"/> class.
@@ -41,7 +42,7 @@ public class BanCommands : CommandGroup
         MessageContext context,
         IMediator mediator,
         IColourPalette colourPalette,
-        ICommandResponder responder
+        CommandMessageResponder responder
     )
     {
         _context = context;
@@ -68,7 +69,7 @@ public class BanCommands : CommandGroup
     public async Task<IResult> BanDiscord(IUser user, ExpiryDate expiryDate, [Greedy] string reason) =>
         await _mediator.Send(new BanModerationAction.Command
             {
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 ChannelId = _context.ChannelID,
                 UserDiscordId = user.ID,
                 Reason = reason,
@@ -100,7 +101,7 @@ public class BanCommands : CommandGroup
     public async Task<IResult> BanIg(string ign, ExpiryDate expiryDate, [Greedy] string reason) =>
         await _mediator.Send(new BanModerationAction.Command
             {
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 ChannelId = _context.ChannelID,
                 UserIgn = ign,
                 Reason = reason,
@@ -133,7 +134,7 @@ public class BanCommands : CommandGroup
         [Greedy] string reason) =>
         await _mediator.Send(new BanModerationAction.Command
             {
-                GuildId = _context.Message.GuildID.Value,
+                GuildId = _context.GuildID.Value,
                 ChannelId = _context.ChannelID,
                 UserIgn = ign,
                 Reason = reason,

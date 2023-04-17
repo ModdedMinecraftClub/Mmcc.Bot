@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Mmcc.Bot.Common.Extensions.Remora.Discord.API.Abstractions.Rest;
 using Mmcc.Bot.Common.Models.Colours;
+using Mmcc.Bot.Common.Models.Settings;
 using Mmcc.Bot.Common.Statics;
 using Mmcc.Bot.Database;
 using Mmcc.Bot.Database.Entities;
@@ -23,33 +25,16 @@ namespace Mmcc.Bot.Commands.Moderation.Bans;
 /// </summary>
 public class Unban
 {
-    /// <summary>
-    /// Command to unban a user.
-    /// </summary>
     public class Command : IRequest<Result<ModerationAction>>
     {
-        /// <summary>
-        /// Moderation action.
-        /// </summary>
         public ModerationAction ModerationAction { get; set; } = null!;
-            
-        /// <summary>
-        /// ID of the channel to which polychat2 will send the confirmation message.
-        /// </summary>
-        public Snowflake ChannelId { get; set; }
     }
-
-    /// <summary>
-    /// Validates the <see cref="Command"/>.
-    /// </summary>
+    
     public class Validator : AbstractValidator<Command>
     {
         public Validator()
         {
             RuleFor(c => c.ModerationAction)
-                .NotNull();
-
-            RuleFor(c => c.ChannelId)
                 .NotNull();
         }
     }
@@ -64,17 +49,8 @@ public class Unban
         private readonly IDiscordRestChannelAPI _channelApi;
         private readonly IColourPalette _colourPalette;
         private readonly ILogger<Handler> _logger;
-
-        /// <summary>
-        /// Instantiates a new instance of <see cref="Handler"/> class.
-        /// </summary>
-        /// <param name="context">The DB context.</param>
-        /// <param name="ps">The polychat service.</param>
-        /// <param name="guildApi">The guild API.</param>
-        /// <param name="userApi">The user API.</param>
-        /// <param name="channelApi">The channel API.</param>
-        /// <param name="colourPalette">The colour palette.</param>
-        /// <param name="logger">The logger.</param>
+        private readonly DiscordSettings _discordSettings;
+        
         public Handler(
             BotContext context,
             IPolychatService ps,
@@ -82,7 +58,8 @@ public class Unban
             IDiscordRestUserAPI userApi,
             IDiscordRestChannelAPI channelApi,
             IColourPalette colourPalette,
-            ILogger<Handler> logger
+            ILogger<Handler> logger, 
+            DiscordSettings discordSettings
         )
         {
             _context = context;
@@ -92,6 +69,7 @@ public class Unban
             _channelApi = channelApi;
             _colourPalette = colourPalette;
             _logger = logger;
+            _discordSettings = discordSettings;
         }
 
         /// <inheritdoc />
@@ -99,18 +77,25 @@ public class Unban
         {
             var ma = request.ModerationAction;
             if (ma.ModerationActionType != ModerationActionType.Ban)
-                return new UnsupportedArgumentError(
-                    $"Wrong moderation action type. Expected: {ModerationActionType.Ban}, got: {ma.ModerationActionType}"); 
-            //if (!ma.IsActive) return new ValidationError("Moderation action is already inactive.");
+                return new UnsupportedArgumentError($"Wrong moderation action type. Expected: {ModerationActionType.Ban}, got: {ma.ModerationActionType}");
+            if (!ma.IsActive)
+                return new UnsupportedArgumentError("Moderation action is already inactive.");
 
+            
             if (ma.UserIgn is not null)
             {
+                var getLogsChannel = await _guildApi.FindGuildChannelByName(new(ma.GuildId), _discordSettings.ChannelNames.ModerationLogs);
+                if (!getLogsChannel.IsSuccess)
+                {
+                    _logger.LogError("An error has occurred while obtaining logs channel.");
+                }
+
                 var proto = new GenericCommand
                 {
-                    DefaultCommand = "ban",
-                    DiscordCommandName = "ban",
-                    DiscordChannelId = request.ChannelId.ToString(),
-                    Args = {request.ModerationAction.UserIgn}
+                    DiscordCommandName = "exec",
+                    DefaultCommand = "$args",
+                    Args = { "pardon", ma.UserIgn },
+                    DiscordChannelId = getLogsChannel.Entity?.ID.ToString()
                 };
                 await _ps.BroadcastMessage(proto);
             }
@@ -140,7 +125,7 @@ public class Unban
                 var createDmResult = await _userApi.CreateDMAsync(userDiscordIdSnowflake, cancellationToken);
                 const string warningMsg =
                     "Failed to send a DM notification to the user. It may be because they have blocked the bot or don't share any servers. This warning can in most cases be ignored.";
-                if (!createDmResult.IsSuccess || createDmResult.Entity is null)
+                if (!createDmResult.IsSuccess)
                 {
                     _logger.LogWarning(warningMsg);
                 }

@@ -1,39 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <UserSecretsId>dotnet-Mmcc.Bot-4BA5AD38-B3B4-456A-853F-080768D88F42</UserSecretsId>
         <Nullable>enable</Nullable>
-        <LangVersion>10</LangVersion>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentValidation" Version="10.3.3" />
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.3.3" />
+        <PackageReference Include="FluentValidation" Version="11.2.2" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.2.2" />
         <PackageReference Include="Hangfire" Version="1.7.28" />
         <PackageReference Include="Hangfire.AspNetCore" Version="1.7.28" />
         <PackageReference Include="Hangfire.Storage.MySql" Version="2.1.0-beta" />
-        <PackageReference Include="MediatR" Version="9.0.0" />
-        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
-        <PackageReference Include="Remora.Discord" Version="2022.3.0" />
-        <PackageReference Include="Remora.Discord.Caching" Version="18.0.5" />
-        <PackageReference Include="Serilog" Version="2.11.0-dev-01371" />
-        <PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
-        <PackageReference Include="Serilog.Formatting.Compact" Version="1.1.0" />
-        <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="3.1.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1-dev-00876" />
+        <PackageReference Include="MediatR" Version="10.0.1" />
+        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+        <PackageReference Include="Remora.Discord" Version="2022.48.0" />
+        <PackageReference Include="Remora.Discord.Caching" Version="32.0.0" />
+        <PackageReference Include="Serilog" Version="2.12.0" />
+        <PackageReference Include="Serilog.Extensions.Hosting" Version="5.0.1" />
+        <PackageReference Include="Serilog.Formatting.Compact" Version="1.1.1-dev-00944" />
+        <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.1-dev-00040" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.1-dev-00896" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00947" />
         <PackageReference Include="BetterSsmp" Version="0.0.3" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Mmcc.Bot.Caching\Mmcc.Bot.Caching.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Common.Extensions\Mmcc.Bot.Common.Extensions.csproj" />
+      <ProjectReference Include="..\Mmcc.Bot.Common.UI\Mmcc.Bot.Common.UI.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Common\Mmcc.Bot.Common.csproj" />
+      <ProjectReference Include="..\Mmcc.Bot.InMemoryStore\Mmcc.Bot.InMemoryStore.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Mojang\Mmcc.Bot.Mojang.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.Polychat\Mmcc.Bot.Polychat.csproj" />
       <ProjectReference Include="..\Mmcc.Bot.RemoraAbstractions\Mmcc.Bot.RemoraAbstractions.csproj" />
+
+      <ProjectReference Include="C:\Users\lukas\Documents\projects\Porbeagle\Porbeagle\Porbeagle.csproj" />
+      <ProjectReference Include="C:\Users\lukas\Documents\projects\Porbeagle\Porbeagle.SourceGenerators\Porbeagle.SourceGenerators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
     </ItemGroup>
 
 </Project>

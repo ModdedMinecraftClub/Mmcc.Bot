@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Mmcc.Bot.RemoraAbstractions.Conditions;
+using Mmcc.Bot.RemoraAbstractions.Conditions.CommandSpecific;
+using Mmcc.Bot.RemoraAbstractions.Conditions.InteractionSpecific;
 using Mmcc.Bot.RemoraAbstractions.Parsers;
 using Mmcc.Bot.RemoraAbstractions.Services;
+using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Remora.Commands.Extensions;
 
 namespace Mmcc.Bot.RemoraAbstractions;
@@ -21,11 +23,18 @@ public static class AbstractionsSetup
         services.AddScoped<IHelpService, HelpService>();
         services.AddScoped<IDmSender, DmSender>();
         services.AddScoped<IDiscordPermissionsService, DiscordPermissionsService>();
-        services.AddScoped<ICommandResponder, CommandResponder>();
-        services.AddScoped<IInteractionResponder, InteractionResponder>();
-            
+        services.AddScoped<IInteractionHelperService, InteractionHelperService>();
+        services.AddScoped<IErrorProcessingService, ErrorProcessingService>();
+
+        services.AddScoped<InteractionMessageResponder>();
+        services.AddScoped<CommandMessageResponder>();
+        services.AddScoped<CommandTreeWalker>();
+
         services.AddCondition<RequireGuildCondition>();
         services.AddCondition<RequireUserGuildPermissionCondition>();
+
+        services.AddCondition<InteractionRequireGuildCondition>();
+        services.AddCondition<InteractionRequireUserGuildPermissionCondition>();
 
         services.AddParser<TimeSpanParser>();
         services.AddParser<ExpiryDateParser>();
