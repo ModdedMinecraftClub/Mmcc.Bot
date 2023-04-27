@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Mmcc.Bot.Common.Extensions.Microsoft.Extensions.DependencyInjection;
 using Mmcc.Bot.Common.Models.Settings;
 using Mmcc.Bot.Database.Settings;
+using Mmcc.Bot.Features.Diagnostics;
 using Mmcc.Bot.Polychat.Models.Settings;
 using Remora.Discord.API.Abstractions.Gateway.Commands;
 using Remora.Discord.Gateway;

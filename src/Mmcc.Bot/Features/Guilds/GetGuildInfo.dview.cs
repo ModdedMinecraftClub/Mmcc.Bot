@@ -8,12 +8,12 @@ using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Objects;
 using Remora.Rest.Core;
 
-namespace Mmcc.Bot.Features.Guilds.Views;
+namespace Mmcc.Bot.Features.Guilds;
 
 [DiscordView]
-public partial record GuildInfoView : IMessageView
+public sealed partial record GetGuildInfoView : IMessageView
 {
-    public GuildInfoView(GetGuildInfo.QueryResult guildInfo)
+    public GetGuildInfoView(GetGuildInfo.QueryResult guildInfo)
         => Embed = new GuildInfoEmbed(guildInfo);
 
     public Optional<string> Text { get; init; } = new();
@@ -21,7 +21,7 @@ public partial record GuildInfoView : IMessageView
     public Embed Embed { get; }
 }
 
-public record GuildInfoEmbed : Embed
+public sealed record GuildInfoEmbed : Embed
 {
     public GuildInfoEmbed(GetGuildInfo.QueryResult guildInfo) : base(
         Title: "Guild info",

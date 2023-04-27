@@ -21,12 +21,12 @@ public class GetGuildInfo
     /// <summary>
     /// Query to get guild info.
     /// </summary>
-    public record Query(Snowflake GuildId) : IRequest<Result<QueryResult>>;
+    public sealed record Query(Snowflake GuildId) : IRequest<Result<QueryResult>>;
 
     /// <summary>
     /// Validates the <see cref="Query"/>.
     /// </summary>
-    public class Validator : AbstractValidator<Query>
+    public sealed class Validator : AbstractValidator<Query>
     {
         public Validator()
         {
@@ -38,7 +38,7 @@ public class GetGuildInfo
     /// <summary>
     /// Result of the query to get guild info.
     /// </summary>
-    public record QueryResult(
+    public sealed record QueryResult(
         string GuildName,
         Snowflake GuildOwnerId,
         int? GuildMaxMembers,
@@ -46,7 +46,7 @@ public class GetGuildInfo
         Uri? GuildIconUrl
     );
     
-    public class Handler : IRequestHandler<Query, Result<QueryResult>>
+    public sealed class Handler : IRequestHandler<Query, Result<QueryResult>>
     {
         private readonly IDiscordRestGuildAPI _guildApi;
         

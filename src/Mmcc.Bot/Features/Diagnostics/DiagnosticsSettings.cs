@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Mmcc.Bot.Common.Models.Settings;
+namespace Mmcc.Bot.Features.Diagnostics;
 
 public interface IDiagnosticsSettings
 {

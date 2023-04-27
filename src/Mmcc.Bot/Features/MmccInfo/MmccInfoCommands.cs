@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel;
 using System.Threading.Tasks;
+using Mmcc.Bot.Commands.MmccInfo;
 using Porbeagle;
 using Remora.Commands.Attributes;
 using Remora.Commands.Groups;
 using Remora.Results;
 
-namespace Mmcc.Bot.Commands.MmccInfo;
+namespace Mmcc.Bot.Features.MmccInfo;
 
 public class MmccInfoCommands : CommandGroup
 {
@@ -16,6 +17,6 @@ public class MmccInfoCommands : CommandGroup
 
     [Command("mmcc")]
     [Description("Shows useful MMCC links")]
-    public async Task<IResult> Mmcc()
+    public async Task<IResult> GetMmccInfo()
         => await _viewManager.RespondWithView(new MmccInfoView());
 }

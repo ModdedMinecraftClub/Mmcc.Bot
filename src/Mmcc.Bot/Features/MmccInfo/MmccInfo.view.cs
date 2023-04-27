@@ -6,7 +6,7 @@ using Remora.Rest.Core;
 namespace Mmcc.Bot.Commands.MmccInfo;
 
 [DiscordView]
-public partial record MmccInfoView : IMessageView
+public sealed partial record MmccInfoView : IMessageView
 {
     public Optional<string> Text { get; init; } = "Useful links";
 

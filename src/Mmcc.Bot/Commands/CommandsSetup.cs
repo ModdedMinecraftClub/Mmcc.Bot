@@ -12,6 +12,7 @@ using Mmcc.Bot.Commands.Tags.Usage;
 using Mmcc.Bot.Features.Diagnostics;
 using Mmcc.Bot.Features.Guilds;
 using Mmcc.Bot.Features.Help;
+using Mmcc.Bot.Features.MmccInfo;
 using Remora.Commands.Extensions;
 using Remora.Discord.Commands.Extensions;
 

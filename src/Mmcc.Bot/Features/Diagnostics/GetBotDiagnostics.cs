@@ -4,7 +4,6 @@ using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Mmcc.Bot.Common.Models.Settings;
 using Remora.Results;
 
 namespace Mmcc.Bot.Features.Diagnostics;
@@ -12,13 +11,13 @@ namespace Mmcc.Bot.Features.Diagnostics;
 /// <summary>
 /// Pings all network resources to check specified in <see cref="IDiagnosticsSettings"/>.
 /// </summary>
-public class PingAllNetworkResourcesToCheck
+public sealed class GetBotDiagnostics
 {
     public record struct Query : IRequest<Result<IList<QueryResult>>>;
 
-    public record QueryResult(string Name, string Address, IPStatus Status, long? RoundtripTime);
+    public sealed record QueryResult(string Name, string Address, IPStatus Status, long? RoundtripTime);
     
-    public class Handler : IRequestHandler<Query, Result<IList<QueryResult>>>
+    public sealed class Handler : IRequestHandler<Query, Result<IList<QueryResult>>>
     {
         private readonly IDiagnosticsSettings _settings;
 

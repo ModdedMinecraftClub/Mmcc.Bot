@@ -9,7 +9,6 @@ using Mmcc.Bot.Common.Models.Colours;
 using Mmcc.Bot.Common.Statics;
 using Mmcc.Bot.Polychat.MessageSenders;
 using Mmcc.Bot.Polychat.Services;
-using Mmcc.Bot.RemoraAbstractions.Conditions;
 using Mmcc.Bot.RemoraAbstractions.Conditions.CommandSpecific;
 using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Remora.Commands.Attributes;
@@ -21,9 +20,6 @@ using Remora.Results;
 
 namespace Mmcc.Bot.Commands.Minecraft;
 
-/// <summary>
-/// Commands for managing MC servers.
-/// </summary>
 [Group("mc")]
 [Description("Minecraft (Polychat)")]
 [RequireGuild]
@@ -34,15 +30,7 @@ public class MinecraftServersCommands : CommandGroup
     private readonly IColourPalette _colourPalette;
     private readonly IPolychatService _polychatService;
     private readonly CommandMessageResponder _responder;
-
-    /// <summary>
-    /// Instantiates a new instance of <see cref="MinecraftServersCommands"/> class.
-    /// </summary>
-    /// <param name="context">The message context.</param>
-    /// <param name="mediator">The mediator.</param>
-    /// <param name="colourPalette">The colour palette.</param>
-    /// <param name="polychatService">The polychat service.</param>
-    /// <param name="responder">The command responder.</param>
+    
     public MinecraftServersCommands(
         MessageContext context,
         IMediator mediator,
@@ -57,44 +45,24 @@ public class MinecraftServersCommands : CommandGroup
         _polychatService = polychatService;
         _responder = responder;
     }
-
-    /// <summary>
-    /// Shows current TPS of a MC server.
-    /// </summary>
-    /// <param name="serverId">ID of the server.</param>
-    /// <returns>Result of the operation.</returns>
+    
     [Command("tps")]
     [Description("Shows current TPS of a MC server")]
     public async Task<IResult> Tps(string serverId) =>
         await _mediator.Send(new SendTpsCommand.Command(serverId, _context.ChannelID));
-
-    /// <summary>
-    /// Executes a command on a MC server.
-    /// </summary>
-    /// <param name="serverId">ID of the server.</param>
-    /// <param name="args">Command arguments.</param>
-    /// <returns>Result of the operation.</returns>
+    
     [Command("exec", "e", "execute")]
     [Description("Executes a command on a MC server")]
     [RequireUserGuildPermission(DiscordPermission.BanMembers)]
     public async Task<IResult> Exec(string serverId, [Greedy] IEnumerable<string> args) =>
         await _mediator.Send(new SendExecCommand.Command(serverId, _context.ChannelID, args));
-
-    /// <summary>
-    /// Restarts a MC server.
-    /// </summary>
-    /// <param name="serverId">ID of the server to restart.</param>
-    /// <returns>Result of the operation.</returns>
+    
     [Command("restart", "r")]
     [Description("Restarts a server")]
     [RequireUserGuildPermission(DiscordPermission.BanMembers)]
     public async Task<IResult> Restart(string serverId) =>
         await _mediator.Send(new SendRestartCommand.Command(serverId, _context.ChannelID));
-
-    /// <summary>
-    /// Shows info about online servers.
-    /// </summary>
-    /// <returns>Result of the operation.</returns>
+    
     [Command("online", "o")]
     [Description("Shows info about online servers")]
     public async Task<IResult> Online()

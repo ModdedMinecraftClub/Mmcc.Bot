@@ -8,19 +8,19 @@ namespace Mmcc.Bot.Features.Diagnostics;
 /// <summary>
 /// Gets the drives diagnostics.
 /// </summary>
-public class GetDrivesDiagnostics
+public sealed class GetDrivesDiagnostics
 {
     /// <summary>
     /// Query to get drives.
     /// </summary>
-    public class Query : IRequest<IList<QueryResult>>
+    public sealed class Query : IRequest<IList<QueryResult>>
     {
     }
-        
+
     /// <summary>
     /// Drive diagnostics.
     /// </summary>
-    public class QueryResult
+    public sealed class QueryResult
     {
         public string Name { get; set; } = null!;
         public DriveType DriveType { get; set; }
@@ -30,8 +30,8 @@ public class GetDrivesDiagnostics
         public double PercentageUsed { get; set; }
         public float GigabytesTotalSize { get; set; }
     }
-    
-    public class Handler : RequestHandler<Query, IList<QueryResult>>
+
+    public sealed class Handler : RequestHandler<Query, IList<QueryResult>>
     {
         protected override IList<QueryResult> Handle(Query request)
         {
@@ -45,7 +45,7 @@ public class GetDrivesDiagnostics
                     Label = string.IsNullOrWhiteSpace(d.VolumeLabel) ? "None" : d.VolumeLabel,
                     DriveFormat = d.DriveFormat,
                     GigabytesFree = d.AvailableFreeSpace / 1024f / 1024f / 1024f,
-                    PercentageUsed = (double) (d.TotalSize - d.AvailableFreeSpace) / d.TotalSize * 100,
+                    PercentageUsed = (double)(d.TotalSize - d.AvailableFreeSpace) / d.TotalSize * 100,
                     GigabytesTotalSize = d.TotalSize / 1024f / 1024f / 1024f
                 })
                 .ToList();

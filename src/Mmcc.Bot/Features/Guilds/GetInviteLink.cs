@@ -12,17 +12,17 @@ namespace Mmcc.Bot.Features.Guilds;
 /// <summary>
 /// Gets an invite link to a guild.
 /// </summary>
-public class GetInviteLink
+public sealed class GetInviteLink
 {
     /// <summary>
     /// Query to get an invite link to a guild.
     /// </summary>
-    public record Query(Snowflake GuildId) : IRequest<Result<string>>;
+    public sealed record Query(Snowflake GuildId) : IRequest<Result<string>>;
 
     /// <summary>
     /// Validates the <see cref="Query"/>.
     /// </summary>
-    public class Validator : AbstractValidator<Query>
+    public sealed class Validator : AbstractValidator<Query>
     {
         public Validator()
         {
@@ -31,7 +31,7 @@ public class GetInviteLink
         }
     }
     
-    public class Handler : IRequestHandler<Query, Result<string>>
+    public sealed class Handler : IRequestHandler<Query, Result<string>>
     {
         private readonly IDiscordRestGuildAPI _guildApi;
         

@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using MediatR;
-using Mmcc.Bot.Features.Diagnostics.Views;
 using Mmcc.Bot.RemoraAbstractions.Conditions.CommandSpecific;
 using Porbeagle;
 using Remora.Commands.Attributes;
@@ -13,7 +13,7 @@ namespace Mmcc.Bot.Features.Diagnostics;
 
 [Group("diagnostics")]
 [Description("Server and bot diagnostics")]
-public class DiagnosticsCommands : CommandGroup
+public sealed class DiagnosticsCommands : CommandGroup
 {
     private readonly IMediator _mediator;
     private readonly IContextAwareViewManager _viewManager;
@@ -28,12 +28,12 @@ public class DiagnosticsCommands : CommandGroup
     [Description("Show status of the bot and APIs it uses")]
     public async Task<IResult> BotDiagnostics()
     {
-        var result = await _mediator.Send(new PingAllNetworkResourcesToCheck.Query());
+        var result = await _mediator.Send(new GetBotDiagnostics.Query());
 
         return result switch
         {
             { IsSuccess: true, Entity: {  } pingResults } 
-                => await _viewManager.RespondWithView(new BotDiagnosticsView(pingResults)),
+                => await _viewManager.RespondWithView(new GetBotDiagnosticsView(pingResults)),
             
             { IsSuccess: false } => result
         };
@@ -47,6 +47,6 @@ public class DiagnosticsCommands : CommandGroup
     {
         var result = await _mediator.Send(new GetDrivesDiagnostics.Query());
 
-        return await _viewManager.RespondWithView(new DrivesDiagnosticsView(result));
+        return await _viewManager.RespondWithView(new GetDrivesDiagnosticsView(result));
     }
 }

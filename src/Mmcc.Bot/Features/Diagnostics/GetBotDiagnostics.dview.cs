@@ -9,12 +9,12 @@ using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Objects;
 using Remora.Rest.Core;
 
-namespace Mmcc.Bot.Features.Diagnostics.Views;
+namespace Mmcc.Bot.Features.Diagnostics;
 
 [DiscordView]
-public partial record BotDiagnosticsView : IMessageView
+public sealed partial record GetBotDiagnosticsView : IMessageView
 {
-    public BotDiagnosticsView(IEnumerable<PingAllNetworkResourcesToCheck.QueryResult> results)
+    public GetBotDiagnosticsView(IEnumerable<GetBotDiagnostics.QueryResult> results)
         => Embed = new BotDiagnosticsEmbed(results);
 
     public Optional<string> Text { get; init; } = new();
@@ -22,9 +22,9 @@ public partial record BotDiagnosticsView : IMessageView
     public Embed Embed { get; }
 }
 
-public record BotDiagnosticsEmbed : Embed
+public sealed record BotDiagnosticsEmbed : Embed
 {
-    public BotDiagnosticsEmbed(IEnumerable<PingAllNetworkResourcesToCheck.QueryResult> results) : base(
+    public BotDiagnosticsEmbed(IEnumerable<GetBotDiagnostics.QueryResult> results) : base(
         Title: "Bot diagnostics",
         Description: "Information about the status of the bot and the APIs it uses",
         Timestamp: DateTimeOffset.UtcNow,
@@ -34,7 +34,7 @@ public record BotDiagnosticsEmbed : Embed
     {
     }
 
-    private static Optional<IReadOnlyList<IEmbedField>> GetFields(IEnumerable<PingAllNetworkResourcesToCheck.QueryResult> results)
+    private static Optional<IReadOnlyList<IEmbedField>> GetFields(IEnumerable<GetBotDiagnostics.QueryResult> results)
     {
         var fields = new List<IEmbedField>
         {
@@ -47,9 +47,9 @@ public record BotDiagnosticsEmbed : Embed
     }
 }
 
-file static class PingResultMapperExtensions 
+file static class PingResultMapperExtensions
 {
-    internal static IEmbedField ToEmbedField(this PingAllNetworkResourcesToCheck.QueryResult pingResult)
+    internal static IEmbedField ToEmbedField(this GetBotDiagnostics.QueryResult pingResult)
     {
         var fieldTextValue = pingResult.Status switch
         {

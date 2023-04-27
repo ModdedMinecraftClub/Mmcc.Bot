@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using MediatR;
 using Mmcc.Bot.Common.Models.Colours;
-using Mmcc.Bot.Features.Guilds.Views;
 using Mmcc.Bot.RemoraAbstractions.Conditions.CommandSpecific;
 using Mmcc.Bot.RemoraAbstractions.Services.MessageResponders;
 using Porbeagle;
@@ -14,7 +13,7 @@ using Remora.Results;
 namespace Mmcc.Bot.Features.Guilds;
 
 [RequireGuild]
-public class GuildCommands : CommandGroup
+public sealed class GuildCommands : CommandGroup
 {
     private readonly MessageContext _context;
     private readonly IColourPalette _colourPalette;
@@ -43,7 +42,7 @@ public class GuildCommands : CommandGroup
         await _mediator.Send(new GetGuildInfo.Query(_context.GuildID.Value)) switch
         {
             { IsSuccess: true, Entity: { } guildInfo } =>
-                await _viewManager.RespondWithView(new GuildInfoView(guildInfo)),
+                await _viewManager.RespondWithView(new GetGuildInfoView(guildInfo)),
 
             { IsSuccess: true } =>
                 Result.FromError(new NotFoundError($"Guild with ID: {_context.GuildID.Value} not found")),

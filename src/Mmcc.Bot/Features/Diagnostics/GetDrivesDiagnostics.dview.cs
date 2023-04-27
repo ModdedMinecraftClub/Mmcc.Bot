@@ -9,19 +9,19 @@ using Remora.Discord.API.Abstractions.Objects;
 using Remora.Discord.API.Objects;
 using Remora.Rest.Core;
 
-namespace Mmcc.Bot.Features.Diagnostics.Views;
+namespace Mmcc.Bot.Features.Diagnostics;
 
 [DiscordView]
-public partial record DrivesDiagnosticsView : IMessageView
+public sealed partial record GetDrivesDiagnosticsView : IMessageView
 {
-    public DrivesDiagnosticsView(IEnumerable<GetDrivesDiagnostics.QueryResult> results)
+    public GetDrivesDiagnosticsView(IEnumerable<GetDrivesDiagnostics.QueryResult> results)
         => Embed = new DrivesDiagnosticsEmbed(results);
     
     public Optional<string> Text { get; init; } = new();
     public Embed Embed { get; }
 }
 
-public record DrivesDiagnosticsEmbed : Embed
+public sealed record DrivesDiagnosticsEmbed : Embed
 {
     public DrivesDiagnosticsEmbed(IEnumerable<GetDrivesDiagnostics.QueryResult> results) : base(
         Title: "Drives diagnostics",

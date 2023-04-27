@@ -5,8 +5,8 @@ using Remora.Discord.API.Objects;
 namespace Mmcc.Bot.Common.UI.Buttons;
 
 public record DonateButton() : ButtonComponent(
-    ButtonComponentStyle.Link,
-    "Donate",
-    new PartialEmoji(Name: "❤️"),
+    Style: ButtonComponentStyle.Link,
+    Label: "Donate",
+    Emoji: new PartialEmoji(Name: "❤️"),
     URL: MmccUrls.Donations
 );
