@@ -50,8 +50,9 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddInMemoryStores();
         services.AddBotDatabaseContext();
 
-        services.AddSingleton<IColourPalette>();
-
+        // TODO: remove this;
+        services.AddSingleton<IColourPalette, TailwindColourPalette>();
+        
         // FluentValidation;
         services.AddValidatorsFromAssemblyContaining<GetExpiredActions>();
         services.AddValidatorsFromAssemblyContaining<DiscordSettings>();

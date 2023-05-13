@@ -24,10 +24,10 @@ namespace Mmcc.Bot.Commands.Moderation;
 /// <summary>
 /// General moderation commands that do not fit into any specific categories.
 /// </summary>
+[RequireGuild]
 [Group("moderation", "mod")]
 [Description("Moderation (general)")]
-[RequireGuild]
-public class GeneralModerationCommands : CommandGroup
+public partial class GeneralModerationCommands : CommandGroup
 {
     private readonly MessageContext _context;
     private readonly IMediator _mediator;
@@ -106,7 +106,7 @@ public class GeneralModerationCommands : CommandGroup
             return getAppResult;
         }
             
-        Result<ModerationAction> deactivateResult = getAppResult.Entity.ModerationActionType switch
+        Result<ModerationAction> deactivateResult = getAppResult.Entity?.ModerationActionType switch
         {
             ModerationActionType.Ban => await _mediator.Send(new Unban.Command { ModerationAction = getAppResult.Entity }),
 
