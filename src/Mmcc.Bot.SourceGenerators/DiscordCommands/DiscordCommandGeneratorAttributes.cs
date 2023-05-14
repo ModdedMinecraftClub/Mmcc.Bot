@@ -1,8 +1,8 @@
 ﻿namespace Mmcc.Bot.SourceGenerators.DiscordCommands;
 
-internal static class Attributes
+internal static class DiscordCommandGeneratorAttributes
 {
-    public static string GenerateDiscordFromMediatRAttribute =>
+    public static string GenerateDiscordCommandAttribute =>
         """
         namespace Mmcc.Bot.SourceGenerators.DiscordCommands;
         

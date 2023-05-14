@@ -1,24 +1,15 @@
-﻿namespace Mmcc.Bot.SourceGenerators.DiscordCommands;
+﻿using static Mmcc.Bot.SourceGenerators.CommonContexts;
 
-internal sealed class Contexts
+namespace Mmcc.Bot.SourceGenerators.DiscordCommands;
+
+internal sealed class DiscordCommandGeneratorContexts
 {
-    internal class ClassContext
-    {
-        public string Namespace { get; set; } = null!;
-        public string ClassName { get; set; } = null!;   
-    }
-    
-    internal sealed class VSAClassContext : ClassContext
+    internal sealed class VsaClassContext : ClassContext
     {
         public RequestClassContext RequestClassContext { get; set; } = null!;
         public DiscordCommandContext DiscordCommandContext { get; set; } = null!;
         public bool ShouldHandleNullReturn { get; set; }
         public IReadOnlyList<ConditionAttributeContext> RemoraConditionsAttributeContexts { get; set; } = null!;
-    }
-
-    internal sealed class ConditionAttributeContext : ClassContext
-    {
-        public List<string>? ArgumentsValues { get; set; }
     }
 
     internal sealed class RequestClassContext : ClassContext
@@ -34,15 +25,14 @@ internal sealed class Contexts
         public IReadOnlyList<string> CommandAliases { get; set; } = null!;
         public DiscordViewContext MatchedView { get; set; } = null!;
     }
+    
+    internal sealed class ConditionAttributeContext : ClassContext
+    {
+        public List<string>? ArgumentsValues { get; set; }
+    }
 
     internal sealed class DiscordViewContext : ClassContext
     {
         public bool HasOnEmpty { get; set; }
-    }
-
-    internal sealed class PropertyContext
-    {
-        public string Type { get; set; } = null!;
-        public string Name { get; set; } = null!;
     }
 }

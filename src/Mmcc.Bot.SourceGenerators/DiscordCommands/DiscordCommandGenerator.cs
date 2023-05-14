@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using System.Text;
+using static Mmcc.Bot.SourceGenerators.CommonContexts;
+using static Mmcc.Bot.SourceGenerators.DiscordCommands.DiscordCommandGeneratorContexts;
 
 namespace Mmcc.Bot.SourceGenerators.DiscordCommands;
 
@@ -18,123 +20,19 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         context.RegisterPostInitializationOutput(ctx =>
-            ctx.AddSource("GenerateDiscordCommandAttribute.g.cs", SourceText.From(Attributes.GenerateDiscordFromMediatRAttribute, Encoding.UTF8))
+            ctx.AddSource("GenerateDiscordCommandAttribute.g.cs", SourceText.From(DiscordCommandGeneratorAttributes.GenerateDiscordCommandAttribute, Encoding.UTF8))
         );
 
         var provider = context.SyntaxProvider
             .CreateSyntaxProvider(IsVsaClassCandidateSyntactically, SemanticTransform)
             .Where(static typesData => typesData.HasValue)
-            .Select(static (typesData, ct) => GetVSAClassContext(typesData!.Value, ct))
+            .Select(static (typesData, _) => GetVsaClassContext(typesData!.Value))
             .Where(static context => context is not null);
 
         context.RegisterSourceOutput(provider, GenerateSource!);
     }
 
-    private static void GenerateSource(SourceProductionContext productionContext, Contexts.VSAClassContext vsaContext)
-    {
-        var sanitisedCommandName = vsaContext.DiscordCommandContext.CommandName.Replace("\"", "");
-        var methodName = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(sanitisedCommandName);
-        var props = vsaContext
-            .RequestClassContext
-            .Properties;
-
-        var methodParamsString = BuildDiscordCommandMethodParams(props, vsaContext.DiscordCommandContext.IsGreedy);
-        var requestCtorParams = string.Join(", ", props.Select(p => p.Name.ToCamelCase()));
-
-        var generatedSource = $$"""
-        // auto-generated
-
-        namespace {{vsaContext.DiscordCommandContext.Namespace}};
-        
-        public partial class {{vsaContext.DiscordCommandContext.ClassName}}
-        {
-        {{GenerateRemoraConditionAttributesString(vsaContext.RemoraConditionsAttributeContexts)}}
-            [global::Remora.Commands.Attributes.Command({{vsaContext.DiscordCommandContext.CommandName}})]
-            [global::System.ComponentModel.Description({{vsaContext.DiscordCommandContext.CommandDescription}})]
-            public async global::System.Threading.Tasks.Task<global::Remora.Results.IResult> {{methodName}}({{methodParamsString}})
-            {
-                var request = new {{vsaContext.Namespace}}.{{vsaContext.ClassName}}.{{vsaContext.RequestClassContext.ClassName}}({{requestCtorParams}});
-                var result = await _mediator.Send(request);
-                
-                return result switch
-                {
-                    { IsSuccess: true, Entity: {  } e }
-                        => await _vm.RespondWithView(new {{vsaContext.DiscordCommandContext.MatchedView.Namespace}}.{{vsaContext.DiscordCommandContext.MatchedView.ClassName}}(e)),
-                    {{GenerateNullHandlerIfNeeded(vsaContext)}}
-                    { IsSuccess: false } => result
-                };
-            }
-        }
-        """;
-
-        var fileName = $"{vsaContext.Namespace}.{vsaContext.ClassName}.dcmd.g.cs";
-        productionContext.AddSource(fileName, generatedSource);
-    }
-
-    private static string GenerateNullHandlerIfNeeded(Contexts.VSAClassContext vsaClassContext)
-    {
-        if (!vsaClassContext.ShouldHandleNullReturn)
-            return string.Empty;
-
-        var viewContext = vsaClassContext.DiscordCommandContext.MatchedView;
-
-        return !viewContext.HasOnEmpty
-            ? """
-            
-                        { IsSuccess: true } => 
-                            global::Remora.Results.Result.FromError(new global::Remora.Results.NotFoundError()),
-        
-            """
-            : $$"""
-            
-                        { IsSuccess: true } => 
-                            global::Remora.Results.Result.FromError(new global::Remora.Results.NotFoundError({{viewContext.Namespace}}.{{viewContext.ClassName}}.OnEmpty(request))),
-        
-            """;
-    }
-
-    private static string GenerateRemoraConditionAttributesString(IReadOnlyList<Contexts.ConditionAttributeContext>? remoraConditionsAttributeContexts)
-    {
-        if (remoraConditionsAttributeContexts is null || remoraConditionsAttributeContexts.Count == 0)
-            return string.Empty;
-
-        const string indent = "    ";
-        var sb = new StringBuilder();
-
-        foreach (var attribute in remoraConditionsAttributeContexts)
-        {
-            var attributeString = attribute.ArgumentsValues is null || attribute.ArgumentsValues.Count == 0
-                ? $"[{attribute.Namespace}.{attribute.ClassName}]"
-                : $"[{attribute.Namespace}.{attribute.ClassName}({string.Join(", ", attribute.ArgumentsValues)})]";
-
-            sb.AppendLine($"{indent}{attributeString}");
-        }
-
-        return sb.ToString().TrimEnd();
-    }
-
-    private static string BuildDiscordCommandMethodParams(IReadOnlyList<Contexts.PropertyContext> props, bool isGreedy)
-    {
-        if (!isGreedy)
-            return string.Join(", ", props.Select(p => $"{p.Type} {p.Name.ToCamelCase()}"));
-
-        var sb = new StringBuilder();
-        for (int i = 0; i < props.Count; i++)
-        {
-            if (i == props.Count - 1)
-            {
-                sb.Append($"[global::Remora.Commands.Attributes.Greedy] {props[i].Type} {props[i].Name.ToCamelCase()}");
-            }
-            else
-            {
-                sb.Append($"{props[i].Type} {props[i].Name.ToCamelCase()}, ");
-            }
-        }
-
-        return sb.ToString().TrimEnd();
-    }
-
-    private static Contexts.VSAClassContext? GetVSAClassContext((INamedTypeSymbol VsaType, INamedTypeSymbol CmdGroupType, INamedTypeSymbol ViewType, AttributeData AttributeData) typesData, CancellationToken ct)
+    private static VsaClassContext? GetVsaClassContext((INamedTypeSymbol VsaType, INamedTypeSymbol CmdGroupType, INamedTypeSymbol ViewType, AttributeData AttributeData) typesData)
     {
         var vsaNamespace = typesData.VsaType.ContainingNamespace.ToDisplayString();
         var vsaName = typesData.VsaType.Name;
@@ -147,7 +45,7 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
             requestInfo.Value.Type, typesData.AttributeData.TargetArguments);
         var shouldHandleNullReturn = GetShouldHandleNullReturn(typesData.VsaType);
 
-        return new Contexts.VSAClassContext
+        return new VsaClassContext
         {
             Namespace = vsaNamespace,
             ClassName = vsaName,
@@ -158,11 +56,11 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
         };
     }
 
-    private static IReadOnlyList<Contexts.ConditionAttributeContext> GetRemoraConditionsAttributeContexts(AttributeData attributeData)
+    private static IReadOnlyList<ConditionAttributeContext> GetRemoraConditionsAttributeContexts(AttributeData attributeData)
     {
         var conditionsAttributes = attributeData.RemoraConditionsAttributes;
         var context = conditionsAttributes
-            .Select(attr => new Contexts.ConditionAttributeContext
+            .Select(attr => new ConditionAttributeContext
             {
                 Namespace = attr.AttributeType.ContainingNamespace.ToDisplayString(),
                 ClassName = attr.AttributeType.Name,
@@ -175,7 +73,7 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
         return context;
     }
 
-    private static (INamedTypeSymbol Type, Contexts.RequestClassContext Context)? GetRequestClassInfo(INamedTypeSymbol vsaType)
+    private static (INamedTypeSymbol Type, RequestClassContext Context)? GetRequestClassInfo(INamedTypeSymbol vsaType)
     {
         var typeMembers = vsaType.GetTypeMembers();
         INamedTypeSymbol? requestType = null;
@@ -197,14 +95,14 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
                 IsStatic: false,
                 SetMethod.IsInitOnly: true
             })
-            .Select(p => new Contexts.PropertyContext
+            .Select(p => new PropertyContext
             {
                 Name = p.Name,
                 Type = p.Type.ToDisplayString(TypeFormat)
             })
             .ToList();
 
-        var context = new Contexts.RequestClassContext
+        var context = new RequestClassContext
         {
             Namespace = @namespace,
             ClassName = className,
@@ -214,7 +112,7 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
         return (requestType, context);
     }
 
-    private static Contexts.DiscordCommandContext GetDiscordCommandContext(
+    private static DiscordCommandContext GetDiscordCommandContext(
         INamedTypeSymbol cmdGroupType,
         INamedTypeSymbol viewType,
         INamedTypeSymbol requestType,
@@ -234,7 +132,7 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
 
         var matchedViewContext = GetViewContext(viewType, requestType);
 
-        return new Contexts.DiscordCommandContext
+        return new DiscordCommandContext
         {
             Namespace = @namespace,
             ClassName = className,
@@ -246,7 +144,7 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
         };
     }
 
-    private static Contexts.DiscordViewContext GetViewContext(INamedTypeSymbol viewType, INamedTypeSymbol requestType)
+    private static DiscordViewContext GetViewContext(INamedTypeSymbol viewType, INamedTypeSymbol requestType)
     {
         var @namespace = viewType.ContainingNamespace.ToDisplayString();
         var className = viewType.Name;
@@ -266,7 +164,7 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
                 } parameters
             } && SymbolEqualityComparer.Default.Equals(parameters[0].Type, requestType));
 
-        return new Contexts.DiscordViewContext
+        return new DiscordViewContext
         {
             Namespace = @namespace,
             ClassName = className,
@@ -414,8 +312,7 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
                         foreach (var argSyntax in attribute.ArgumentList.Arguments)
                         {
                             var argSymbol = semanticModel.GetSymbolInfo(argSyntax.Expression).Symbol;
-                            if (argSymbol is not IFieldSymbol argFieldSymbol
-                                || argFieldSymbol.Type is not INamedTypeSymbol argType
+                            if (argSymbol is not IFieldSymbol { Type: INamedTypeSymbol argType } argFieldSymbol
                                 || argType.EnumUnderlyingType is null
                             )
                             {
@@ -438,6 +335,122 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
             : new AttributeData(cmdGroupType, targetArguments, conditionAttributes);
 
         return attributeData is not null;
+    }
+    
+        private static void GenerateSource(SourceProductionContext productionContext, VsaClassContext vsaContext)
+    {
+        var sanitisedCommandName = vsaContext.DiscordCommandContext.CommandName.Replace("\"", "");
+        var methodName = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(sanitisedCommandName);
+        var props = vsaContext
+            .RequestClassContext
+            .Properties;
+
+        var methodParamsString = GenerateDiscordCommandMethodParams(props, vsaContext.DiscordCommandContext.IsGreedy);
+        var requestCtorParams = string.Join(", ", props.Select(p => p.Name.ToCamelCase()));
+
+        var generatedSource = $$"""
+        // auto-generated
+
+        namespace {{vsaContext.DiscordCommandContext.Namespace}};
+        
+        public partial class {{vsaContext.DiscordCommandContext.ClassName}}
+        {
+        {{GenerateRemoraConditionAttributesString(vsaContext.RemoraConditionsAttributeContexts)}}
+            [global::Remora.Commands.Attributes.Command({{vsaContext.DiscordCommandContext.CommandName}}{{GenerateAliasesString(vsaContext.DiscordCommandContext)}})]
+            [global::System.ComponentModel.Description({{vsaContext.DiscordCommandContext.CommandDescription}})]
+            public async global::System.Threading.Tasks.Task<global::Remora.Results.IResult> {{methodName}}({{methodParamsString}})
+            {
+                var request = new {{vsaContext.Namespace}}.{{vsaContext.ClassName}}.{{vsaContext.RequestClassContext.ClassName}}({{requestCtorParams}});
+                var result = await _mediator.Send(request);
+                
+                return result switch
+                {
+                    { IsSuccess: true, Entity: {  } e }
+                        => await _vm.RespondWithView(new {{vsaContext.DiscordCommandContext.MatchedView.Namespace}}.{{vsaContext.DiscordCommandContext.MatchedView.ClassName}}(e)),
+                    {{GenerateNullHandlerIfNeeded(vsaContext)}}
+                    { IsSuccess: false } => result
+                };
+            }
+        }
+        """;
+
+        var fileName = $"{vsaContext.Namespace}.{vsaContext.ClassName}.dcmd.g.cs";
+        productionContext.AddSource(fileName, generatedSource);
+    }
+
+    private static string GenerateAliasesString(DiscordCommandContext discordCommandContext)
+    {
+        var aliases = discordCommandContext.CommandAliases;
+        var aliasesString = aliases.Any()
+            ? $", {string.Join(", ", aliases)}"
+            : string.Empty;
+
+        return aliasesString;
+    }
+
+    private static string GenerateNullHandlerIfNeeded(VsaClassContext vsaClassContext)
+    {
+        if (!vsaClassContext.ShouldHandleNullReturn)
+            return string.Empty;
+
+        var viewContext = vsaClassContext.DiscordCommandContext.MatchedView;
+
+        return !viewContext.HasOnEmpty
+            ? """
+            
+                        { IsSuccess: true } => 
+                            global::Remora.Results.Result.FromError(new global::Remora.Results.NotFoundError()),
+        
+            """
+            : $$"""
+            
+                        { IsSuccess: true } => 
+                            global::Remora.Results.Result.FromError(new global::Remora.Results.NotFoundError({{viewContext.Namespace}}.{{viewContext.ClassName}}.OnEmpty(request))),
+        
+            """;
+    }
+
+    private static string GenerateRemoraConditionAttributesString(IReadOnlyList<ConditionAttributeContext>? remoraConditionsAttributeContexts)
+    {
+        if (remoraConditionsAttributeContexts is null || remoraConditionsAttributeContexts.Count == 0)
+            return string.Empty;
+
+        const string indent = "    ";
+        var sb = new StringBuilder();
+
+        foreach (var attribute in remoraConditionsAttributeContexts)
+        {
+            var attributeString = attribute.ArgumentsValues is null || attribute.ArgumentsValues.Count == 0
+                ? $"[{attribute.Namespace}.{attribute.ClassName}]"
+                : $"[{attribute.Namespace}.{attribute.ClassName}({string.Join(", ", attribute.ArgumentsValues)})]";
+
+            sb.AppendLine($"{indent}{attributeString}");
+        }
+
+        return sb.ToString().TrimEnd();
+    }
+
+    private static string GenerateDiscordCommandMethodParams(IReadOnlyList<PropertyContext> props, bool isGreedy)
+    {
+        if (!isGreedy)
+            return string.Join(", ", props.Select(p => $"{p.Type} {p.Name.ToCamelCase()}"));
+
+        var sb = new StringBuilder();
+        for (int i = 0; i < props.Count; i++)
+        {
+            // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
+            // justification: Trace - cleaner here imo;
+            if (i == props.Count - 1)
+            {
+                sb.Append($"[global::Remora.Commands.Attributes.Greedy] {props[i].Type} {props[i].Name.ToCamelCase()}");
+            }
+            else
+            {
+                sb.Append($"{props[i].Type} {props[i].Name.ToCamelCase()}, ");
+            }
+        }
+
+        return sb.ToString().TrimEnd();
     }
 }
 
