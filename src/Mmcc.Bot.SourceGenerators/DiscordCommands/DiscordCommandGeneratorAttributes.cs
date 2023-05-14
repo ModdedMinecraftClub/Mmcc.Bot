@@ -2,7 +2,7 @@
 
 internal static class DiscordCommandGeneratorAttributes
 {
-    public static string GenerateDiscordCommandAttribute =>
+    internal static string GenerateDiscordCommandAttribute =>
         """
         namespace Mmcc.Bot.SourceGenerators.DiscordCommands;
         

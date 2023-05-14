@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using static Mmcc.Bot.SourceGenerators.CommonContexts;
 using static Mmcc.Bot.SourceGenerators.DiscordCommands.DiscordCommandGeneratorContexts;
@@ -184,47 +183,60 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
                 Kind: SymbolKind.Method,
                 MethodKind: MethodKind.Ordinary,
                 IsStatic: false,
-                DeclaredAccessibility: Accessibility.Public or Accessibility.Internal,
                 Name: "Handle"
             });
         if (handleMethod is null)
             return false;
 
-        if (!handleMethod.ReturnType.OriginalDefinition.ToDisplayString()
+        return IsReturnTypeNullable(handleMethod);
+    }
+
+    private static bool IsReturnTypeNullable(IMethodSymbol method)
+    {
+        if (method.ReturnType.OriginalDefinition.ToDisplayString()
                 .Equals("System.Threading.Tasks.Task<TResult>", StringComparison.Ordinal))
         {
-            return handleMethod.ReturnType.NullableAnnotation == NullableAnnotation.Annotated;
+            var returnTypeInsideTask = ((INamedTypeSymbol)method.ReturnType).TypeArguments.FirstOrDefault();
+            if (returnTypeInsideTask is null)
+                return false; // something weird would be going on;
+
+            return IsReturnTypeNullable(returnTypeInsideTask);
         }
 
-        var returnTypeInsideTask = ((INamedTypeSymbol)handleMethod.ReturnType).TypeArguments.FirstOrDefault();
-        if (returnTypeInsideTask is null)
-            return false; // something weird would be going on;
-
-        if (!returnTypeInsideTask.OriginalDefinition.ToDisplayString()
-                .Equals("Remora.Results.Result<TEntity>", StringComparison.Ordinal))
-        {
-            return returnTypeInsideTask.NullableAnnotation == NullableAnnotation.Annotated;
-        }
-
-        var resultType = returnTypeInsideTask;
-        var returnType = ((INamedTypeSymbol)resultType).TypeArguments.FirstOrDefault();
-        return returnType?.NullableAnnotation is NullableAnnotation.Annotated;
+        return IsReturnTypeNullable(method.ReturnType);
     }
+
+    private static bool IsReturnTypeNullable(ITypeSymbol type)
+    {
+        if (type.OriginalDefinition.ToDisplayString()
+               .Equals("Remora.Results.Result<TEntity>", StringComparison.Ordinal))
+        {
+            return IsTypeInsideResultNullable(type);
+        }
+
+        return IsTypeNullable(type);
+    }
+
+    private static bool IsTypeInsideResultNullable(ITypeSymbol resultType)
+    {
+        var returnType = ((INamedTypeSymbol)resultType).TypeArguments.FirstOrDefault();
+        return IsTypeNullable(returnType);
+    }
+
+    private static bool IsTypeNullable(ITypeSymbol? returnType) => returnType?.NullableAnnotation is NullableAnnotation.Annotated;
 
     private static bool IsVsaClassCandidateSyntactically(SyntaxNode node, CancellationToken ct)
         => node is ClassDeclarationSyntax
-        {
-            AttributeLists.Count: > 0,
-            BaseList: null or { Types.Count: 0 }
-        } candidate
+           {
+               AttributeLists.Count: > 0,
+               BaseList: null or { Types.Count: 0 }
+           } candidate
            && candidate.Modifiers.Any(SyntaxKind.PartialKeyword)
            && !candidate.Modifiers.Any(SyntaxKind.StaticKeyword);
 
     private static (INamedTypeSymbol VsaType, INamedTypeSymbol CmdGroupType, INamedTypeSymbol ViewType, AttributeData AttributeData)? SemanticTransform(GeneratorSyntaxContext ctx, CancellationToken ct)
     {
-        Debug.Assert(ctx.Node is ClassDeclarationSyntax);
         var candidate = Unsafe.As<ClassDeclarationSyntax>(ctx.Node);
-
         var symbol = ctx.SemanticModel.GetDeclaredSymbol(candidate, ct);
         var generateDiscordAttribute =
             ctx.SemanticModel.Compilation.GetTypeByMetadataName("Mmcc.Bot.SourceGenerators.DiscordCommands.GenerateDiscordCommandAttribute`1");
