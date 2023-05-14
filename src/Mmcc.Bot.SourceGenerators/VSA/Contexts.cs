@@ -13,6 +13,7 @@ internal sealed class Contexts
         public RequestClassContext RequestClassContext { get; set; } = null!;
         public DiscordCommandContext DiscordCommandContext { get; set; } = null!;
         public bool ShouldHandleNullReturn { get; set; }
+        public IReadOnlyList<string> RemoraConditionsArguments { get; set; } = null!;
     }
 
     internal sealed class RequestClassContext : ClassContext
