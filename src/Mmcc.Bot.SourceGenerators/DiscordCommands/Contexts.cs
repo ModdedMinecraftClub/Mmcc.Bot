@@ -1,4 +1,4 @@
-﻿namespace Mmcc.Bot.SourceGenerators.VSA;
+﻿namespace Mmcc.Bot.SourceGenerators.DiscordCommands;
 
 internal sealed class Contexts
 {
@@ -13,7 +13,12 @@ internal sealed class Contexts
         public RequestClassContext RequestClassContext { get; set; } = null!;
         public DiscordCommandContext DiscordCommandContext { get; set; } = null!;
         public bool ShouldHandleNullReturn { get; set; }
-        public IReadOnlyList<string> RemoraConditionsArguments { get; set; } = null!;
+        public IReadOnlyList<ConditionAttributeContext> RemoraConditionsAttributeContexts { get; set; } = null!;
+    }
+
+    internal sealed class ConditionAttributeContext : ClassContext
+    {
+        public List<string>? ArgumentsValues { get; set; }
     }
 
     internal sealed class RequestClassContext : ClassContext

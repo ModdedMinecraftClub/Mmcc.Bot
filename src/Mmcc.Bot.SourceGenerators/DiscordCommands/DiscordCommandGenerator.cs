@@ -2,28 +2,31 @@
 using System.Globalization;
 using System.Text;
 
-namespace Mmcc.Bot.SourceGenerators.VSA;
+namespace Mmcc.Bot.SourceGenerators.DiscordCommands;
 
+/// <summary>
+/// Generates a Discord command from a vertical slice architecture-style parent class.
+/// </summary>
 [Generator]
-internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
+internal sealed class DiscordCommandGenerator : IIncrementalGenerator
 {
     private static SymbolDisplayFormat TypeFormat
         => SymbolDisplayFormat.FullyQualifiedFormat.WithMiscellaneousOptions(
             SymbolDisplayMiscellaneousOptions.UseSpecialTypes | SymbolDisplayMiscellaneousOptions.ExpandNullable |
             SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier);
-    
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterPostInitializationOutput(ctx => 
-            ctx.AddSource("MapDiscordCommandAttribute.g.cs", SourceText.From(Attributes.GenerateDiscordFromMediatRAttribute, Encoding.UTF8))
-        );        
+        context.RegisterPostInitializationOutput(ctx =>
+            ctx.AddSource("GenerateDiscordCommandAttribute.g.cs", SourceText.From(Attributes.GenerateDiscordFromMediatRAttribute, Encoding.UTF8))
+        );
 
         var provider = context.SyntaxProvider
             .CreateSyntaxProvider(IsVsaClassCandidateSyntactically, SemanticTransform)
             .Where(static typesData => typesData.HasValue)
             .Select(static (typesData, ct) => GetVSAClassContext(typesData!.Value, ct))
             .Where(static context => context is not null);
-        
+
         context.RegisterSourceOutput(provider, GenerateSource!);
     }
 
@@ -37,7 +40,7 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
 
         var methodParamsString = BuildDiscordCommandMethodParams(props, vsaContext.DiscordCommandContext.IsGreedy);
         var requestCtorParams = string.Join(", ", props.Select(p => p.Name.ToCamelCase()));
-        
+
         var generatedSource = $$"""
         // auto-generated
 
@@ -45,7 +48,7 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
         
         public partial class {{vsaContext.DiscordCommandContext.ClassName}}
         {
-        {{GenerateRemoraConditionArgumentsString(vsaContext.RemoraConditionsArguments)}}
+        {{GenerateRemoraConditionAttributesString(vsaContext.RemoraConditionsAttributeContexts)}}
             [global::Remora.Commands.Attributes.Command({{vsaContext.DiscordCommandContext.CommandName}})]
             [global::System.ComponentModel.Description({{vsaContext.DiscordCommandContext.CommandDescription}})]
             public async global::System.Threading.Tasks.Task<global::Remora.Results.IResult> {{methodName}}({{methodParamsString}})
@@ -74,14 +77,14 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
             return string.Empty;
 
         var viewContext = vsaClassContext.DiscordCommandContext.MatchedView;
-        
-        return !viewContext.HasOnEmpty 
+
+        return !viewContext.HasOnEmpty
             ? """
             
                         { IsSuccess: true } => 
                             global::Remora.Results.Result.FromError(new global::Remora.Results.NotFoundError()),
         
-            """ 
+            """
             : $$"""
             
                         { IsSuccess: true } => 
@@ -90,14 +93,21 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
             """;
     }
 
-    private static string GenerateRemoraConditionArgumentsString(IEnumerable<string> remoraConditionArguments)
+    private static string GenerateRemoraConditionAttributesString(IReadOnlyList<Contexts.ConditionAttributeContext>? remoraConditionsAttributeContexts)
     {
+        if (remoraConditionsAttributeContexts is null || remoraConditionsAttributeContexts.Count == 0)
+            return string.Empty;
+
         const string indent = "    ";
         var sb = new StringBuilder();
 
-        foreach (var argument in remoraConditionArguments)
+        foreach (var attribute in remoraConditionsAttributeContexts)
         {
-            sb.AppendLine($"{indent}{argument}");
+            var attributeString = attribute.ArgumentsValues is null || attribute.ArgumentsValues.Count == 0
+                ? $"[{attribute.Namespace}.{attribute.ClassName}]"
+                : $"[{attribute.Namespace}.{attribute.ClassName}({string.Join(", ", attribute.ArgumentsValues)})]";
+
+            sb.AppendLine($"{indent}{attributeString}");
         }
 
         return sb.ToString().TrimEnd();
@@ -124,17 +134,17 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
         return sb.ToString().TrimEnd();
     }
 
-    private static Contexts.VSAClassContext? GetVSAClassContext((INamedTypeSymbol VsaType, INamedTypeSymbol CmdGroupType, INamedTypeSymbol ViewType, AttributeArgumentListSyntax AttributeArguments, List<string> RemoraConditionsArgs) typesData, CancellationToken ct)
-    {        
+    private static Contexts.VSAClassContext? GetVSAClassContext((INamedTypeSymbol VsaType, INamedTypeSymbol CmdGroupType, INamedTypeSymbol ViewType, AttributeData AttributeData) typesData, CancellationToken ct)
+    {
         var vsaNamespace = typesData.VsaType.ContainingNamespace.ToDisplayString();
         var vsaName = typesData.VsaType.Name;
-        
+
         var requestInfo = GetRequestClassInfo(typesData.VsaType);
         if (requestInfo is null)
             return null;
 
         var discordCommandContext = GetDiscordCommandContext(typesData.CmdGroupType, typesData.ViewType,
-            requestInfo.Value.Type, typesData.AttributeArguments);
+            requestInfo.Value.Type, typesData.AttributeData.TargetArguments);
         var shouldHandleNullReturn = GetShouldHandleNullReturn(typesData.VsaType);
 
         return new Contexts.VSAClassContext
@@ -144,8 +154,25 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
             RequestClassContext = requestInfo.Value.Context,
             DiscordCommandContext = discordCommandContext,
             ShouldHandleNullReturn = shouldHandleNullReturn,
-            RemoraConditionsArguments = typesData.RemoraConditionsArgs
+            RemoraConditionsAttributeContexts = GetRemoraConditionsAttributeContexts(typesData.AttributeData)
         };
+    }
+
+    private static IReadOnlyList<Contexts.ConditionAttributeContext> GetRemoraConditionsAttributeContexts(AttributeData attributeData)
+    {
+        var conditionsAttributes = attributeData.RemoraConditionsAttributes;
+        var context = conditionsAttributes
+            .Select(attr => new Contexts.ConditionAttributeContext
+            {
+                Namespace = attr.AttributeType.ContainingNamespace.ToDisplayString(),
+                ClassName = attr.AttributeType.Name,
+                ArgumentsValues = attr.Arguments?
+                .Select(arg => arg.Match(symbol => symbol.ToDisplayString(), expression => expression.ToFullString()))
+                .ToList()
+            })
+            .ToList();
+
+        return context;
     }
 
     private static (INamedTypeSymbol Type, Contexts.RequestClassContext Context)? GetRequestClassInfo(INamedTypeSymbol vsaType)
@@ -157,7 +184,7 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
 
         if (requestType is null)
             return null;
-        
+
         var @namespace = requestType.ContainingNamespace.ToDisplayString();
         var className = requestType.Name;
         var properties = requestType
@@ -165,7 +192,7 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
             .OfType<IPropertySymbol>()
             .Where(p => p is
             {
-                Kind: SymbolKind.Property, 
+                Kind: SymbolKind.Property,
                 DeclaredAccessibility: Accessibility.Public,
                 IsStatic: false,
                 SetMethod.IsInitOnly: true
@@ -218,7 +245,7 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
             MatchedView = matchedViewContext
         };
     }
-    
+
     private static Contexts.DiscordViewContext GetViewContext(INamedTypeSymbol viewType, INamedTypeSymbol requestType)
     {
         var @namespace = viewType.ContainingNamespace.ToDisplayString();
@@ -270,7 +297,7 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
         {
             return handleMethod.ReturnType.NullableAnnotation == NullableAnnotation.Annotated;
         }
-        
+
         var returnTypeInsideTask = ((INamedTypeSymbol)handleMethod.ReturnType).TypeArguments.FirstOrDefault();
         if (returnTypeInsideTask is null)
             return false; // something weird would be going on;
@@ -288,23 +315,23 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
 
     private static bool IsVsaClassCandidateSyntactically(SyntaxNode node, CancellationToken ct)
         => node is ClassDeclarationSyntax
-           {
-               AttributeLists.Count: > 0,
-               BaseList: null or { Types.Count: 0 }
-           } candidate
+        {
+            AttributeLists.Count: > 0,
+            BaseList: null or { Types.Count: 0 }
+        } candidate
            && candidate.Modifiers.Any(SyntaxKind.PartialKeyword)
            && !candidate.Modifiers.Any(SyntaxKind.StaticKeyword);
 
-    private static (INamedTypeSymbol VsaType, INamedTypeSymbol CmdGroupType, INamedTypeSymbol ViewType, AttributeArgumentListSyntax AttributeArguments, List<string> RemoraConditionsArgs)? SemanticTransform(GeneratorSyntaxContext ctx, CancellationToken ct)
+    private static (INamedTypeSymbol VsaType, INamedTypeSymbol CmdGroupType, INamedTypeSymbol ViewType, AttributeData AttributeData)? SemanticTransform(GeneratorSyntaxContext ctx, CancellationToken ct)
     {
         Debug.Assert(ctx.Node is ClassDeclarationSyntax);
         var candidate = Unsafe.As<ClassDeclarationSyntax>(ctx.Node);
 
         var symbol = ctx.SemanticModel.GetDeclaredSymbol(candidate, ct);
         var generateDiscordAttribute =
-            ctx.SemanticModel.Compilation.GetTypeByMetadataName("Mmcc.Bot.SourceGenerators.VSA.MapDiscordCommandAttribute`1");
+            ctx.SemanticModel.Compilation.GetTypeByMetadataName("Mmcc.Bot.SourceGenerators.DiscordCommands.GenerateDiscordCommandAttribute`1");
 
-        if (symbol is not null 
+        if (symbol is not null
             && TryGetAttributeData(candidate, generateDiscordAttribute, ctx.SemanticModel, out var attributeData)
             && attributeData.HasValue)
         {
@@ -312,7 +339,7 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
 
             if (viewType is not null)
             {
-                return (symbol, attributeData.Value.CmdGroupType, viewType, attributeData.Value.Arguments, attributeData.Value.RemoraConditionsArgs);
+                return (symbol, attributeData.Value.CmdGroupType, viewType, attributeData.Value);
             }
         }
 
@@ -323,16 +350,12 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
         ClassDeclarationSyntax candidate,
         INamedTypeSymbol? target,
         SemanticModel semanticModel,
-        out (
-            INamedTypeSymbol CmdGroupType,
-            AttributeArgumentListSyntax Arguments,
-            List<string> RemoraConditionsArgs
-        )? attributeData
+        out AttributeData? attributeData
     )
     {
         INamedTypeSymbol? cmdGroupType = null;
         AttributeArgumentListSyntax? targetArguments = null;
-        var conditionAttributes = new List<string>();        
+        var conditionAttributes = new List<(INamedTypeSymbol, IReadOnlyList<OneOf<IFieldSymbol, ExpressionSyntax>>?)>();
         foreach (var attributeList in candidate.AttributeLists)
         {
             foreach (var attribute in attributeList.Attributes)
@@ -342,9 +365,9 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
 
                 if (attributeSymbol is null)
                     continue;
-                
+
                 // Target attribute;
-                if (attribute is 
+                if (attribute is
                     {
                         Name: GenericNameSyntax
                         {
@@ -357,7 +380,7 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
                         {
                             Arguments.Count: >= 3
                         } attributeArgumentsSyntax
-                    } 
+                    }
                     && SymbolEqualityComparer.Default.Equals(attributeSymbol.ContainingSymbol.OriginalDefinition, target)
                 )
                 {
@@ -380,40 +403,58 @@ internal sealed class VerticalSliceArchitectureGenerator : IIncrementalGenerator
                     var conditionAttributeNamespace = conditionAttributeType.ContainingNamespace.ToDisplayString();
                     if (!conditionAttributeNamespace.StartsWith("Remora.Discord.Commands.Conditions") && !conditionAttributeNamespace.StartsWith("Mmcc.Bot.RemoraAbstractions.Conditions"))
                         continue;
-                    
+
                     if (attribute.ArgumentList is null || attribute.ArgumentList.Arguments.Count == 0)
                     {
-                        conditionAttributes.Add($"[{conditionAttributeType.ToDisplayString()}]");
+                        conditionAttributes.Add((conditionAttributeType, null));
                     }
                     else
-                    {                        
-                        var args = new List<string>(attribute.ArgumentList.Arguments.Count);
+                    {
+                        var args = new List<OneOf<IFieldSymbol, ExpressionSyntax>>(attribute.ArgumentList.Arguments.Count);
                         foreach (var argSyntax in attribute.ArgumentList.Arguments)
                         {
                             var argSymbol = semanticModel.GetSymbolInfo(argSyntax.Expression).Symbol;
-                            if (argSymbol is not IFieldSymbol argFieldSymbol)
-                                continue;
-                            if (argFieldSymbol.Type is not INamedTypeSymbol argType)
-                                continue;
-
-                            var argString = argType.EnumUnderlyingType is not null
-                                ? argSymbol.ToDisplayString()
-                                : argSyntax.Expression.ToFullString();
-
-                            args.Add(argString);
+                            if (argSymbol is not IFieldSymbol argFieldSymbol
+                                || argFieldSymbol.Type is not INamedTypeSymbol argType
+                                || argType.EnumUnderlyingType is null
+                            )
+                            {
+                                args.Add(argSyntax.Expression);
+                            }
+                            else
+                            {
+                                args.Add(OneOf<IFieldSymbol, ExpressionSyntax>.FromT0(argFieldSymbol));
+                            }
                         }
 
-                        var fullAttributeString = $"[{conditionAttributeType.ToDisplayString()}({string.Join(", ", args)})]";
-                        conditionAttributes.Add(fullAttributeString);
-                    }                    
+                        conditionAttributes.Add((conditionAttributeType, args));
+                    }
                 }
             }
         }
 
         attributeData = cmdGroupType is null || targetArguments is null
             ? null
-            : (cmdGroupType, targetArguments, conditionAttributes);
+            : new AttributeData(cmdGroupType, targetArguments, conditionAttributes);
 
         return attributeData is not null;
+    }
+}
+
+internal readonly struct AttributeData
+{
+    internal readonly INamedTypeSymbol CmdGroupType;
+    internal readonly AttributeArgumentListSyntax TargetArguments;
+    internal readonly IReadOnlyList<(INamedTypeSymbol AttributeType, IReadOnlyList<OneOf<IFieldSymbol, ExpressionSyntax>>? Arguments)> RemoraConditionsAttributes;
+
+    internal AttributeData(
+        INamedTypeSymbol cmdGroupType,
+        AttributeArgumentListSyntax targetArguments,
+        IReadOnlyList<(INamedTypeSymbol, IReadOnlyList<OneOf<IFieldSymbol, ExpressionSyntax>>?)> remoraConditionAttributes
+    )
+    {
+        CmdGroupType = cmdGroupType;
+        TargetArguments = targetArguments;
+        RemoraConditionsAttributes = remoraConditionAttributes;
     }
 }
