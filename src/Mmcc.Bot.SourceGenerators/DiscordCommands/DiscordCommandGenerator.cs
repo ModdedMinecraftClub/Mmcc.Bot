@@ -65,8 +65,8 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
                 Namespace = attr.AttributeType.ContainingNamespace.ToDisplayString(),
                 ClassName = attr.AttributeType.Name,
                 ArgumentsValues = attr.Arguments?
-                .Select(arg => arg.Match(symbol => symbol.ToDisplayString(), expression => expression.ToFullString()))
-                .ToList()
+                    .Select(arg => arg.Match(symbol => symbol.ToDisplayString(), expression => expression.ToFullString()))
+                    .ToList()
             })
             .ToList();
 
