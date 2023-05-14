@@ -337,7 +337,7 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
         return attributeData is not null;
     }
     
-        private static void GenerateSource(SourceProductionContext productionContext, VsaClassContext vsaContext)
+    private static void GenerateSource(SourceProductionContext productionContext, VsaClassContext vsaContext)
     {
         var sanitisedCommandName = vsaContext.DiscordCommandContext.CommandName.Replace("\"", "");
         var methodName = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(sanitisedCommandName);
