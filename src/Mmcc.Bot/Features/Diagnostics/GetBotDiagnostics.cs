@@ -4,13 +4,12 @@ using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Mmcc.Bot.SourceGenerators.DiscordCommands;
 using Remora.Results;
 
 namespace Mmcc.Bot.Features.Diagnostics;
 
-/// <summary>
-/// Pings all network resources to check specified in <see cref="IDiagnosticsSettings"/>.
-/// </summary>
+[DiscordCommand<DiagnosticsCommands>("bot", "Show status of the bot and APIs it uses", isGreedy: false)]
 public sealed class GetBotDiagnostics
 {
     public record struct Query : IRequest<Result<IList<QueryResult>>>;

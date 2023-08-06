@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using static Mmcc.Bot.SourceGenerators.CommonContexts;
 using static Mmcc.Bot.SourceGenerators.DiscordCommands.DiscordCommandGeneratorContexts;
@@ -19,7 +20,7 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         context.RegisterPostInitializationOutput(ctx =>
-            ctx.AddSource("GenerateDiscordCommandAttribute.g.cs", SourceText.From(DiscordCommandGeneratorAttributes.GenerateDiscordCommandAttribute, Encoding.UTF8))
+            ctx.AddSource("DiscordCommandAttribute.g.cs", SourceText.From(DiscordCommandGeneratorAttributes.DiscordCommandAttribute, Encoding.UTF8))
         );
 
         var provider = context.SyntaxProvider
@@ -231,18 +232,17 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
                AttributeLists.Count: > 0,
                BaseList: null or { Types.Count: 0 }
            } candidate
-           && candidate.Modifiers.Any(SyntaxKind.PartialKeyword)
            && !candidate.Modifiers.Any(SyntaxKind.StaticKeyword);
 
     private static (INamedTypeSymbol VsaType, INamedTypeSymbol CmdGroupType, INamedTypeSymbol ViewType, AttributeData AttributeData)? SemanticTransform(GeneratorSyntaxContext ctx, CancellationToken ct)
     {
         var candidate = Unsafe.As<ClassDeclarationSyntax>(ctx.Node);
         var symbol = ctx.SemanticModel.GetDeclaredSymbol(candidate, ct);
-        var generateDiscordAttribute =
-            ctx.SemanticModel.Compilation.GetTypeByMetadataName("Mmcc.Bot.SourceGenerators.DiscordCommands.GenerateDiscordCommandAttribute`1");
+        var discordCmdAttribute =
+            ctx.SemanticModel.Compilation.GetTypeByMetadataName("Mmcc.Bot.SourceGenerators.DiscordCommands.DiscordCommandAttribute`1");
 
         if (symbol is not null
-            && TryGetAttributeData(candidate, generateDiscordAttribute, ctx.SemanticModel, out var attributeData)
+            && TryGetAttributeData(candidate, discordCmdAttribute, ctx.SemanticModel, out var attributeData)
             && attributeData.HasValue)
         {
             var viewType = ctx.SemanticModel.Compilation.GetTypeByMetadataName($"{symbol.ContainingNamespace}.{symbol.Name}View");
@@ -288,7 +288,7 @@ internal sealed class DiscordCommandGenerator : IIncrementalGenerator
                         },
                         ArgumentList:
                         {
-                            Arguments.Count: >= 3
+                            Arguments.Count: >= 2
                         } attributeArgumentsSyntax
                     }
                     && SymbolEqualityComparer.Default.Equals(attributeSymbol.ContainingSymbol.OriginalDefinition, target)

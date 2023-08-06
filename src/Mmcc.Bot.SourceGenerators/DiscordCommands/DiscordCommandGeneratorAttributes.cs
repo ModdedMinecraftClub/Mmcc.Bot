@@ -2,13 +2,13 @@
 
 internal static class DiscordCommandGeneratorAttributes
 {
-    internal static string GenerateDiscordCommandAttribute =>
+    internal static string DiscordCommandAttribute =>
         """
         namespace Mmcc.Bot.SourceGenerators.DiscordCommands;
         
         [global::System.CodeDom.Compiler.GeneratedCode("Mmcc.Bot.SourceGenerators", "1.0.0")]
         [global::System.AttributeUsage(global::System.AttributeTargets.Class)]
-        public class GenerateDiscordCommandAttribute<TCommandGroup> : global::System.Attribute
+        public class DiscordCommandAttribute<TCommandGroup> : global::System.Attribute
             where TCommandGroup : global::Remora.Commands.Groups.CommandGroup
         {
             public string Name { get; set; }
@@ -16,10 +16,10 @@ internal static class DiscordCommandGeneratorAttributes
             public bool IsGreedy { get; set; }
             public string[] Aliases { get; set; }
             
-            public GenerateDiscordCommandAttribute(
+            public DiscordCommandAttribute(
                 string name,
                 string description,
-                bool isGreedy,
+                bool isGreedy = false,
                 params string[] aliases
             )
             {
