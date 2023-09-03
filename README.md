@@ -1,7 +1,7 @@
 # Mmcc.Bot
-Discord bot to fulfill all of MMCC's needs - communication with servers, diagnostics, applications, moderation, issues.
+Minecraft servers network management system disguised as a Discord bot.
 
-The bot is tightly integrated with [polychat2](https://github.com/ModdedMinecraftClub/polychat2) which it uses to communicate with Minecraft servers. It implements its protocol via [Ssmp](https://github.com/john01dav/ssmp).
+The bot is tightly integrated with [polychat2](https://github.com/ModdedMinecraftClub/polychat2) which is a Forge/Bukkit server-side Minecraft mod needed for the incoming messages to be understood and handled correctly.
 
 ## Available features
 
@@ -9,7 +9,7 @@ To view all the commands, simply type `!help` in a server that has the bot, once
 
 ### Minecraft servers integration
 
-The bot integrates with MMCC Minecraft servers, providing the ability to view online servers and information about them (IP, name, amount of online players), as well as the ability for staff to perform administrative tasks such as restarting the servers and executing commands on them from Discord.
+The bot integrates with Minecraft servers, providing the ability to view online servers and information about them (IP, name, amount of online players), as well as the ability for staff to perform administrative tasks such as restarting the servers and executing commands on them from Discord.
 
 ### Member applications
 
